@@ -60,7 +60,7 @@ export default function AdminSiteSettings({ token, onSaved, onNotice }) {
 
   return (
     <section className="admin-list-section">
-      <AdminSectionHeader title="大厅文案" meta="修改校园播报、大厅标题、项目版本号、关于文本和页脚信息" />
+      <AdminSectionHeader title="大厅文案" meta="修改校园播报、大厅标题、项目版本号、关于文本、碎碎念和页脚信息" />
       {loading ? <WindowLoadingState compact>正在加载系统设置…</WindowLoadingState> : !ready ? (
         <div>
           <p className="admin-error" role="alert">系统设置加载失败：{loadState.error}</p>
@@ -106,12 +106,21 @@ export default function AdminSiteSettings({ token, onSaved, onNotice }) {
           />
         </label>
         <label>
-          <AdminFieldLabel text="关于文本" tip="显示在玩家设置弹窗的关于页，可填写较长说明。" />
+          <AdminFieldLabel text="关于文本" tip="默认显示在玩家设置弹窗的关于页，用于填写网站信息。" />
           <textarea
             maxLength={3000}
             rows={8}
             value={draft.aboutText}
             onChange={(event) => setDraft((current) => ({ ...current, aboutText: event.target.value }))}
+          />
+        </label>
+        <label>
+          <AdminFieldLabel text="碎碎念文本" tip="玩家在关于页点击“碎碎念”后显示，留空时显示暂无内容提示。" />
+          <textarea
+            maxLength={3000}
+            rows={8}
+            value={draft.aboutNotesText ?? ""}
+            onChange={(event) => setDraft((current) => ({ ...current, aboutNotesText: event.target.value }))}
           />
         </label>
         <label>

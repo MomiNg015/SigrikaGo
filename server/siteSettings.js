@@ -20,6 +20,7 @@ const SITE_SETTING_LIMITS = {
   homeVersion: 24,
   homeSubtitle: 80,
   aboutText: 3000,
+  aboutNotesText: 3000,
   footerText: 3000,
   preloadTips: 1000,
   characterLoadingLines: 3000,

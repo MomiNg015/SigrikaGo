@@ -129,16 +129,36 @@
   background: #fbf7fd;
   min-height: 230px;
   max-height: min(48vh, 420px);
-  align-content: start;
-  overflow: auto;
-  padding: 14px;
-  white-space: pre-wrap;
+  align-content: stretch;
+  grid-template-rows: minmax(0, 1fr) auto;
+  overflow: hidden;
+  padding: 24px;
   line-height: 1.8;
   color: #4f3d55;
 }
 
 .about-panel p {
   margin: 0;
+}
+
+.about-panel-text {
+  min-width: 0;
+  min-height: 0;
+  overflow: auto;
+  overscroll-behavior: contain;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.about-panel-actions {
+  display: flex;
+  justify-content: flex-end;
+  padding: 0 4px 4px 0;
+}
+
+.about-panel-toggle {
+  min-height: 44px;
+  padding: 8px 18px;
 }
 
 .volume-row {

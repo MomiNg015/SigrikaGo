@@ -62,6 +62,12 @@
   gap: 16px;
 }
 
+/* About copy scrolls independently so its bottom-right switch stays reachable. */
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school:not(.is-sigrika-corrupted) .settings-modal.window-sticker-host .about-panel {
+  padding: clamp(18px, 3vw, 26px) !important;
+  overflow-y: hidden !important;
+}
+
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school:not(.is-sigrika-corrupted) :is(
   .profile-report-dialog,
   .profile-blacklist-dialog

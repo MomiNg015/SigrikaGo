@@ -498,3 +498,11 @@ Capture loading, retryable errors, empty and populated results must all retain t
 - `result-compact.css` 的结果卡外框为 `3px solid var(--bright-border)`，硬阴影为 `6px 6px 0 var(--bright-border)`，手机保留阴影安全边距。
 - 未开放的主题按钮使用 `aria-disabled` 及共享 `data-button-role` 禁用视觉，保留键盘可聚焦性。`InteractionFeedback` 每次不可用反馈派发冒泡的 `sigrika:ui-unavailable` 事件；设置窗口仅响应自身未开放主题按钮并显示原有 toast，不放行业务 click，也不切换主题。鼠标 pointerdown/click 去重及按键 repeat 去重仍由共享反馈负责。
 - 浏览器验证覆盖 1280×720、1440×800、1920×1080、2301×1152 桌面及 320／360／390px 竖屏；棋盘保持正方形且无横向溢出，数子前后测量一致。短手机沿用页面纵向滚动，操作区可滚动到达。加载页在桌面和 320／390px 竖屏轮换长短 tip／角色后锚点不变。
+
+### 关于正文与碎碎念（2026-11-05）
+
+`SettingsModal` 保留现有标题、书签、边框、配色和动效，关于页正文四周使用 `clamp(18px, 3vw, 26px)` 内边距；最终规则位于 `window-title-sticker-content.css`，覆盖通用内容区及手机阴影留白规则。内部 `.about-panel-text` 独立滚动，底部操作行将“碎碎念／返回”按钮固定在右下角，保留按钮硬阴影空间。切换重建正文滚动区但保持按钮节点与焦点，返回后从文本顶部开始；重新选择关于或重开设置时显示网站信息。
+
+网站信息继续读取 `aboutText`；碎碎念使用新键 `aboutNotesText`，通过现有 `SiteSetting` 键值模型、公开读取及管理员 PATCH/GET 传递，无数据库迁移。共享默认值为空字符串，服务端去除首尾空白并限制为 3000 字符，保留段落换行；后台“大厅文案”提供独立输入框。缺失或清空时玩家显示“还没有写下碎碎念。”，且仍可返回。普通 React 文本渲染，不解析 HTML；更新其他配置不重置此字段，启动播种不覆盖已保存正文。
+
+验证：关于往返、空值／旧配置、焦点与滚动重置、后台保存与清空、公开读取、PATCH/GET、启动保留；真实完整主题在 1440×1000、800×600、390×844、320×568 下检查内边距、长文滚动和按钮可达性。设计检测提示均为既有色值／圆角，本次未新增外观色值或改动它们。

@@ -12,6 +12,32 @@ import {
 } from "../src/shared/shopMascotDialogues.js";
 
 describe("site settings defaults", () => {
+  it("bounds author notes, preserves line breaks and leaves old configurations empty", async () => {
+    expect(sanitizeSiteSettings({ aboutNotesText: "  第一行\n第二行  " }).aboutNotesText).toBe("第一行\n第二行");
+    expect(sanitizeSiteSettings({ aboutNotesText: "字".repeat(3100) }).aboutNotesText).toHaveLength(3000);
+    expect(sanitizeSiteSettings({ aboutNotesText: " \n " }).aboutNotesText).toBe("");
+    const store = new Map([["aboutText", "原有网站信息"]]);
+    const tx = {
+      siteSetting: {
+        findMany: async () => [...store].map(([key, value]) => ({ key, value })),
+        upsert: async ({ where, create, update }) => {
+          if (!store.has(where.key)) store.set(where.key, create.value);
+          else if (Object.hasOwn(update, "value")) store.set(where.key, update.value);
+        }
+      },
+      adminAuditLog: { create: vi.fn() }
+    };
+    const prisma = { ...tx, $transaction: async callback => callback(tx) };
+    expect((await getPublicSiteSettings(prisma)).aboutNotesText).toBe("");
+    const save = body => updateSiteSettings({ prisma, adminUser: { id: "admin" }, body });
+    await save({ aboutNotesText: "独立碎碎念" });
+    await ensureDefaultSiteSettings(prisma);
+    await save({ homeVersion: "v3" });
+    expect(await getPublicSiteSettings(prisma)).toMatchObject({ aboutText: "原有网站信息", aboutNotesText: "独立碎碎念" });
+    await save({ aboutNotesText: "" });
+    expect((await getPublicSiteSettings(prisma)).aboutNotesText).toBe("");
+  });
+
   it("uses the academy brand as the production fallback title", () => {
     expect(DEFAULT_SITE_SETTINGS.homeTitle).toBe("星炬学院围棋部");
     expect(DEFAULT_SITE_SETTINGS.homeVersion).toBe("v0.1.0");

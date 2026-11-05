@@ -494,6 +494,7 @@ describe("admin site settings routes", () => {
         topAnnouncementEnabled: true,
         topAnnouncementText: "周日\n维护",
         aboutText: "关于测试文本",
+        aboutNotesText: "作者碎碎念\n第二行",
         footerText: "棋境大厅\n[备案](https://beian.miit.gov.cn/)",
         preloadTips: "第一句提示\n第二句提示",
         characterLoadingLines: "sigrika=西格莉卡正在戳棋盘",
@@ -521,6 +522,7 @@ describe("admin site settings routes", () => {
       topAnnouncementEnabled: true,
       topAnnouncementText: "周日 维护",
       aboutText: "关于测试文本",
+      aboutNotesText: "作者碎碎念\n第二行",
       footerText: "棋境大厅\n[备案](https://beian.miit.gov.cn/)",
       preloadTips: "第一句提示\n第二句提示",
       characterLoadingLines: "sigrika=西格莉卡正在戳棋盘",
@@ -530,6 +532,7 @@ describe("admin site settings routes", () => {
     });
     expect(readResponse.body.settings.homeTitle).toBe("棋境大厅");
     expect(readResponse.body.settings.homeVersion).toBe("v2.4.1");
+    expect(readResponse.body.settings.aboutNotesText).toBe("作者碎碎念\n第二行");
     expect(readResponse.body.settings.topAnnouncementEnabled).toBe(true);
     expect(readResponse.body.settings.topAnnouncementText).toBe("周日 维护");
     expect(auditWrites[0].action).toBe("site-settings.update");

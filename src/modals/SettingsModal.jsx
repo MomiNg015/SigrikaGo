@@ -16,6 +16,7 @@ export default function SettingsModal({
   onClose
 }) {
   const [tab, setTab] = useState("audio");
+  const [showAboutNotes, setShowAboutNotes] = useState(false);
   const modalRef = useRef(null);
   useEffect(() => {
     const modal = modalRef.current;
@@ -36,14 +37,15 @@ export default function SettingsModal({
   ];
 
   return (
-    <div className="modal-backdrop" onClick={onClose}>
+    <div className="modal-backdrop" onClick={(event) => {
+      if (event.target === event.currentTarget) onClose();
+    }}>
       <section
         ref={modalRef}
         className={`settings-modal settings-modal-content window-sticker-host window-bookmark-host settings-tab-${tab}`}
         role="dialog"
         aria-modal="true"
         aria-labelledby="settings-modal-title"
-        onClick={(event) => event.stopPropagation()}
       >
         <button className="close-button" type="button" aria-label={"\u5173\u95ed\u8bbe\u7f6e"} onClick={onClose}><X size={20} /></button>
         <WindowTitleSticker titleKey="settings" id="settings-modal-title" />
@@ -73,7 +75,10 @@ export default function SettingsModal({
             role="tab"
             aria-selected={tab === "about"}
             aria-controls="settings-panel-about"
-            onClick={() => setTab("about")}
+            onClick={() => {
+              setShowAboutNotes(false);
+              setTab("about");
+            }}
           ><Info size={16} />{"\u5173\u4e8e"}</button>
         </WindowBookmarkTabs>
         {tab === "audio" && (
@@ -156,7 +161,23 @@ export default function SettingsModal({
         )}
         {tab === "about" && (
           <div id={panelId} className="settings-panel about-panel about-panel-block" role="tabpanel" aria-labelledby="settings-tab-about">
-            <p>{siteSettings.aboutText}</p>
+            <div
+              key={showAboutNotes ? "notes" : "about"}
+              className="about-panel-text"
+              role="region"
+              aria-label={showAboutNotes ? "碎碎念" : "网站信息"}
+              tabIndex={0}
+            >
+              <p>{showAboutNotes ? (siteSettings.aboutNotesText?.trim() || "还没有写下碎碎念。") : siteSettings.aboutText}</p>
+            </div>
+            <div className="about-panel-actions">
+              <button
+                type="button"
+                className="about-panel-toggle"
+                data-button-role="secondary"
+                onClick={() => setShowAboutNotes((current) => !current)}
+              >{showAboutNotes ? "返回" : "碎碎念"}</button>
+            </div>
           </div>
         )}
       </section>

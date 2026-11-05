@@ -45,7 +45,7 @@ describe("public and lobby route handlers", () => {
       listWatchRooms: () => [],
       listPublicCharacterResponseFn: async (prisma) => ({ characters: [{ id: prisma.id }] }),
       listPublicSkillTraitsFn: async (prisma) => [{ id: `trait:${prisma.id}` }],
-      getPublicSiteSettingsFn: async (prisma) => ({ title: prisma.id })
+      getPublicSiteSettingsFn: async (prisma) => ({ title: prisma.id, aboutText: "网站信息", aboutNotesText: "作者想法\n第二行" })
     });
     const characterRes = createResponse();
     const traitRes = createResponse();
@@ -57,7 +57,7 @@ describe("public and lobby route handlers", () => {
 
     expect(characterRes.body).toEqual({ characters: [{ id: "prisma" }] });
     expect(traitRes.body).toEqual({ traits: [{ id: "trait:prisma" }] });
-    expect(settingsRes.body).toEqual({ settings: { title: "prisma" } });
+    expect(settingsRes.body).toEqual({ settings: { title: "prisma", aboutText: "网站信息", aboutNotesText: "作者想法\n第二行" } });
   });
 
   it("loads the authenticated user's shop catalog", async () => {

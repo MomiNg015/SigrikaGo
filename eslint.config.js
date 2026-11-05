@@ -5,6 +5,7 @@ import reactHooks from "eslint-plugin-react-hooks";
 import react from "eslint-plugin-react";
 
 const maintainedFiles = [
+  "src/modals/SettingsModal*.jsx",
   "tests/e2e/deployment-loading*.js",
   "tests/e2e/handbook-entry.spec.js",
   "docs/design-samples/handbook-desktop-entry-2026-10-29/*.{js,jsx,mjs}",
@@ -176,6 +177,13 @@ export default [
       "jsx-a11y/click-events-have-key-events": "off",
       "jsx-a11y/no-static-element-interactions": "off",
       "no-unused-vars": ["error", { argsIgnorePattern: "^_", varsIgnorePattern: "^_" }]
+    }
+  },
+  {
+    files: ["src/modals/SettingsModal.jsx"],
+    rules: {
+      // Named reading regions need keyboard focus for native long-text scrolling.
+      "jsx-a11y/no-noninteractive-tabindex": ["error", { roles: ["tabpanel", "region"] }]
     }
   }
 ];

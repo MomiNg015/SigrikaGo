@@ -16,6 +16,20 @@ beforeEach(() => vi.clearAllMocks());
 afterEach(cleanup);
 
 describe("AdminSiteSettings loading and editing", () => {
+  it("edits author notes independently of the existing about text and allows clearing them", async () => {
+    adminApi.mockResolvedValueOnce({ settings: { aboutText: "原有网站资料", aboutNotesText: "旧碎碎念" } });
+    adminApi.mockImplementation(async (_path, _token, options) => ({ settings: options.body }));
+    render(<AdminSiteSettings token="admin" />);
+    const notes = await screen.findByLabelText(/碎碎念文本/);
+    expect(notes.value).toBe("旧碎碎念");
+    fireEvent.change(notes, { target: { value: "新想法\n下一行" } });
+    await act(async () => fireEvent.click(screen.getByRole("button", { name: "保存", exact: true })));
+    expect(adminApi).toHaveBeenLastCalledWith("/site-settings", "admin", expect.objectContaining({ body: expect.objectContaining({ aboutText: "原有网站资料", aboutNotesText: "新想法\n下一行" }) }));
+    fireEvent.change(notes, { target: { value: "" } });
+    await act(async () => fireEvent.click(screen.getByRole("button", { name: "保存", exact: true })));
+    expect(adminApi).toHaveBeenLastCalledWith("/site-settings", "admin", expect.objectContaining({ body: expect.objectContaining({ aboutText: "原有网站资料", aboutNotesText: "" }) }));
+  });
+
   it("loads and saves the broadcast switch and text through the existing settings form", async () => {
     adminApi.mockResolvedValueOnce({ settings: { topAnnouncementEnabled: false, topAnnouncementText: "之前的公告" } });
     adminApi.mockImplementationOnce(async (_path, _token, options) => ({ settings: options.body }));
