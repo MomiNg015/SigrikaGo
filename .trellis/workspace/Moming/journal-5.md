@@ -1130,3 +1130,36 @@ Stabilized loading portrait/tip slots, kept five battle actions during scoring w
 ### Next Steps
 
 - None - task complete
+
+
+## Session 275: 关于页留白与碎碎念切换
+
+**Date**: 2026-11-05
+**Task**: 关于页留白与碎碎念切换
+**Branch**: `master`
+
+### Summary
+
+保留现有风格，关于页增加18至26px内边距与右下角碎碎念/返回按钮；正文独立滚动，后台aboutNotesText独立配置。126项相关回归、局部Lint、生产构建和构建CSS检查通过，桌面与320/390px竖屏验证通过。仅提交本任务内容，保留其他WIP及未采用样板。
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `c7e9bf55` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
