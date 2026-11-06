@@ -57,13 +57,14 @@ export function useTimedRoomRequestToast({
   }, [roomRequestToast?.key, roomRequestToast?.autoDismiss]);
 
   function handleTimedRequestAction(action) {
-    setRoomRequestToast((current) => current ? { ...current, pendingAction: action } : current);
-    if (action === "draw:accept") onDrawRespond?.(true);
-    if (action === "draw:reject") onDrawRespond?.(false);
-    if (action === "counting:accept") onCountingRespond?.(true);
-    if (action === "counting:reject") onCountingRespond?.(false);
-    if (action === "result:accept") onScoringAction?.({ type: "accept-result" });
-    if (action === "result:reject") onScoringAction?.({ type: "reject-result" });
+    let sent;
+    if (action === "draw:accept") sent = onDrawRespond?.(true);
+    if (action === "draw:reject") sent = onDrawRespond?.(false);
+    if (action === "counting:accept") sent = onCountingRespond?.(true);
+    if (action === "counting:reject") sent = onCountingRespond?.(false);
+    if (action === "result:accept") sent = onScoringAction?.({ type: "accept-result" });
+    if (action === "result:reject") sent = onScoringAction?.({ type: "reject-result" });
+    if (sent !== false) setRoomRequestToast((current) => current ? { ...current, pendingAction: action } : current);
   }
 
   return {

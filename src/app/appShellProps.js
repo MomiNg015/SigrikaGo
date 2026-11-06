@@ -1,3 +1,5 @@
+import { emitRoomMutation } from "./roomActionConnection.js";
+
 export function buildAppRouteProps({
   overlayProps = {},
   routeActions = {},
@@ -8,8 +10,8 @@ export function buildAppRouteProps({
     ...routeState,
     ...routeActions,
     ...overlayProps,
-    onCountingRequest: () => socket?.emit("counting:request", { roomCode: room.code }),
-    onCountingRespond: (accepted) => socket?.emit("counting:respond", { roomCode: room.code, accepted })
+    onCountingRequest: () => emitRoomMutation(socket, "counting:request", { roomCode: room?.code }, routeActions.onToast),
+    onCountingRespond: (accepted) => emitRoomMutation(socket, "counting:respond", { roomCode: room?.code, accepted }, routeActions.onToast)
   };
 }
 

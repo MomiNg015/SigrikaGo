@@ -19,18 +19,26 @@ import {
   shouldShowRoomCloseCountdown
 } from "./roomState.js";
 import { useRoomBoardView } from "./view/useRoomBoardView.js";
+import { useRoomActionsReady } from "../app/useRoomActionsReady.js";
 
 export { MOBILE_ROOM_MEDIA_QUERY };
 
 export function submitRoomResignation({ setPendingSkill, onGameAction, onBack, remainForResult = false }) {
   setPendingSkill(false);
-  onGameAction({ type: "resign" });
+  if (onGameAction({ type: "resign" }) === false) return;
   if (!remainForResult) onBack?.();
 }
 
-export default function RoomScreen({ room, user, token, characters, replayStep, setReplayStep, pendingSkill, setPendingSkill, mobileBackRequestId = 0, audioSettings, siteSettings, onOpenSettings, onOpenMessageBoard, onBack, onGameAction, onCountingRequest, onCountingRespond, onDrawRequest, onDrawRespond, onScoringAction, onOpenReplay, onToast }) {
+export default function RoomScreen({ room, socket, user, token, characters, replayStep, setReplayStep, pendingSkill, setPendingSkill, mobileBackRequestId = 0, audioSettings, siteSettings, onOpenSettings, onOpenMessageBoard, onBack, onGameAction, onCountingRequest, onCountingRespond, onDrawRequest, onDrawRespond, onScoringAction, onOpenReplay, onToast }) {
+  const actionsReady = useRoomActionsReady(socket, room.code);
   const [showCoords, setShowCoords] = useState(true);
   const [confirmAction, setConfirmAction] = useState(null);
+  useEffect(() => {
+    if (!actionsReady) {
+      setConfirmAction(null);
+      setPendingSkill(false);
+    }
+  }, [actionsReady, setPendingSkill]);
   const handledMobileBackRequestIdRef = useRef(mobileBackRequestId);
   const {
     activePlayer,
@@ -78,6 +86,7 @@ export default function RoomScreen({ room, user, token, characters, replayStep, 
     onScoringAction
   });
   const { handleBoardSurface, handlePoint, handleScoringPoint, pointConfirmation } = useRoomPointActions({
+    actionsReady,
     canConfirmSkillPoint,
     displayRoom,
     isReplay,
@@ -167,10 +176,11 @@ export default function RoomScreen({ room, user, token, characters, replayStep, 
         onBack={requestExitConfirm}
         onToggleCoords={toggleCoords}
         showTestTools={import.meta.env.DEV && role === "player" && !isReplay && !isSigrikaCandyDuel && !(displayRoom.game.phase === GAME_PHASES.markingDead && scoring)}
-        testToolsDisabled={displayRoom.game.phase !== GAME_PHASES.playing || Boolean(skillPreview) || !me}
+        testToolsDisabled={!actionsReady || displayRoom.game.phase !== GAME_PHASES.playing || Boolean(skillPreview) || !me}
         onGameAction={onGameAction}
       />
       <RoomBattleStage
+        actionsDisabled={!actionsReady}
         battleLayoutClassName={battleLayoutClassName}
         audioSettings={audioSettings}
         boardStep={boardStep}

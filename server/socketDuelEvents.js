@@ -18,7 +18,7 @@ export function registerDuelSocketEvents(socket, {
       await refreshSocketUser(socket);
       await duelRequests.handleRequest(socket, String(targetUserId ?? ""), normalizeGameModeId(modeInput));
     } catch (error) {
-      socket.emit("error:toast", SOCKET_AUTH_EXPIRED_MESSAGE);
+      socket.emit("error:toast", error.code === "room_admission_rejected" ? error.message : SOCKET_AUTH_EXPIRED_MESSAGE);
     }
   });
 
@@ -29,7 +29,7 @@ export function registerDuelSocketEvents(socket, {
       await duelRequests.handleResponse(socket, String(requestId ?? ""), Boolean(accepted));
       broadcastLobbyStats();
     } catch (error) {
-      socket.emit("error:toast", SOCKET_AUTH_EXPIRED_MESSAGE);
+      socket.emit("error:toast", error.code === "room_admission_rejected" ? error.message : SOCKET_AUTH_EXPIRED_MESSAGE);
     }
   });
 }

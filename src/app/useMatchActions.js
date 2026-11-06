@@ -1,4 +1,5 @@
-import { useCallback } from "react";
+import { useCallback, useEffect } from "react";
+import { cancelPendingRoomActions, emitRoomMutation, markRoomActionsSyncing, roomActionsReady, ROOM_ACTION_UNAVAILABLE } from "./roomActionConnection.js";
 import { GAME_PHASES } from "../shared/game.js";
 import { CAPTURE_CHALLENGE_MODE } from "../shared/captureChallenge.js";
 import { PRACTICE_BOT_PORTRAIT_URL } from "../shared/practiceMode.js";
@@ -30,6 +31,8 @@ export function useMatchActions({
   setRoom,
   setView
 }) {
+  const roomCode = room?.code;
+  useEffect(() => () => cancelPendingRoomActions(socket, roomCode), [socket, roomCode]);
   const startMatch = useCallback((mode = "spark", lineup, characterId) => {
     startMatchTransition({
       mode,
@@ -94,29 +97,33 @@ export function useMatchActions({
   }, [socket]);
 
   const emitGame = useCallback((action) => {
-    if (!room) return;
-    emitGameActionWithAck(socket, { roomCode: room.code, action }, {
+    if (!room || !roomActionsReady(socket, room.code)) {
+      showToast(ROOM_ACTION_UNAVAILABLE, "warning");
+      return false;
+    }
+    return Boolean(emitGameActionWithAck(socket, { roomCode: room.code, action }, {
       onUnconfirmed: () => {
         showToast("操作确认超时，正在同步对局状态", "warning");
+        markRoomActionsSyncing(socket);
         socket?.emit("room:resume", { roomCode: room.code, resumeReason: "action-ack-timeout" });
       }
-    });
+    }));
   }, [room, showToast, socket]);
 
   const emitScoring = useCallback((action) => {
     if (!room) return;
-    socket?.emit("scoring:action", { roomCode: room.code, action });
-  }, [room, socket]);
+    return emitRoomMutation(socket, "scoring:action", { roomCode: room.code, action }, showToast);
+  }, [room, socket, showToast]);
 
   const requestDraw = useCallback(() => {
     if (!room) return;
-    socket?.emit("draw:request", { roomCode: room.code });
-  }, [room, socket]);
+    return emitRoomMutation(socket, "draw:request", { roomCode: room.code }, showToast);
+  }, [room, socket, showToast]);
 
   const respondDraw = useCallback((accepted) => {
     if (!room) return;
-    socket?.emit("draw:respond", { roomCode: room.code, accepted });
-  }, [room, socket]);
+    return emitRoomMutation(socket, "draw:respond", { roomCode: room.code, accepted }, showToast);
+  }, [room, socket, showToast]);
 
   return {
     cancelMatch,

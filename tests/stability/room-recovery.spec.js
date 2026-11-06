@@ -8,7 +8,7 @@ import {
   connectSocket
 } from "./helpers.js";
 
-test("recovers an active room after page reload", async ({ baseURL, browser, page }) => {
+test("recovers an active room after reload and disables actions while offline", async ({ baseURL, browser, page }, testInfo) => {
   const serverUrl = baseURL ?? "http://127.0.0.1:4173";
   const secondContext = await createStabilityBrowserContext(browser);
   const sockets = [];
@@ -33,7 +33,21 @@ test("recovers an active room after page reload", async ({ baseURL, browser, pag
     await page.reload();
     await expectRecoveredBoard(page);
     await expect(page.locator(".app-error-boundary")).toHaveCount(0);
+    const resign = page.getByRole("button", { name: "认输", exact: true });
+    await expect(resign).toBeEnabled();
+    await page.context().setOffline(true);
+    await expect(page.locator(".connection-notice")).toContainText("连接已断开");
+    const actions = page.getByRole("navigation", { name: "对弈操作" }).getByRole("button");
+    await expect(actions).toHaveCount(5);
+    for (const button of await actions.all()) await expect(button).toBeDisabled();
+    await page.screenshot({ path: testInfo.outputPath("room-offline-actions-disabled.png") });
+    await page.context().setOffline(false);
+    await expect(page.locator(".connection-notice")).toHaveCount(0, { timeout: 20_000 });
+    await expect(resign).toBeEnabled();
+    await expectRecoveredBoard(page);
+    await page.screenshot({ path: testInfo.outputPath("room-actions-restored.png") });
   } finally {
+    await page.context().setOffline(false);
     if (roomCode) {
       for (const socket of sockets) {
         socket.emit("game:action", { roomCode, action: { type: "resign" } });

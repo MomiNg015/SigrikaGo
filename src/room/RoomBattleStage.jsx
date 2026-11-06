@@ -16,6 +16,7 @@ export default function RoomBattleStage({
   battleLayoutClassName,
   audioSettings,
   actionPanelOverride,
+  actionsDisabled = false,
   tutorialAction,
   tutorialSkillName,
   tutorialContinueLabel,
@@ -123,7 +124,7 @@ export default function RoomBattleStage({
         audioSettings={audioSettings}
         skillEffectsEnabled={skillEffectsEnabled}
         pointConfirmation={pointConfirmation}
-        previewPlayer={role === "player" ? me : null}
+        previewPlayer={role === "player" && !actionsDisabled ? me : null}
         stoneDecorations={stoneDecorationsForRoom(displayRoom)}
         aemeathRainbowMoveEffect={aemeathRainbowMoveEffect}
         tutorialTargetPointId={tutorialTargetPointId}
@@ -137,6 +138,7 @@ export default function RoomBattleStage({
   );
   const defaultActionPanel = (
     <ActionBar
+      actionsDisabled={actionsDisabled}
       role={role}
       tutorialAction={tutorialAction}
       tutorialContinueLabel={tutorialContinueLabel}

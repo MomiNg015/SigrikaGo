@@ -70,6 +70,11 @@ const matchmakingQueue = createRoomMatchmakingQueue();
 const roomMembershipIndex = createRoomMembershipIndex({ rooms });
 const ROOM_PERSIST_THROTTLE_MS = 5000;
 const runtimeLimits = runtimeCapacityLimits();
+let roomCreationAdmission = () => ([...rooms.values()].filter((room) => room.game.phase !== "finished").length < runtimeLimits.maxActiveRooms
+  ? { ok: true } : { ok: false, code: "active_room_capacity", error: "当前对局人数较多，请稍后再匹配" });
+export function setRoomCreationAdmission(admission) {
+  roomCreationAdmission = admission;
+}
 let schedulePracticeRoomUpdate = () => {};
 const roomRuntime = createRoomRuntime({
   prisma,
@@ -258,6 +263,7 @@ export const {
 } = roomRequestLifecycle;
 const roomCreationLifecycle = createRoomCreationLifecycle({
   rooms,
+  admitRoom: () => roomCreationAdmission(),
   matchmakingQueue,
   isRoomCodeTaken,
   persistRoom,

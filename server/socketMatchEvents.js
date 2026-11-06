@@ -196,7 +196,7 @@ export function registerMatchSocketEvents(socket, {
         socket.emit("match:left");
         broadcastLobbyStats();
       }
-      const message = error.code === "active_room_exists" ? error.message : SOCKET_AUTH_EXPIRED_MESSAGE;
+      const message = ["active_room_exists", "room_admission_rejected"].includes(error.code) ? error.message : SOCKET_AUTH_EXPIRED_MESSAGE;
       socket.emit("error:toast", message);
       ack({ ok: false, error: message, ...(error.code ? { code: error.code } : {}) });
     }

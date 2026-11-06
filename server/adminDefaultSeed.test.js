@@ -87,7 +87,7 @@ describe("admin default config seed", () => {
     expect(sigrika).toMatchObject({
       cvName: "璃音",
       cvUrl: "https://space.bilibili.com/68435776",
-      illustName: "鸣潮-星弹奇游",
+      illustName: "nai5",
       illustUrl: ""
     });
     expect(costumeNames).toEqual([

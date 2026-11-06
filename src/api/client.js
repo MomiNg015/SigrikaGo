@@ -8,7 +8,7 @@ export function configureAuthRefresh(handler) {
 }
 
 export async function api(path, options = {}) {
-  const response = await fetchWithTimeout(`${API_BASE}${path}`, {
+  const { response, data } = await fetchWithTimeout(`${API_BASE}${path}`, {
     method: options.method ?? "GET",
     credentials: "same-origin",
     headers: {
@@ -18,7 +18,32 @@ export async function api(path, options = {}) {
     body: options.body ? JSON.stringify(options.body) : undefined,
     signal: options.signal,
     keepalive: options.keepalive
-  }, options.requestTimeoutMs);
+  }, options.requestTimeoutMs, (response) => readApiResponse(response, path, options));
+  if (!response.ok) {
+    const devRetryAttempt = options.devRetryAttempt ?? 0;
+    if (options.retryDevBackend && (options.method ?? "GET").toUpperCase() === "GET"
+      && response.status === 503 && data.code === "dev_backend_unavailable"
+      && devRetryAttempt < DEV_BACKEND_RETRY_DELAYS_MS.length) {
+      await waitForDevBackend(DEV_BACKEND_RETRY_DELAYS_MS[devRetryAttempt], options.signal);
+      return api(path, { ...options, devRetryAttempt: devRetryAttempt + 1 });
+    }
+    if (response.status === 401 && options.token && !options.skipAuthRefresh && authRefreshHandler) {
+      const refreshed = await authRefreshHandler();
+      if (refreshed?.token) {
+        return api(path, { ...options, token: refreshed.token, skipAuthRefresh: true });
+      }
+    }
+    const error = new Error(data.error ?? "请求失败");
+    error.status = response.status;
+    error.code = data.code;
+    error.data = data;
+    error.retryAfter = parseRetryAfter(response.headers.get("retry-after"));
+    throw error;
+  }
+  return data;
+}
+
+async function readApiResponse(response, path, options) {
   const contentType = response.headers.get("content-type") ?? "";
   if (!contentType.includes("application/json")) {
     reportUnexpectedAnnouncementResponse(path, options, response.status, contentType);
@@ -37,32 +62,7 @@ export async function api(path, options = {}) {
     reportUnexpectedAnnouncementResponse(path, options, response.status, contentType);
     throw error;
   }
-  if (!response.ok) {
-    const devRetryAttempt = options.devRetryAttempt ?? 0;
-    if (options.retryDevBackend && (options.method ?? "GET").toUpperCase() === "GET"
-      && response.status === 503 && data.code === "dev_backend_unavailable"
-      && devRetryAttempt < DEV_BACKEND_RETRY_DELAYS_MS.length) {
-      await waitForDevBackend(DEV_BACKEND_RETRY_DELAYS_MS[devRetryAttempt], options.signal);
-      return api(path, { ...options, devRetryAttempt: devRetryAttempt + 1 });
-    }
-    if (response.status === 401 && options.token && !options.skipAuthRefresh && authRefreshHandler) {
-      const refreshed = await authRefreshHandler();
-      if (refreshed?.token) {
-        return api(path, {
-          ...options,
-          token: refreshed.token,
-          skipAuthRefresh: true
-        });
-      }
-    }
-    const error = new Error(data.error ?? "\u8bf7\u6c42\u5931\u8d25");
-    error.status = response.status;
-    error.code = data.code;
-    error.data = data;
-    error.retryAfter = parseRetryAfter(response.headers.get("retry-after"));
-    throw error;
-  }
-  return data;
+  return { response, data };
 }
 
 function reportUnexpectedAnnouncementResponse(path, options, status, contentType) {
@@ -100,13 +100,12 @@ export async function uploadPortrait(file, token) {
 async function uploadPortraitWithToken(file, token, { skipAuthRefresh = false } = {}) {
   const form = new FormData();
   form.append("portrait", file);
-  const response = await fetchWithTimeout(`${API_BASE}/api/admin/uploads/character-portrait`, {
+  const { response, data } = await fetchWithTimeout(`${API_BASE}/api/admin/uploads/character-portrait`, {
     method: "POST",
     credentials: "same-origin",
     headers: { Authorization: `Bearer ${token}` },
     body: form
-  });
-  const data = await response.json();
+  }, DEFAULT_REQUEST_TIMEOUT_MS, async (response) => ({ response, data: await response.json() }));
   if (response.status === 401 && token && !skipAuthRefresh && authRefreshHandler) {
     const refreshed = await authRefreshHandler();
     if (refreshed?.token) {
@@ -117,9 +116,9 @@ async function uploadPortraitWithToken(file, token, { skipAuthRefresh = false } 
   return data.url;
 }
 
-async function fetchWithTimeout(url, init, timeoutMs = DEFAULT_REQUEST_TIMEOUT_MS) {
+async function fetchWithTimeout(url, init, timeoutMs = DEFAULT_REQUEST_TIMEOUT_MS, readResponse) {
   const timeout = Number(timeoutMs);
-  if (!Number.isFinite(timeout) || timeout <= 0) return fetch(url, init);
+  if (!Number.isFinite(timeout) || timeout <= 0) return readResponse(await fetch(url, init));
 
   const controller = new AbortController();
   const externalSignal = init.signal;
@@ -133,10 +132,11 @@ async function fetchWithTimeout(url, init, timeoutMs = DEFAULT_REQUEST_TIMEOUT_M
   }, timeout);
 
   try {
-    return await fetch(url, {
+    const response = await fetch(url, {
       ...init,
       signal: controller.signal
     });
+    return await readResponse(response);
   } catch (error) {
     if (timedOut) {
       throw new Error("\u8bf7\u6c42\u8d85\u65f6\uff0c\u8bf7\u7a0d\u540e\u91cd\u8bd5\u3002");

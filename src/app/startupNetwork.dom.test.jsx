@@ -5,17 +5,32 @@ import { useStartupPreload } from "./useStartupPreload.js";
 import { useAuthSession } from "./useAuthSession.js";
 import ConnectionNotice from "./ConnectionNotice.jsx";
 import { api } from "../api/client.js";
+import { preloadLoginAssets } from "../shared/preloadAssets.js";
 vi.mock("../api/client.js", () => ({ api: vi.fn(), configureAuthRefresh: vi.fn() }));
-vi.mock("./homeReadyPreload.js", () => ({ preloadHomeReady: async () => {} }));
+vi.mock("./homeReadyPreload.js", () => ({ preloadHomeReady: async () => {}, preloadPlayerWindows: async () => {} }));
 vi.mock("./characterCatalog.js", () => ({ loadPublicCharacterCatalog: async () => ({}) }));
 vi.mock("./musicTrackCatalog.js", () => ({ loadMusicTrackCatalog: async () => { throw Object.assign(new Error("503"), { status: 503 }); } }));
-vi.mock("../shared/preloadAssets.js", () => ({ loginPreloadAssets: () => [], preloadLoginAssets: async () => {}, retrySkippedPreloadAssets: () => () => {} }));
+vi.mock("../shared/preloadAssets.js", () => ({ loginPreloadAssets: () => [], preloadLoginAssets: vi.fn(async () => {}), retrySkippedPreloadAssets: () => () => {} }));
 afterEach(() => { cleanup(); vi.clearAllMocks(); vi.useRealTimers(); });
 function args() {
   return { token: "valid", fallbackCharacters: {}, matchSuccessRef: { current: null }, roomRef: { current: null }, viewRef: { current: "preloading" },
     refreshSiteSettings: async () => {}, ...Object.fromEntries(["AssetProgress", "Characters", "LobbyStats", "MatchStart", "MatchSuccess", "MusicTracks", "Room", "ShowHouse", "ShowLeaderboard", "ShowShop", "ShowWarehouse", "ShowWatch", "Token", "User", "View", "StartupError"].map((name) => [`set${name}`, vi.fn()])) };
 }
 describe("startup network recovery", () => {
+  test("a late home preload failure does not cover a recovered match with a stale error", async () => {
+    api.mockResolvedValue({ user: { id: "u" } });
+    let rejectAssets;
+    preloadLoginAssets.mockImplementationOnce(() => new Promise((_resolve, reject) => { rejectAssets = reject; }));
+    const options = args();
+    renderHook(() => useStartupPreload(options));
+    await waitFor(() => expect(rejectAssets).toBeTypeOf("function"));
+    options.roomRef.current = { code: "recovered-room" };
+    options.viewRef.current = "room";
+    await act(async () => { rejectAssets(new Error("offline")); });
+    expect(options.setStartupError).not.toHaveBeenCalledWith(expect.objectContaining({ source: "preload" }));
+    expect(options.setToken).not.toHaveBeenCalled();
+    expect(options.setView).not.toHaveBeenCalledWith("home");
+  });
   test("100% waits for settings, holds two seconds, and unmount cancels entry", async () => {
     vi.useFakeTimers();
     api.mockImplementation(async (url) => url === "/api/me" ? { user: { id: "u" } } : { items: [] });
@@ -53,7 +68,7 @@ describe("startup network recovery", () => {
     api.mockRejectedValue(Object.assign(new Error("busy"), { status: 503 }));
     const options = args();
     const { rerender } = renderHook(({ key }) => useStartupPreload({ ...options, retryKey: key }), { initialProps: { key: 0 } });
-    await waitFor(() => expect(options.setStartupError).toHaveBeenCalledWith(expect.objectContaining({ source: "preload" })));
+    await waitFor(() => expect(options.setStartupError).toHaveBeenCalledWith({ source: "preload", message: "暂时无法加载账号，请检查网络后重试" }));
     expect(options.setToken).not.toHaveBeenCalled();
     api.mockImplementation(async (url) => url === "/api/me" ? { user: { id: "u" } } : { items: [] });
     rerender({ key: 1 });

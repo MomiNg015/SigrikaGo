@@ -25,6 +25,25 @@ import {
 import { battlePreloadAssets, deploymentSocketBase, loginPreloadAssets, playbackAssetSources, preloadImageAssets, preloadLoginAssets, retrySkippedPreloadAssets } from "./preloadAssets.js";
 
 describe("deployment preload asset helpers", () => {
+  it("keeps optional shop images and sound failures outside the home entry barrier", async () => {
+    const assets = loginPreloadAssets({ priority: "home", shopItems: [{ imageUrl: "/optional-shop.webp" }],
+      user: { selectedCharacter: "sigrika", ownedCharacters: ["sigrika"] },
+      characters: { sigrika: { id: "sigrika" } } });
+    expect(assets.criticalImages).toContain(RUNTIME_IMAGE_ASSETS.home[0]);
+    expect(assets.criticalImages).not.toContain("/optional-shop.webp");
+    expect(assets.deferredImages).toContain("/optional-shop.webp");
+    expect(assets.criticalAudio).toEqual([]);
+    const loadImage = vi.fn(async (src) => {
+      if (assets.deferredImages.includes(src)) throw new Error("404");
+      return src;
+    });
+    const failedSound = async () => { throw new Error("audio unavailable"); };
+    await expect(preloadLoginAssets(assets, { requireComplete: true, loadImage,
+      loadAudio: failedSound, loadEffectAudio: failedSound, loadVoiceAudio: failedSound })).resolves.toBeUndefined();
+    await expect(preloadLoginAssets({ criticalImages: ["/required.webp"] }, {
+      requireComplete: true, loadImage: async () => { throw new Error("404"); }
+    })).rejects.toThrow("Required resources");
+  });
   it("preloads only the selected standard bust in addition to existing accessible portraits", () => {
     const assets = loginPreloadAssets({
       characters: {

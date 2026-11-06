@@ -15,6 +15,7 @@ import ActionKey from "./actionBar/ActionKey.jsx";
 
 function ActionBar({
   role,
+  actionsDisabled = false,
   mode = "spark",
   phase,
   me,
@@ -63,7 +64,7 @@ function ActionBar({
   const isGomoku = gameModeFamily(mode) === "gomoku";
   const remainingUses = skillEnabled ? Math.max(0, skillUses ?? 0) : 0;
   const actionSkillName = skillEnabled ? (skillName || "技能") : "技能";
-  const actionDisabled = (action, disabled) => tutorialAction === undefined ? disabled : tutorialAction !== action;
+  const actionDisabled = (action, disabled) => actionsDisabled || (tutorialAction === undefined ? disabled : tutorialAction !== action);
   const isContinue = tutorialAction !== undefined && Boolean(tutorialContinueLabel);
   const countingAction = isContinue ? "continue" : "counting";
   return (
@@ -77,7 +78,7 @@ function ActionBar({
         data-tutorial-continue={isContinue || undefined}
         data-tutorial-target={tutorialAction === countingAction || undefined}
         onClick={isMarkingDead ? onConfirmScoring : isContinue ? onTutorialContinue : onCountingRequest}
-        disabled={isMarkingDead ? !canScore || confirmed : actionDisabled(countingAction, isGomoku || !countingEnabled || !canRequestOpponentDecision({ phase, skillLocked: decisionLocked, hasAnyStones, opponentConnected }))}
+        disabled={actionsDisabled || (isMarkingDead ? !canScore || confirmed : actionDisabled(countingAction, isGomoku || !countingEnabled || !canRequestOpponentDecision({ phase, skillLocked: decisionLocked, hasAnyStones, opponentConnected })))}
         title={isMarkingDead && confirmed ? "你已确认死子，等待双方完成确认。" : !isMarkingDead && !isContinue && (isGomoku || !countingEnabled) ? "该对局无法数子" : undefined}
       >
         {!isMarkingDead && (isContinue ? <Play size={18} aria-hidden="true" /> : <Calculator size={18} />)}
@@ -102,7 +103,7 @@ function ActionBar({
         <Handshake size={18} />
         <span className="action-label mobile-action-button-label">和棋</span>
       </ActionKey>
-      <ActionKey className="resign-action" data-tutorial-target={tutorialAction === "resign" || undefined} onClick={isMarkingDead ? onResetScoring : onResign} disabled={isMarkingDead ? !canScore : actionDisabled("resign", phase === "finished" || skillLocked)}>{!isMarkingDead && <Flag size={18} />}<span className="action-label mobile-action-button-label">{isMarkingDead ? "重新确认" : "认输"}</span></ActionKey>
+      <ActionKey className="resign-action" data-tutorial-target={tutorialAction === "resign" || undefined} onClick={isMarkingDead ? onResetScoring : onResign} disabled={actionsDisabled || (isMarkingDead ? !canScore : actionDisabled("resign", phase === "finished" || skillLocked))}>{!isMarkingDead && <Flag size={18} />}<span className="action-label mobile-action-button-label">{isMarkingDead ? "重新确认" : "认输"}</span></ActionKey>
     </nav>
   );
 }
@@ -117,6 +118,7 @@ export function areActionBarPropsEqual(previous, next) {
   }
 
   return previous.mode === next.mode
+    && previous.actionsDisabled === next.actionsDisabled
     && previous.phase === next.phase
     && previous.me?.user?.id === next.me?.user?.id
     && Boolean(previous.me) === Boolean(next.me)

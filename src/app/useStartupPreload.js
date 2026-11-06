@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { MUSIC_TRACKS } from "../shared/musicLibrary.js";
 import { api } from "../api/client.js";
 import { loginPreloadAssets, preloadLoginAssets } from "../shared/preloadAssets.js";
-import { preloadHomeReady } from "./homeReadyPreload.js";
+import { preloadHomeReady, preloadPlayerWindows } from "./homeReadyPreload.js";
 import { loadPublicCharacterCatalog } from "./characterCatalog.js";
 import { loadMusicTrackCatalog } from "./musicTrackCatalog.js";
 import { shouldFinishPreloadAsHome, shouldShowStartupPreload } from "./sessionState.js";
@@ -36,12 +36,14 @@ export function useStartupPreload({
   useEffect(() => {
     if (!token) return;
     let cancelled = false;
+    let accountLoaded = false;
     let cancelHold = () => {};
     api("/api/me", { token })
       .then(async (data) => {
         if (cancelled) return;
         setStartupError(null);
         setUser(data.user);
+        accountLoaded = true;
         if (shouldShowStartupPreload({
           room: roomRef.current,
           matchSuccess: matchSuccessRef.current
@@ -49,27 +51,20 @@ export function useStartupPreload({
           setView("preloading");
         }
         setAssetProgress(0);
-        const [nextCharacters, nextMusicTracks, shopData, inventoryData, recruitmentData] = await Promise.all([
+        const [nextCharacters, nextMusicTracks] = await Promise.all([
           loadPublicCharacterCatalog({ token }),
           loadMusicTrackCatalog({ token }).catch((error) => {
             if (error.status === 401 || error.status === 403) throw error;
             return MUSIC_TRACKS;
-          }),
-          api("/api/shop", { token, requestTimeoutMs: 8000 }).catch(() => ({ items: [] })),
-          api("/api/items/inventory", { token, requestTimeoutMs: 8000 }).catch(() => ({ items: [] })),
-          api("/api/recruitment", { token, requestTimeoutMs: 8000 }).catch(() => ({ items: [] }))
+          })
         ]);
         if (cancelled) return;
         setCharacters(nextCharacters);
         setMusicTracks(nextMusicTracks);
         await Promise.all([preloadHomeReady(), preloadLoginAssets(loginPreloadAssets({
+          priority: "home",
           characters: nextCharacters,
           user: data.user,
-          shopItems: shopData.items ?? [],
-          inventoryItems: [
-            ...(inventoryData.items ?? []),
-            ...(recruitmentData.items ?? [])
-          ],
           tracks: nextMusicTracks
         }), {
           concurrency: 6,
@@ -94,13 +89,20 @@ export function useStartupPreload({
           matchSuccess: matchSuccessRef.current
         })) {
           setView("home");
+          void preloadPlayerWindows();
+          void warmCatalogImages(token, () => cancelled).catch(() => {});
         }
       })
       .catch((error) => {
         if (cancelled) return;
         if (error.status !== 401 && error.status !== 403) {
-          setStartupError({ source: "preload", message: "资源尚未加载完成，请检查网络后重试" });
-          if (shouldShowStartupPreload({ room: roomRef.current, matchSuccess: matchSuccessRef.current })) setView("preloading");
+          // A recovered match owns its own asset barrier and connection feedback.
+          if (shouldShowStartupPreload({ room: roomRef.current, matchSuccess: matchSuccessRef.current })) {
+            setStartupError({ source: "preload", message: accountLoaded
+              ? "资源尚未加载完成，请检查网络后重试"
+              : "暂时无法加载账号，请检查网络后重试" });
+            setView("preloading");
+          }
           return;
         }
         setStartupError(null);
@@ -147,4 +149,13 @@ export function useStartupPreload({
     token,
     viewRef
   ]);
+}
+
+async function warmCatalogImages(token, isCancelled) {
+  const catalogs = await Promise.all(["/api/shop", "/api/items/inventory", "/api/recruitment"]
+    .map((path) => api(path, { token }).catch(() => ({ items: [] }))));
+  if (isCancelled()) return;
+  await preloadLoginAssets({ images: catalogs.flatMap((catalog) => (catalog.items ?? []).map((item) => item.imageUrl)) }, {
+    concurrency: 2, taskTimeoutMs: 8000
+  });
 }

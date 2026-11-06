@@ -145,7 +145,7 @@ export default function MailboxModal({
                         <time className="mailbox-list-time" dateTime={message.createdAt}>{listTime}</time>
                       </span>
                       <span className="mailbox-list-state" aria-hidden="true">
-                        {message.claimable ? "附件待领取" : message.isRead ? "✓ 已完成" : "未读"}
+                        {message.claimable ? `${message.isRead ? "已读" : "未读"} · 附件待领取` : message.isRead ? "✓ 已完成" : "未读"}
                       </span>
                     </button>
                   </li>
@@ -222,7 +222,7 @@ export function mailboxMessageIsDone(message) {
 }
 
 function mailboxMessageStateClass(message) {
-  return mailboxMessageIsDone(message) ? "state-done" : "state-open";
+  return `${mailboxMessageIsDone(message) ? "state-done" : "state-open"} ${message.isRead ? "is-read" : "is-unread"}`;
 }
 
 function mailboxMessageStatusLabel(message) {

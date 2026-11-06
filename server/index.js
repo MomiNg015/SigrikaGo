@@ -82,7 +82,8 @@ import {
   restorePersistedRooms,
   respondCounting,
   respondDraw,
-  roomView
+  roomView,
+  setRoomCreationAdmission
 } from "./rooms.js";
 import {
   hasBlacklistBetween,
@@ -139,6 +140,7 @@ const runtimeServiceState = createRuntimeServiceState({
   matchmakingCount,
   persistenceStats: roomPersistenceStats
 });
+setRoomCreationAdmission(() => runtimeServiceState.admission("match"));
 
 const corsOptions = {
   origin: (origin, callback) => corsOriginForRequest(origin, callback),

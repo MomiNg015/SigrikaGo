@@ -4,6 +4,7 @@ import { isLibertyPurgeForbiddenPoint } from "../../shared/gameSkillState.js";
 import { nextPointConfirmation, shouldUsePointConfirmation } from "../mobilePointConfirmation.js";
 
 export function useRoomPointActions({
+  actionsReady = true,
   canConfirmSkillPoint,
   displayRoom,
   isReplay,
@@ -24,14 +25,16 @@ export function useRoomPointActions({
 
   useEffect(() => {
     setPointConfirmation(null);
-  }, [displayRoom.code, displayRoom.game.turn, displayRoom.game.phase, pendingSkill, skillPreview, isReplay]);
+  }, [displayRoom.code, displayRoom.game.turn, displayRoom.game.phase, pendingSkill, skillPreview, isReplay, actionsReady]);
 
   const handleScoringPoint = useCallback((point) => {
+    if (!actionsReady) return;
     if (point.stone) onScoringAction({ type: "mark-dead", pointId: point.id });
     else if (point.valid) onScoringAction({ type: "mark-neutral", pointId: point.id });
-  }, [onScoringAction]);
+  }, [onScoringAction, actionsReady]);
 
   const handlePoint = useCallback((point, eventMeta = {}) => {
+    if (!actionsReady) return;
     if (isReplay) return;
     if (skillPreview) return;
     if (phase === "marking-dead") return handleScoringPoint(point);
@@ -70,6 +73,7 @@ export function useRoomPointActions({
     }
     onGameAction({ type: "move", pointId: point.id });
   }, [
+    actionsReady,
     canConfirmSkillPoint,
     handleScoringPoint,
     isReplay,
@@ -87,12 +91,13 @@ export function useRoomPointActions({
   ]);
 
   const handleBoardSurface = useCallback(() => {
+    if (!actionsReady) return;
     if (isReplay || skillPreview || !pendingSkill || !skillUsesBoardSurfaceConfirmation) return;
     if (phase !== GAME_PHASES.playing || role !== "player") return;
     setPointConfirmation(null);
     setPendingSkill(false);
     onGameAction({ type: "skill" });
-  }, [isReplay, onGameAction, pendingSkill, phase, role, setPendingSkill, skillPreview, skillUsesBoardSurfaceConfirmation]);
+  }, [actionsReady, isReplay, onGameAction, pendingSkill, phase, role, setPendingSkill, skillPreview, skillUsesBoardSurfaceConfirmation]);
 
   return {
     handlePoint,

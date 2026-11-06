@@ -1,3 +1,5 @@
+import { roomActionsReady, trackPendingRoomAction } from "./roomActionConnection.js";
+
 export const GAME_ACTION_ACK_TIMEOUT_MS = 4000;
 export const GAME_ACTION_RETRY_LIMIT = 2;
 
@@ -24,12 +26,23 @@ export function emitGameActionWithAck(socket, {
   onAcknowledged = () => {},
   onUnconfirmed = () => {}
 } = {}) {
-  if (!socket?.emit || !roomCode || !action) return null;
+  if (!roomActionsReady(socket, roomCode) || !action) return null;
 
   const payload = { roomCode, action, actionId };
   let attempts = 0;
   let timerId = null;
   let settled = false;
+  const connectionId = socket.id;
+  let untrack = () => {};
+
+  function cancel() {
+    settled = true;
+    clearTimer();
+    untrack();
+    socket.off?.("disconnect", cancel);
+  }
+  untrack = trackPendingRoomAction(socket, roomCode, cancel);
+  socket.on?.("disconnect", cancel);
 
   function clearTimer() {
     if (timerId === null) return;
@@ -39,13 +52,16 @@ export function emitGameActionWithAck(socket, {
 
   function acknowledge(response = {}) {
     if (settled || response?.actionId !== actionId) return;
-    settled = true;
-    clearTimer();
+    cancel();
     onAcknowledged(response);
   }
 
   function send() {
     if (settled) return;
+    if (!roomActionsReady(socket, roomCode) || socket.id !== connectionId) {
+      cancel();
+      return;
+    }
     attempts += 1;
     socket.emit("game:action", payload, acknowledge);
     if (settled) return;
@@ -57,7 +73,7 @@ export function emitGameActionWithAck(socket, {
         send();
         return;
       }
-      settled = true;
+      cancel();
       onUnconfirmed({ actionId, attempts, payload });
     }, ackTimeoutMs);
   }
@@ -65,9 +81,6 @@ export function emitGameActionWithAck(socket, {
   send();
   return {
     actionId,
-    cancel: () => {
-      settled = true;
-      clearTimer();
-    }
+    cancel
   };
 }

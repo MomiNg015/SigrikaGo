@@ -1,7 +1,7 @@
 import { expect, test } from "@playwright/test";
 import { registerPlayer } from "./helpers.js";
 
-test("keeps the session through a startup 503 and retries with a failed music catalog", async ({ page }, testInfo) => {
+test("keeps the session through a startup 503 and reaches home despite optional catalog failures", async ({ page }, testInfo) => {
   test.setTimeout(60_000);
   const auth = await registerPlayer(page.context(), "nw");
   const headers = { Authorization: `Bearer ${auth.token}` };
@@ -11,6 +11,9 @@ test("keeps the session through a startup 503 and retries with a failed music ca
   const failMe = (route) => route.fulfill({ status: 503, contentType: "text/html", body: "temporarily unavailable" });
   await page.route("**/api/me", failMe);
   await page.route("**/api/music-tracks", (route) => route.fulfill({ status: 503, body: "unavailable" }));
+  for (const path of ["shop", "items/inventory", "recruitment"]) {
+    await page.route(`**/api/${path}`, (route) => route.fulfill({ status: 503, body: "optional catalog unavailable" }));
+  }
   await page.goto("/");
   const notice = page.locator(".connection-notice");
   await expect(notice).toContainText("暂时无法加载账号", { timeout: 45_000 });

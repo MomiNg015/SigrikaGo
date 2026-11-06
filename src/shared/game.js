@@ -1,4 +1,5 @@
 import { CHARACTERS } from "./characters.js";
+import { concealHiddenHandLocations } from "./gameVisibility.js";
 import {
   COLORS,
   NEUTRAL_STONES,
@@ -194,6 +195,7 @@ export function activatePassiveSkill(state, color, skillOrCharacterId) {
 
 export function gameViewForColor(game, viewerColor) {
   const view = cloneState(game);
+  concealHiddenHandLocations(view, viewerColor);
   const showColorIllusions = [
     ...(view.mode === "team" ? [GAME_PHASES.opening] : []),
     GAME_PHASES.playing,
@@ -203,11 +205,14 @@ export function gameViewForColor(game, viewerColor) {
   ].includes(view.phase);
   view.points = view.points.map((point) => {
     let nextPoint = point;
-    if (nextPoint.hiddenHand && !nextPoint.hiddenHand.exposed && nextPoint.hiddenHand.owner !== viewerColor) {
+    if (view.phase !== GAME_PHASES.finished && nextPoint.hiddenHand && !nextPoint.hiddenHand.exposed && nextPoint.hiddenHand.owner !== viewerColor) {
       nextPoint = {
         ...nextPoint,
         stone: null,
-        hiddenHand: null
+        hiddenHand: null,
+        colorIllusion: null,
+        skillEffect: null,
+        skillEffectOwner: null
       };
     }
     if (showColorIllusions && nextPoint.colorIllusion && nextPoint.colorIllusion.owner !== viewerColor && nextPoint.stone) {

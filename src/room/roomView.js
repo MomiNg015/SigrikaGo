@@ -226,7 +226,16 @@ export function replayGameAt(room, step) {
     if (entry.type === "skill") {
       const player = (room.team ? players : room.players).find((candidate) => candidate.color === entry.color);
       const skill = player?.character?.skill ?? player?.characterId;
-      if (entry.effectType === "color-illusion-passive") {
+      if (entry.effectType === "hidden-hand" && entry.concealed && !entry.id) {
+        // A live public history advances the turn without reconstructing a secret stone.
+        game = structuredClone(game);
+        game.turn = entry.color === COLORS.black ? COLORS.white : COLORS.black;
+        game.moveNumber = entry.moveNumber;
+        game.passes = 0;
+        game.skillUses[entry.color] = Math.max(0, (game.skillUses[entry.color] ?? 0) - 1);
+        applySkillCost(game, entry.color, skill);
+        game.history.push(entry);
+      } else if (entry.effectType === "color-illusion-passive") {
         result = activatePassiveSkill(game, entry.color, skill);
       } else if (entry.effectType === "random-blast") {
         result = randomBlast(game, entry.color, {

@@ -36,6 +36,7 @@ export function playbackAssetSources(playback) {
 }
 
 export function loginPreloadAssets({
+  priority = "all",
   characters = {},
   user = null,
   ownedCharacters = user?.ownedCharacters,
@@ -112,6 +113,19 @@ export function loginPreloadAssets({
   const deferredAudio = [];
   const audio = criticalAudio;
 
+  if (priority === "home") {
+    const required = new Set(compactUnique([
+      ...RUNTIME_IMAGE_ASSETS.home,
+      ...(homeCharacter ? [
+        resolveCharacterPortrait(homeCharacter, { variant: "avatar" }),
+        resolveHandbookPortrait(homeCharacter, { user, itemEffects: user?.itemEffects, chibi: true }).src
+      ] : []),
+      ...equipmentAssets.map((asset) => asset?.imageUrl),
+      ...(user?.sigrikaCandyArc?.corrupted === true ? RUNTIME_IMAGE_ASSETS.corruption : [])
+    ]));
+    return { voiceAudio, images, audio, criticalImages: [...required],
+      deferredImages: images.filter((src) => !required.has(src)), criticalAudio: [], deferredAudio: audio };
+  }
   return { voiceAudio, criticalImages, deferredImages, images, criticalAudio, deferredAudio, audio };
 }
 
@@ -292,7 +306,7 @@ export async function preloadLoginAssets(assets, {
       }
     }
   }
-  void runPreloadTasks(deferredTasks, { concurrency, onSkipped, taskTimeoutMs });
+  void runPreloadTasks(deferredTasks, { concurrency: Math.min(concurrency, 2), onSkipped, taskTimeoutMs });
 }
 
 export function retrySkippedPreloadAssets(skippedAssets, {

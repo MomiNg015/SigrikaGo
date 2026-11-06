@@ -249,15 +249,9 @@
 }
 
 .audio-slider-item.is-muted > button.audio-volume-title,
-.audio-slider-item.is-muted > button.audio-volume-title:hover,
-.audio-slider-item.is-muted > button.audio-volume-title:focus,
-.audio-slider-item.is-muted > button.audio-volume-title:focus-visible,
-.audio-slider-item.is-muted > button.audio-volume-title:active,
+.audio-slider-item.is-muted > button.audio-volume-title:is(:hover, :focus, :focus-visible, :active),
 .settings-modal .audio-slider-item.is-muted > button.audio-volume-title,
-.settings-modal .audio-slider-item.is-muted > button.audio-volume-title:hover,
-.settings-modal .audio-slider-item.is-muted > button.audio-volume-title:focus,
-.settings-modal .audio-slider-item.is-muted > button.audio-volume-title:focus-visible,
-.settings-modal .audio-slider-item.is-muted > button.audio-volume-title:active {
+.settings-modal .audio-slider-item.is-muted > button.audio-volume-title:is(:hover, :focus, :focus-visible, :active) {
   color: #8f8793 !important;
 }
 

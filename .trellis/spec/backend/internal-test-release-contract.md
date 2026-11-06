@@ -30,6 +30,12 @@ Read before changing settlement, account occupancy, startup recovery, password r
 
 ## 4. Validation & Error Matrix
 
+### November 2026 review boundaries
+- `roomCreationLifecycle` receives `admitRoom`; run it synchronously at creation and immediately before registration. Production injects `runtimeServiceState.admission("match")` through `setRoomCreationAdmission`. Do not rely exclusively on a Socket handler check before awaited authentication. Reject with `room_admission_rejected`, preserve the public capacity/maintenance message, and close failed duel invitations.
+- Client room mutations require a connected Socket and a matching synchronized room. `roomActionConnection` is shared by game, counting, draw and scoring dispatch. Cancel ACK retry handles on disconnect, resync, room change and owner cleanup. Never replay offline resignation/move input after reconnect.
+- HTTP cancellation/timeout spans headers AND body consumption. Keep timer/listener cleanup after `json()`/`text()`, including uploads; auth refresh and development retries start only after body consumption.
+- Required regressions: two concurrent authenticated practice starts under a one-room ceiling; creation during drain; offline Socket.IO buffer stays empty; corresponding room snapshot re-enables controls; stalled HTTP response body and caller abort after headers.
+
 | Trigger | Required result |
 | --- | --- |
 | Transaction failure | No visible reward/saved flag; retry permitted |

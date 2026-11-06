@@ -203,6 +203,7 @@ export default function AppRoutes({
       {view === "admin" && user?.role !== "admin" && homeScreen}
       {view === "room" && room && user && (
         <RoomScreen
+          socket={socket}
           room={room}
           user={user}
           token={token}

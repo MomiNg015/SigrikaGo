@@ -12,6 +12,13 @@ const props = (overrides = {}) => ({
 afterEach(() => { cleanup(); vi.useRealTimers(); });
 
 describe("battle action keys", () => {
+  it.each(["playing", "marking-dead"])("disables every mutation during reconnection in %s", (phase) => {
+    const p = props({ phase, scoring: { confirmedBy: [] }, actionsDisabled: true });
+    const { rerender } = render(<ActionBar {...p}/>);
+    expect(screen.getAllByRole("button").every((button) => button.disabled)).toBe(true);
+    rerender(<ActionBar {...p} actionsDisabled={false}/>);
+    expect(screen.getAllByRole("button").some((button) => !button.disabled)).toBe(true);
+  });
   it("uses the counting key for continuation without dispatching a counting request", () => {
     const onTutorialContinue = vi.fn();
     const p = props({ tutorialAction: "continue", tutorialContinueLabel: "继续", onTutorialContinue });

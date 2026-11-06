@@ -87,12 +87,18 @@ export function createDuelRequestManager({
     }
     await refreshSocketUser(fromSocket);
     await refreshSocketUser(socket);
-    createDirectRoom(
-      { user: fromSocket.user, socketId: fromSocket.id },
-      { user: socket.user, socketId: socket.id },
-      io,
-      request.mode
-    );
+    try {
+      createDirectRoom(
+        { user: fromSocket.user, socketId: fromSocket.id },
+        { user: socket.user, socketId: socket.id },
+        io,
+        request.mode
+      );
+    } catch (error) {
+      fromSocket.emit("duel:rejected", { requestId, username: socket.user.username, reason: "unavailable" });
+      socket.emit("duel:closed", { requestId });
+      throw error;
+    }
     socket.emit("duel:closed", { requestId });
   }
 

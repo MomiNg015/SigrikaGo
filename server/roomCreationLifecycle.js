@@ -14,7 +14,8 @@ export function createRoomCreationLifecycle({
   roomView,
   appendSystem,
   prewarmSigrikaEngine = () => {},
-  registerRoom = () => {}
+  registerRoom = () => {},
+  admitRoom = () => ({ ok: true })
 }) {
   function isBusy(userId) {
     return [...rooms.values()].some((room) => (
@@ -25,6 +26,13 @@ export function createRoomCreationLifecycle({
   function assertAvailable(...players) {
     if (players.some((player) => isBusy(player.user.id))) {
       throw Object.assign(new Error("你已有进行中的对局或尚未完成的结算"), { code: "active_room_exists" });
+    }
+    assertAdmission();
+  }
+  function assertAdmission() {
+    const admission = admitRoom();
+    if (!admission.ok) {
+      throw Object.assign(new Error(admission.error), { code: "room_admission_rejected", admissionCode: admission.code });
     }
   }
   function joinMatchmaking(player, io, { canPair = () => true } = {}) {
@@ -98,6 +106,8 @@ export function createRoomCreationLifecycle({
   }
 
   function registerCreatedRoom(room, io) {
+    // This check and registration must remain synchronous, with no await between them.
+    assertAdmission();
     rooms.set(room.code, room);
     registerRoom(room);
     persistRoom(room, { force: true });

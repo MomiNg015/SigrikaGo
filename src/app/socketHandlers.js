@@ -2,6 +2,7 @@ import { applyRoomSnapshot, normalizeRoomSnapshot } from "./roomSnapshot.js";
 import { applyRoomPatch, roomPatchCanUpdate, roomPatchNeedsResume } from "./roomPatch.js";
 import { GAME_MODE_IDS } from "../shared/gameModes.js";
 import { GAME_PHASES } from "../shared/game.js";
+import { markRoomActionsReady, markRoomActionsSyncing } from "./roomActionConnection.js";
 
 export const ROOM_PATCH_RESUME_DEBOUNCE_MS = 1000;
 export const ROOM_RESUME_REQUEST_COOLDOWN_MS = 1500;
@@ -298,6 +299,7 @@ export function createSocketHandlers({
 }
 
 export function installSocketHandlers(socket, handlers, { buildRoomResumeRequest, onSocketReconnect = () => {}, now = () => Date.now() } = {}) {
+  markRoomActionsSyncing(socket);
   const roomResumeEmitter = createRoomResumeEmitter(socket, { buildRoomResumeRequest, now });
 
   function requestPatchResume() {
@@ -306,12 +308,19 @@ export function installSocketHandlers(socket, handlers, { buildRoomResumeRequest
 
   socket.on("match:waiting", handlers.matchWaiting);
   socket.on("match:left", handlers.matchLeft);
-  socket.on("disconnect", () => handlers.socketDisconnect?.());
+  socket.on("disconnect", () => {
+    markRoomActionsSyncing(socket);
+    handlers.socketDisconnect?.();
+  });
   socket.on("lobby:stats", handlers.lobbyStats);
-  socket.on("match:found", handlers.matchFound);
+  socket.on("match:found", (roomView) => {
+    handlers.matchFound(roomView);
+    markRoomActionsReady(socket, roomView?.code);
+  });
   socket.on("room:update", (roomView) => {
     roomResumeEmitter.markRoomResumeSettled(roomView?.code ?? "");
     handlers.roomUpdate(roomView);
+    markRoomActionsReady(socket, roomView?.code);
   });
   socket.on("room:patch", (patch) => {
     handlers.roomPatch(patch, () => requestPatchResume(patch));
@@ -320,8 +329,10 @@ export function installSocketHandlers(socket, handlers, { buildRoomResumeRequest
   socket.on("room:resume", (payload) => {
     roomResumeEmitter.markRoomResumeSettled(payload?.room?.code ?? "");
     handlers.roomResume(payload);
+    markRoomActionsReady(socket, payload?.room?.code);
   });
   socket.on("connect", () => {
+    markRoomActionsSyncing(socket);
     handlers.socketReconnect?.();
     onSocketReconnect();
     roomResumeEmitter.emitRoomResume("socket-connect");
@@ -357,6 +368,7 @@ export function createRoomResumeEmitter(socket, {
       return false;
     }
     pendingRoomResume = { key, requestedAt, reason };
+    markRoomActionsSyncing(socket);
     socket.emit("room:resume", { ...request, resumeReason: reason });
     return true;
   }

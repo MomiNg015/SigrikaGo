@@ -145,6 +145,8 @@ describe("MailboxModal information center", () => {
     const claimableRow = screen.getByRole("button", { name: /仍待领取.*待领取/ });
     expect(claimableRow.classList.contains("state-done")).toBe(false);
     expect(claimableRow.classList.contains("state-open")).toBe(true);
+    expect(claimableRow.textContent).toContain("已读 · 附件待领取");
+    expect(claimableRow.classList.contains("is-read")).toBe(true);
     expect(container.querySelector(".mailbox-unread-dot")).toBeNull();
     expect(container.querySelector(".mailbox-list-status")).toBeNull();
     expect(container.querySelector(".mailbox-list-item img")).toBeNull();

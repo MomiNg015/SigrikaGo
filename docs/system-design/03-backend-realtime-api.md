@@ -1,5 +1,12 @@
 # 后端、HTTP API 与实时房间
 
+## 实时权限、并发准入与弱网操作（2026-11-06）
+
+- `gameViewForColor` 在克隆的公开状态上统一处理隐藏手：对手和实时观战者看不到未公开的历史 `id`、暂存隐藏手或预演目标／影响点。隐藏历史保留 `concealed` 标记与手数；公开回看推进轮次但不重建秘密棋子。本人仍可看自己的位置，揭露后恢复历史坐标，结束棋谱保持完整。规范与回归见 `spectator-visibility-contract.md`、`betaReleaseBoundaries.test.js`。
+- `roomCreationLifecycle` 在新建流程及最终注册前同步调用 `admitRoom`；运行入口通过 `setRoomCreationAdmission` 注入实时服务的容量、维护和存储就绪判断。检查与 `rooms.set` 之间没有异步等待。容量错误使用 `room_admission_rejected`，向玩家显示真实繁忙提示而非误报登录失效；失败约战关闭双方请求状态。恢复已有房间不经过新建边界。
+- `roomActionConnection` 按 Socket 和房间维护同步状态。断线、重连／补齐快照期间禁止改变局面的请求进入 Socket.IO 缓冲队列；只有对应房间的完整快照到达后恢复操作。待确认落子重试随断线、离房或连接更换取消，同连接中的 ACK 重试保留原动作 ID。数子、求和和计分操作复用相同准入判断。
+- `api/client` 的请求计时器与外部取消监听在响应体读取完成后才释放，包含 JSON、非 JSON 错误体及上传响应。认证刷新与有限开发后端重试保持原契约。真实本地 HTTP 流回归覆盖先发响应头后停住正文及正文期间主动取消。
+
 ## 自由注册内测安全边界（2026-10-27）
 
 - `roomChatLifecycle.addChat(roomCode, user, text, socketId)` 在修改聊天记录前检查玩家或观战成员的 `user.id` 和当前 `socketId` 同时匹配。猜中房间码、旧连接、已离开的观战者均不能发言，且不触发广播；普通房间仍允许在房观战者共享聊天，特殊对局仍禁用聊天。显示名称取房间成员快照。
