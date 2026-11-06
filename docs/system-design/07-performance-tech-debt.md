@@ -2,6 +2,12 @@
 
 本文记录技术债优先级、后续扩展建议、实时性能和高频交互优化。新增性能优化、技术债清理、扩展路线或架构风险时优先更新本分篇。
 
+## 2026-11-05 综合验证与完整对局负载
+
+`npm run verify:pre-release` 将质量、运行依赖公告、迁移、备份、完整浏览器、稳定性、WASM 和容量 smoke 串行编排，失败即停并保存日志和代码状态；与原发布候选入口并存，真实云配置和发布仍需独立验证。可选 Windows 守护约束整棵测试树；主机内存不足记为 `resource-aborted`，不能当通过或容量瓶颈。
+
+容量 `--recycle-after-moves N`（N 至少 20）在真实落子后正常认输、直接核验隔离库的唯一结算记录、离房重匹配并恢复观战；`--http-reads-per-cycle N` 可混合认证读取。至少每房完成一次入库核验才通过生命周期门槛。低占用冒烟通过，但原 100 房间失败档和长稳仍待内存允许后复测；共享 SQLite 默认单连接的对照证据和未完成项见[综合测试记录](../testing-pre-release-2026-11-05.md)。
+
 ## 开发服务器扫描边界
 
 `vite.config.js` 的 `optimizeDeps.entries` 固定为 `["index.html"]`，依赖扫描仍会沿应用的静态／动态 import 发现真实依赖，但不会递归寻找工作区内所有 HTML。`server.watch.ignored` 排除临时工具链、复制构建、测试输出、制作包及 Trellis 元数据目录；这些目录不需要应用热更新，源码 `src` 和静态资源 `public` 保持监听。该配置仅约束开发期扫描和监听，不改变生产入口、资源预加载或 Pixi 的 exclude/include 互操作契约。
@@ -117,6 +123,8 @@ Phase 2 已删除观战 payload 内重复的黑方完整视图、把首次房间
 上线初期应以 `ack p95 < 200ms`、`event-loop delay p95 < 50ms`、`RSS < 1.2GB`、恢复成功率大于 99%、持久化与结果保存错误为 0 作为压测观察线。只有在实际 2 核 2G 主机完成包含重连和观战的阶梯压测后，才能提高软上限。后续容量工作主要是目标机阶梯压测、静态资源 CDN 分流，以及在有完整 revision/恢复测试后按动作类型继续扩展 delta protocol。
 
 Phase 3 已把上述观察线做成 `npm run verify:capacity`：smoke profile 使用 20 Socket/5 房和 event-loop p95 150ms 本地诊断线验证工具链，target profile 使用 500 Socket/100 房、每房 2 名观战、7.5 秒动作间隔、20% 重连、event-loop p95 50ms 目标机验收线并执行一次 SIGTERM 恢复。脚本使用独立临时数据库和 `NODE_ENV=capacity`，通过仅限 verification 环境的认证夹具把首个容量账号提升为指标读取管理员，报告冷登录/静态入口、ack/reconnect/resume 分位数，以及真实管理员运行指标快照；`artifacts/capacity/` 仅保存本机报告且不提交。该入口禁止连接正式生产数据库，本机 smoke 通过也不是容量承诺。
+
+2026-11-05 增加 `--action-mode move`（真实普通围棋落子）、`--rooms 0`（纯在线）、`--stagger-actions`（错峰落子）和 `--registration-concurrency`（账号准备并发）选项；默认 `layout` 仍为历史随机棋盘诊断。`--restart-after-setup` 在隔离账号准备后重启服务，消除累积事件循环直方图中的注册成本，不能替代负载中的重启恢复测试。任何客户端错误、意外断线、服务端最终连接/房间数量不符都会失败，纯在线模式只豁免无样本的落子延迟门槛。Windows 的可选限额使用两个指定逻辑处理器和 Job Object committed-memory 上限，发压端单独限核并降优先级；全机可用内存低于保护线时仅终止测试服务。它不能完整模拟 2GB Linux 云主机的内核、页缓存、磁盘和带宽，报告必须保留该边界。详见[本机容量测试记录](../testing-capacity-2026-11-05.md)。
 
 阶段 3 的完整本地发布候选入口为 `npm run verify:release-candidate`，按 Prisma Client、迁移基线、生产配置、构建、双项目稳定性、SQLite 备份恢复演练和容量 smoke 的顺序失败即停。稳定性环境通过 run/context namespace 隔离认证与 API 限流桶，Aemeath 等非默认角色由仅限 stability/capacity 且显式启用测试 action 的认证夹具准备；生产环境不挂钩用户名、不读取 namespace 绕过限流，也不能使用夹具路由。`npm ci` 的 postinstall 与生产 prestart 都生成 Prisma Client，确保干净安装可直接进入验证。
 

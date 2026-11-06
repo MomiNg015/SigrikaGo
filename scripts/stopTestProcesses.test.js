@@ -7,6 +7,22 @@ import { expect, test } from "vitest";
 import { assertTestPortAvailable, stopTestProcesses } from "./stop-test-processes.mjs";
 import { cleanupPlaywrightTestDatabase } from "./playwrightTestDatabase.mjs";
 
+test("capacity shutdown handles an already closed IPC channel without masking the test failure", async () => {
+  const child = spawn(process.execPath, ["-e", 'process.disconnect(); setInterval(() => {}, 1000);'],
+    { stdio: ["ignore", "ignore", "ignore", "ipc"] });
+  await once(child, "disconnect");
+  await stopTestProcesses([child], { shutdownMessage: { type: "shutdown" }, graceMs: 50, forceMs: 2000 });
+  expect(child.exitCode !== null || child.signalCode !== null).toBe(true);
+});
+
+test("capacity shutdown lets the real service drain over IPC before exit", async () => {
+  const child = spawn(process.execPath, ["-e", 'process.on("message", msg => { if (msg.type === "shutdown") process.exit(0); }); process.send("ready");'],
+    { stdio: ["ignore", "ignore", "ignore", "ipc"] });
+  await once(child, "message");
+  await stopTestProcesses([child], { shutdownMessage: { type: "shutdown" } });
+  expect(child.exitCode).toBe(0);
+});
+
 test("test service shutdown resolves only after the real child exits, including a forced shutdown", async () => {
   const child = spawn(process.execPath, ["-e", 'const net = require("node:net"); process.on("SIGTERM", () => {}); const server = net.createServer(); server.listen(0, "127.0.0.1", () => process.stdout.write(String(server.address().port)));'],
     { stdio: ["ignore", "pipe", "ignore"] });

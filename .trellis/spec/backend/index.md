@@ -6,6 +6,8 @@
 
 ## Overview
 
+Capacity harness and local reference results follow [Capacity verification contract](./capacity-verification-contract.md).
+
 Release hardening follows [Internal Test Release Contract](./internal-test-release-contract.md).
 
 Browser validation and disposable service isolation follow [Full-system Test Contract](./full-system-test-contract.md).

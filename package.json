@@ -27,6 +27,7 @@
     "verify:migrations": "node scripts/verify-migration-baseline.mjs",
     "verify:backup-restore": "node scripts/verify-backup-restore.mjs",
     "verify:release-candidate": "node scripts/verify-release-candidate.mjs",
+    "verify:pre-release": "node scripts/verify-pre-release.mjs",
     "backup:sqlite": "node scripts/backup-sqlite.mjs",
     "export:skill-gifs": "node scripts/export-skill-gifs.mjs",
     "test:e2e:ui": "node scripts/run-playwright-suite.mjs e2e --ui",

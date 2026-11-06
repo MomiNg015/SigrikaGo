@@ -1,4 +1,6 @@
 import { io } from "socket.io-client";
+import { playMove } from "../src/shared/gameStoneActions.js";
+import { applyRoomPatch } from "../src/app/roomPatch.js";
 
 const PROFILES = Object.freeze({
   smoke: Object.freeze({
@@ -24,11 +26,23 @@ export function capacityProfile(name = "smoke", overrides = {}) {
   const base = PROFILES[profileName];
   const profile = {
     name: profileName,
+    actionMode: "layout",
+    registrationConcurrency: 8,
+    staggerActions: false,
+    recycleAfterMoves: 0,
+    httpReadsPerCycle: 0,
     ...base,
     ...Object.fromEntries(Object.entries(overrides).filter(([, value]) => value !== undefined))
   };
   profile.sockets = positiveInteger(profile.sockets, base.sockets);
-  profile.rooms = positiveInteger(profile.rooms, base.rooms);
+  profile.registrationConcurrency = positiveInteger(profile.registrationConcurrency, 8);
+  profile.recycleAfterMoves = nonNegativeInteger(profile.recycleAfterMoves, 0);
+  profile.httpReadsPerCycle = nonNegativeInteger(profile.httpReadsPerCycle, 0);
+  if (profile.recycleAfterMoves && (profile.actionMode !== "move" || profile.recycleAfterMoves < 20)) {
+    throw new Error("Capacity lifecycle needs move mode and at least 20 moves per game");
+  }
+  profile.rooms = nonNegativeInteger(profile.rooms, base.rooms);
+  if (!["layout", "move"].includes(profile.actionMode)) throw new Error("Unknown capacity action mode");
   profile.spectatorsPerRoom = nonNegativeInteger(profile.spectatorsPerRoom, base.spectatorsPerRoom);
   profile.durationMs = positiveInteger(profile.durationMs, base.durationMs);
   profile.actionIntervalMs = positiveInteger(profile.actionIntervalMs, base.actionIntervalMs);
@@ -43,12 +57,15 @@ export async function runCapacityVerification({
   baseUrl,
   profile = capacityProfile(),
   restartServer = null,
+  restartAfterSetup = null,
+  verifySettlement = null,
   runId = Date.now().toString(36).slice(-5),
   password = "pwpass12",
   onProgress = () => {}
 } = {}) {
   const target = String(baseUrl ?? "").replace(/\/+$/, "");
   if (!target) throw new Error("Capacity verification requires baseUrl");
+  if (profile.recycleAfterMoves && !verifySettlement) throw new Error("Lifecycle verification requires the isolated local database auditor");
   const records = [];
   const rooms = [];
   const ackLatencies = [];
@@ -56,6 +73,8 @@ export async function runCapacityVerification({
   const restartResumeLatencies = [];
   const serverSamples = [];
   const errors = [];
+  const httpLatencies = [];
+  let completedGames = 0;
   const startedAt = new Date();
 
   try {
@@ -67,17 +86,20 @@ export async function runCapacityVerification({
       baseUrl: target,
       count: profile.sockets,
       password,
-      runId
+      runId,
+      concurrency: profile.registrationConcurrency
     });
+    if (restartAfterSetup) {
+      onProgress("restart after account setup to separate registration cost from online load");
+      await restartAfterSetup();
+    }
 
     onProgress(`connect ${profile.sockets} sockets`);
-    const connected = await mapWithConcurrency(authRecords, 25, async (auth) => ({
-      auth,
-      socket: await connectSocket(target, auth.token),
-      role: "idle",
-      roomCode: ""
-    }));
-    records.push(...connected);
+    await mapWithConcurrency(authRecords, 25, async (auth, index) => {
+      const onUnexpectedDisconnect = (reason) => errors.push(`unexpected disconnect ${index}: ${reason}`);
+      records[index] = { auth, socket: await connectSocket(target, auth.token, onUnexpectedDisconnect),
+        role: "idle", roomCode: "", onUnexpectedDisconnect };
+    });
 
     onProgress(`create ${profile.rooms} active rooms`);
     const roomPairs = Array.from({ length: profile.rooms }, (_, index) => [index * 2, index * 2 + 1]);
@@ -88,7 +110,7 @@ export async function runCapacityVerification({
       records[firstIndex].roomCode = prepared.roomCode;
       records[secondIndex].role = "player";
       records[secondIndex].roomCode = prepared.roomCode;
-      preparedRooms.push({ roomCode: prepared.roomCode, actorIndex: firstIndex });
+      preparedRooms.push({ roomCode: prepared.roomCode, actorIndex: firstIndex, secondIndex, round: 0 });
     }
     await mapWithConcurrency(preparedRooms, 12, (room) => waitForRoomPhase(
       records[room.actorIndex].socket,
@@ -123,15 +145,25 @@ export async function runCapacityVerification({
     let actionSequence = 0;
 
     while (Date.now() < deadline) {
+      const cycleStarted = Date.now();
       onProgress(`action cycle ${actionSequence + 1}`);
-      await Promise.all(rooms.map(async (room) => {
-        const actor = records[room.actorIndex];
+      await Promise.all(rooms.map(async (room, roomIndex) => {
+        if (profile.staggerActions) await delay(Math.floor(roomIndex * profile.actionIntervalMs / rooms.length));
+        let actor = records[room.actorIndex];
+        let action = { type: "test-random-layout" };
+        if (profile.actionMode === "move") {
+          const view = actor.socket.capacityRoom;
+          const player = view?.players.find((entry) => entry.color === view.game.turn);
+          actor = [records[room.actorIndex], records[room.secondIndex]].find((entry) => entry.auth.user.id === player?.user.id);
+          action = nextCapacityMove(view?.game);
+          if (!actor || !action) { errors.push(`action ${room.roomCode}: no playable turn`); return; }
+        }
         const started = performance.now();
         try {
           const response = await emitWithAck(actor.socket, "game:action", {
             roomCode: room.roomCode,
             actionId: `capacity:${runId}:${actionSequence}:${room.roomCode}`,
-            action: { type: "test-random-layout" }
+            action
           });
           ackLatencies.push(performance.now() - started);
           if (!response.ok) errors.push(`action ${room.roomCode}: ${response.error ?? "rejected"}`);
@@ -141,9 +173,55 @@ export async function runCapacityVerification({
         }
       }));
       actionSequence += 1;
+      if (profile.httpReadsPerCycle) {
+        await mapWithConcurrency(Array.from({ length: profile.httpReadsPerCycle }, (_, index) => index), 4, async (index) => {
+          const record = records[(actionSequence * profile.httpReadsPerCycle + index) % records.length];
+          const started = performance.now();
+          try {
+            const response = await fetch(`${target}/api/me`, { headers: { Authorization: `Bearer ${record.auth.token}` } });
+            await response.arrayBuffer();
+            httpLatencies.push(performance.now() - started);
+            if (!response.ok) errors.push(`http me: ${response.status}`);
+          } catch (error) { errors.push(`http me: ${error.message}`); }
+        });
+      }
+      if (profile.recycleAfterMoves && actionSequence % profile.recycleAfterMoves === 0) {
+        onProgress(`settle and verify ${rooms.length} games, then rematch`);
+        await mapWithConcurrency(rooms, 4, async (room) => {
+          const loser = records[room.round % 2 ? room.secondIndex : room.actorIndex];
+          const result = await emitWithAck(loser.socket, "game:action", {
+            roomCode: room.roomCode, actionId: `capacity:${runId}:finish:${room.roomCode}`, action: { type: "resign" }
+          });
+          if (!result.ok) throw new Error(`Settlement action rejected: ${result.error}`);
+          await verifySettlement({ roomCode: room.roomCode, loserId: loser.auth.user.id,
+            playerIds: [records[room.actorIndex].auth.user.id, records[room.secondIndex].auth.user.id], minMoves: profile.recycleAfterMoves });
+          completedGames += 1;
+          const participants = records.filter(record => record.roomCode === room.roomCode);
+          room.spectatorIndexes = participants.filter(record => record.role === "spectator").map(record => records.indexOf(record));
+          await Promise.all(participants.map(async (record) => {
+            const left = waitForEvent(record.socket, "room:left", payload => payload.roomCode === room.roomCode);
+            record.socket.emit("room:leave", { roomCode: room.roomCode });
+            await left;
+          }));
+        });
+        // Match pairs sequentially: parallel queue joins could pair different rooms' players.
+        for (const room of rooms) {
+          const prepared = await createPreparedRoom(records[room.actorIndex].socket, records[room.secondIndex].socket);
+          room.roomCode = prepared.roomCode;
+          room.round += 1;
+          for (const index of [room.actorIndex, room.secondIndex]) records[index].roomCode = room.roomCode;
+        }
+        await mapWithConcurrency(rooms, 12, room => waitForRoomPhase(records[room.actorIndex].socket, room.roomCode, "playing"));
+        await mapWithConcurrency(rooms, 4, async room => {
+          for (const index of room.spectatorIndexes) {
+            await joinRoom(records[index].socket, room.roomCode);
+            records[index].roomCode = room.roomCode;
+          }
+        });
+      }
       serverSamples.push(await fetchServerSnapshot(target, adminToken));
 
-      if (!reconnectDone && Date.now() >= reconnectAt) {
+      if (!reconnectDone && profile.reconnectRatio > 0 && Date.now() >= reconnectAt) {
         reconnectDone = true;
         const reconnectCount = Math.max(1, Math.floor(records.length * profile.reconnectRatio));
         onProgress(`reconnect ${reconnectCount} sockets`);
@@ -175,15 +253,18 @@ export async function runCapacityVerification({
         });
       }
 
-      await delay(Math.min(profile.actionIntervalMs, Math.max(0, deadline - Date.now())));
+      await delay(Math.min(Math.max(0, profile.actionIntervalMs - (Date.now() - cycleStarted)), Math.max(0, deadline - Date.now())));
     }
 
     const serverEnd = await fetchServerSnapshot(target, adminToken);
+    const disconnectedSockets = records.filter((record) => !record.socket.connected).length;
+    if (disconnectedSockets) errors.push(`disconnected sockets at end: ${disconnectedSockets}`);
     serverSamples.push(serverEnd);
     const serverPeak = peakProcessMetrics(serverSamples);
     const completedAt = new Date();
     return {
       profile,
+      restartedAfterAccountSetup: Boolean(restartAfterSetup),
       target,
       startedAt: startedAt.toISOString(),
       completedAt: completedAt.toISOString(),
@@ -197,6 +278,8 @@ export async function runCapacityVerification({
       },
       coldStatic,
       client: {
+        completedGames,
+        httpReads: summarizeLatency(httpLatencies),
         coldLogins: summarizeLatency(authRecords.map((auth) => auth.loginLatencyMs)),
         actions: summarizeLatency(ackLatencies),
         reconnects: summarizeLatency(reconnectLatencies),
@@ -217,14 +300,27 @@ export async function runCapacityVerification({
         ackLatencies,
         restartResumeLatencies,
         errors,
+        completedGames,
         serverEnd,
         serverPeak,
         serverSamples
       })
     };
   } finally {
-    records.forEach((record) => record.socket?.disconnect());
+    records.forEach((record) => record?.socket?.disconnect());
   }
+}
+
+export function nextCapacityMove(game) {
+  if (game?.phase !== "playing") return null;
+  const empty = game.points.filter((point) => point.valid && !point.stone);
+  // Rotate candidates to spread stones across the board; validate with the real rules.
+  const offset = Number(game.moveNumber ?? 0) * 37;
+  for (let index = 0; index < empty.length; index += 1) {
+    const point = empty[(offset + index) % empty.length];
+    if (playMove(game, game.turn, point.id).ok) return { type: "move", pointId: point.id };
+  }
+  return null;
 }
 
 export function percentile(values, requestedPercentile) {
@@ -268,12 +364,12 @@ async function measureColdStatic(baseUrl) {
   };
 }
 
-async function registerCapacityUsers({ baseUrl, count, password, runId }) {
+async function registerCapacityUsers({ baseUrl, count, password, runId, concurrency }) {
   const users = Array.from({ length: count }, (_, index) => ({
     username: index === 0 ? "capadmin" : `c${runId}${index.toString(36)}`,
     password
   }));
-  return mapWithConcurrency(users, 8, async (credentials, index) => {
+  return mapWithConcurrency(users, concurrency, async (credentials, index) => {
     const started = performance.now();
     let response = await requestJson(`${baseUrl}/api/auth/register`, {
       method: "POST",
@@ -317,7 +413,7 @@ async function waitForRoomPhase(socket, roomCode, phase) {
 
 async function reconnectRecord(record, baseUrl) {
   record.socket?.disconnect();
-  record.socket = await connectSocket(baseUrl, record.auth.token);
+  record.socket = await connectSocket(baseUrl, record.auth.token, record.onUnexpectedDisconnect);
   if (record.role === "player") {
     await requestRoomSnapshot(record.socket, record.roomCode);
   } else if (record.role === "spectator") {
@@ -325,13 +421,18 @@ async function reconnectRecord(record, baseUrl) {
   }
 }
 
-function connectSocket(baseUrl, token) {
+function connectSocket(baseUrl, token, onUnexpectedDisconnect = () => {}) {
   return new Promise((resolve, reject) => {
     const socket = io(baseUrl, {
       auth: { token },
       reconnection: false,
       timeout: 8_000,
       transports: ["websocket"]
+    });
+    socket.on("room:update", (room) => { socket.capacityRoom = room; });
+    socket.on("room:patch", (patch) => { socket.capacityRoom = applyRoomPatch(socket.capacityRoom, patch); });
+    socket.on("disconnect", (reason) => {
+      if (reason !== "io client disconnect") onUnexpectedDisconnect(reason);
     });
     const timeoutId = setTimeout(() => {
       socket.disconnect();
@@ -465,6 +566,7 @@ export function evaluateThresholds({
   ackLatencies,
   restartResumeLatencies,
   errors,
+  completedGames = 0,
   serverEnd,
   serverPeak,
   serverSamples
@@ -480,8 +582,12 @@ export function evaluateThresholds({
     serverMetricsAvailable: serverSamples.length > 0 && serverSamples.every((sample) => (
       sample?.capacity?.process && sample?.runtimeStability
     )),
-    ackP95Under200Ms: ackP95 !== null && ackP95 < 200,
-    ackP99Under500Ms: ackP99 !== null && ackP99 < 500,
+    noClientErrors: errors.length === 0,
+    requestedLifecycleCompleted: !profile?.recycleAfterMoves || (profile.rooms > 0 && completedGames >= profile.rooms),
+    expectedOnlineUsers: profile?.sockets === undefined || serverEnd?.capacity?.current?.onlineUsers === profile.sockets,
+    expectedActiveRooms: profile?.rooms === undefined || serverEnd?.capacity?.current?.activeRooms === profile.rooms,
+    ackP95Under200Ms: profile?.rooms === 0 || (ackP95 !== null && ackP95 < 200),
+    ackP99Under500Ms: profile?.rooms === 0 || (ackP99 !== null && ackP99 < 500),
     eventLoopP95WithinProfileLimit: Number(processMetrics.eventLoopDelayP95Ms ?? Infinity) < eventLoopDelayLimitMs,
     rssUnder1_2GiB: Number(processMetrics.rssBytes ?? Infinity) < 1.2 * 1024 * 1024 * 1024,
     restartRecoveryAbove99Percent: restartSuccessRatio === null || restartSuccessRatio > 0.99,
@@ -523,7 +629,9 @@ async function mapWithConcurrency(values, concurrency, task) {
       results[index] = await task(values[index], index);
     }
   }
-  await Promise.all(Array.from({ length: Math.min(concurrency, values.length) }, worker));
+  const settled = await Promise.allSettled(Array.from({ length: Math.min(concurrency, values.length) }, worker));
+  const failure = settled.find((result) => result.status === "rejected");
+  if (failure) throw failure.reason;
   return results;
 }
 

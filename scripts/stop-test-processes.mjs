@@ -12,7 +12,7 @@ function hasExited(child) {
   return !child.pid || child.exitCode !== null || child.signalCode !== null;
 }
 
-export async function stopTestProcesses(children, { graceMs = 18_000, forceMs = 5_000 } = {}) {
+export async function stopTestProcesses(children, { graceMs = 18_000, forceMs = 5_000, shutdownMessage } = {}) {
   await Promise.all(children.filter(Boolean).map((child) => new Promise((resolve, reject) => {
     if (hasExited(child)) return resolve();
     let timer;
@@ -31,6 +31,16 @@ export async function stopTestProcesses(children, { graceMs = 18_000, forceMs = 
       try { child.kill("SIGKILL"); } catch (error) { finish(error); return; }
       timer = setTimeout(() => finish(new Error(`Test process ${child.pid} did not exit; preserving its database`)), forceMs);
     }, graceMs);
-    try { child.kill("SIGTERM"); } catch (error) { finish(error); }
+    try {
+      if (shutdownMessage && child.connected) {
+        child.send(shutdownMessage, (error) => {
+          // The child can close IPC between the connected check and send.
+          // Always observe actual exit; never remove its database on a send error.
+          if (error && !hasExited(child)) {
+            try { child.kill("SIGTERM"); } catch (killError) { finish(killError); }
+          }
+        });
+      } else child.kill("SIGTERM");
+    } catch (error) { finish(error); }
   })));
 }

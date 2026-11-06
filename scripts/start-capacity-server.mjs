@@ -1,3 +1,6 @@
+import { applyCapacityWindowsLimits } from "./capacityWindowsLimits.mjs";
+
+await applyCapacityWindowsLimits("server");
 process.env.NODE_ENV = "capacity";
 process.env.LOCAL_PROD_STATIC = "1";
 process.env.PORT ??= process.env.CAPACITY_PORT ?? "4174";

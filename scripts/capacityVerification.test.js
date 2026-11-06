@@ -1,12 +1,19 @@
 import fs from "node:fs";
 import path from "node:path";
 import { describe, expect, it } from "vitest";
-import { capacityProfile, evaluateThresholds, percentile, summarizeLatency } from "./capacityVerification.mjs";
+import { capacityProfile, evaluateThresholds, nextCapacityMove, percentile, summarizeLatency } from "./capacityVerification.mjs";
+import { createGameState } from "../src/shared/game.js";
+import { playMove } from "../src/shared/gameStoneActions.js";
 
 describe("capacity verification", () => {
   it("defines the requested 2-core/2-GB target topology", () => {
     expect(capacityProfile("target")).toEqual({
       name: "target",
+      actionMode: "layout",
+      registrationConcurrency: 8,
+      staggerActions: false,
+      recycleAfterMoves: 0,
+      httpReadsPerCycle: 0,
       sockets: 500,
       rooms: 100,
       spectatorsPerRoom: 2,
@@ -14,6 +21,60 @@ describe("capacity verification", () => {
       actionIntervalMs: 7_500,
       reconnectRatio: 0.2
     });
+  });
+
+  it("supports idle-only topology and explicitly zero reconnects", () => {
+    expect(capacityProfile("target", { rooms: 0, reconnectRatio: 0 })).toMatchObject({ rooms: 0, reconnectRatio: 0 });
+    expect(() => capacityProfile("target", { actionMode: "bogus" })).toThrow("Unknown capacity action mode");
+    expect(() => capacityProfile("target", { actionMode: "move", recycleAfterMoves: 10 })).toThrow("at least 20 moves");
+  });
+
+  it("does not pass when a client action or reconnect failed", () => {
+    const result = evaluateThresholds({
+      profile: { name: "target", rooms: 0 }, ackLatencies: [], restartResumeLatencies: [],
+      errors: ["reconnect 1: timeout"], serverEnd: { capacity: { current: { activeRooms: 0 } } },
+      serverPeak: { eventLoopDelayP95Ms: 10, rssBytes: 100_000_000 },
+      serverSamples: [{ capacity: { process: {} }, runtimeStability: {} }]
+    });
+    expect(result.checks.ackP95Under200Ms).toBe(true);
+    expect(result.passed).toBe(false);
+  });
+
+  it("requires the observed online topology even for idle-only load", () => {
+    const common = {
+      profile: { name: "target", sockets: 100, rooms: 0 }, ackLatencies: [], restartResumeLatencies: [], errors: [],
+      serverPeak: { eventLoopDelayP95Ms: 20, rssBytes: 100_000_000 },
+      serverSamples: [{ capacity: { process: {} }, runtimeStability: {} }]
+    };
+    expect(evaluateThresholds({ ...common, serverEnd: { capacity: { current: { onlineUsers: 100, activeRooms: 0 } } } }).passed).toBe(true);
+    expect(evaluateThresholds({ ...common, serverEnd: { capacity: { current: { onlineUsers: 99, activeRooms: 0 } } } }).passed).toBe(false);
+    expect(evaluateThresholds({ ...common, serverEnd: null }).passed).toBe(false);
+  });
+
+  it("does not pass a requested lifecycle before at least one audited settlement per room", () => {
+    const common = {
+      profile: { name: "target", sockets: 4, rooms: 1, recycleAfterMoves: 20 },
+      ackLatencies: [10], restartResumeLatencies: [], errors: [],
+      serverEnd: { capacity: { current: { onlineUsers: 4, activeRooms: 1 } } },
+      serverPeak: { eventLoopDelayP95Ms: 20, rssBytes: 100_000_000 },
+      serverSamples: [{ capacity: { process: {} }, runtimeStability: {} }]
+    };
+    expect(evaluateThresholds({ ...common, completedGames: 0 }).passed).toBe(false);
+    expect(evaluateThresholds({ ...common, completedGames: 1 }).passed).toBe(true);
+  });
+
+  it("selects legal alternating moves without mutating the received board", () => {
+    let game = createGameState([], { mode: "standard" });
+    game.phase = "playing";
+    for (let i = 0; i < 80; i += 1) {
+      const before = JSON.stringify(game);
+      const action = nextCapacityMove(game);
+      expect(action?.type).toBe("move");
+      expect(JSON.stringify(game)).toBe(before);
+      const result = playMove(game, game.turn, action.pointId);
+      expect(result.ok).toBe(true);
+      game = result.state;
+    }
   });
 
   it("keeps target event-loop acceptance stricter than the local smoke diagnostic", () => {

@@ -24,7 +24,12 @@ Questions to answer:
 
 <!-- How should queries be written? Batch operations? -->
 
-(To be filled by the team)
+### SQLite process connection pool
+
+- `server/db.js` constructs the shared runtime client with `sqliteClientOptions()`. For `file:` DATABASE_URL values, append `connection_limit=1` unless explicitly supplied. Preserve the original path bytes and all other URL parameters; do not mutate `process.env`.
+- A process affinity mask does not change Prisma's host-derived pool size. On the reference Windows host the default pool opened 33 connections despite a two-CPU mask. Concurrent read/write transactions can contend with snapshot writes and time out; serialize SQLite connection access rather than increasing timeouts to hide the contention.
+- This is a single-process SQLite default, not a new multi-instance scaling contract. Explicit connection-limit overrides remain operator-owned and require load verification.
+- `server/sqliteConcurrency.integration.test.js` must use a disposable database and assert that all 50 concurrent room writes retain the latest revision across three transaction rounds. URL/override behavior is covered by `server/sqliteClientOptions.test.js`.
 
 ---
 

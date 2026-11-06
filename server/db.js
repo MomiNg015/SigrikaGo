@@ -4,8 +4,9 @@ import { GAME_MODE_IDS, normalizeGameModeId } from "../src/shared/gameModes.js";
 import { publicSigrikaCandyArc } from "../src/shared/sigrikaCandyArc.js";
 import { publicUserAssets } from "./userAssets.js";
 import { ownedMusicIdsWithDefaults, parseMusicSelections } from "../src/shared/musicLibrary.js";
+import { sqliteClientOptions } from "./sqliteClientOptions.js";
 
-export const prisma = new PrismaClient();
+export const prisma = new PrismaClient(sqliteClientOptions());
 
 export const USER_ASSET_RELATION_INCLUDE = {
   userCharacters: true,

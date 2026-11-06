@@ -25,6 +25,8 @@ Use for browser suite commands, database/asset fixture changes, proxy configurat
 - API readiness precedes registration. When the fixture owns children, pass `manageSignals: false` (no automatic exit cleanup), track the API PID, stop services before DB cleanup, and cover startup failure/early exit. Shutdown waits up to 18 seconds, then force-kills and waits another 5 seconds; failure preserves the database. Cleanup, including runner cleanup by UUID, refuses a database whose recorded API PID is still alive.
 - Static-only previews explicitly set `proxy: {}` rather than inheriting development proxy targets; practice covers all three proxy families with its isolated API.
 - Stability accepts only `STABILITY_PORT` (default 4173), always prepares a fresh test database and overrides development origin/uploads/remote AI. Do not reuse inherited `DATABASE_URL`. Its real restart integration test explicitly starts `server/index.js` twice with its own disposable database.
+- `npm run verify:pre-release -- [stage ...]` runs quality, runtime dependency audit, migrations, backup, browser, stability, practice and capacity smoke serially; `--list` enumerates stages. Stage/report logs retain the git HEAD, dirty paths, command, timestamps and failure status. It stops on the first failure; selecting later browser stages assumes an explicit fresh build.
+- Each stage is launched through `run-guarded-check.mjs`. Windows limits are opt-in using the capacity guard variables. The entire owned test tree is limited; nested capacity limits are disabled inside this wrapper. A host-memory guard termination records `resource-aborted` and exit 75. It must never kill or change priorities/affinities of other applications. Full tests use `npm test` so scratch/worktree/browser suites stay excluded.
 
 ## 4. Validation & Error Matrix
 
@@ -48,6 +50,7 @@ Use for browser suite commands, database/asset fixture changes, proxy configurat
 
 - `scripts/e2eIsolation.test.js`: custom/default proxy families, strict port, optimizer cache and entries; a real Vite child remains reachable after its automation stdin closes.
 - `scripts/stopTestProcesses.test.js`: a real child exits before cleanup, forced exit is bounded, and live-owner database cleanup is rejected.
+- `scripts/guardedVerification.test.js`: real child output is fully drained before closing the log; successful and failed child exit codes/status are preserved. The Windows host-memory guard is additionally exercised with an intentionally unreachable free-memory floor and must return 75 without touching another app.
 - `tests/e2e/full-system*.spec.js`: permission boundaries, economic concurrency, all admin pages and explicit saves, workbook local import/save/published separation, all multiplayer modes, settlement replay/stats, spectator/ACK/reconnect, real forms and desktop/portrait windows, upload and media boundaries.
 - `local-practice.spec.js`: development/production, engine failure/recovery, reload, 100 moves, challenge leaderboard, no normal replay/reward.
 - Retain separate stability, migration, backup, capacity smoke, native/WASM parity and runtime dependency checks. Actual cloud Nginx/systemd/HTTPS/capacity remain target-host gates.
