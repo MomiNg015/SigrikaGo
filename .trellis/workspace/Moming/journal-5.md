@@ -1229,3 +1229,36 @@ Stabilized loading portrait/tip slots, kept five battle actions during scoring w
 ### Next Steps
 
 - None - task complete
+
+
+## Session 278: 提交数据库与上线验证改动并推送
+
+**Date**: 2026-11-06
+**Task**: 提交数据库与上线验证改动并推送
+**Branch**: `master`
+
+### Summary
+
+按用户选择提交数据库、上线验证工具及对应规范/报告共28文件，并已推送origin/master；定向7文件24项、ESLint、Python语法、命令列表和暂存文档一致性通过。设计样板、PV、旧截图删除与相关混合文档保留。完整验收的资源限制与目标云验证边界保留在报告中。
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `58fa80fe` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
