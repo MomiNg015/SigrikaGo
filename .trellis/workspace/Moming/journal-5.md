@@ -1196,3 +1196,36 @@ Stabilized loading portrait/tip slots, kept five battle actions during scoring w
 ### Next Steps
 
 - None - task complete
+
+
+## Session 277: 内测审查修复与发布快照同步
+
+**Date**: 2026-11-06
+**Task**: 内测审查修复与发布快照同步
+**Branch**: `master`
+
+### Summary
+
+修复隐藏手历史泄露、并发容量准入、断线旧操作、HTTP 正文超时、首页预热与错误归属、邮箱状态和设置 CSS。同步用户确认的角色署名及奖励，排除本地测试公告。全量基线3509项通过且唯一HTML失败已复验，最终数据文档32项通过，桌面手机弱网及20连接5房间smoke通过；完整复跑和窗口链路因内存保护中止。保留原有数据库、容量工具和设计WIP。详见docs/testing-beta-review-fixes-2026-11-06.md。
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `9e6a2652` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete

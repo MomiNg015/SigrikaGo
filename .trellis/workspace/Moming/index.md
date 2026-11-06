@@ -8,8 +8,8 @@
 
 <!-- @@@auto:current-status -->
 - **Active File**: `journal-5.md`
-- **Total Sessions**: 276
-- **Last Active**: 2026-11-05
+- **Total Sessions**: 277
+- **Last Active**: 2026-11-06
 <!-- @@@/auto:current-status -->
 
 ---
@@ -19,7 +19,7 @@
 <!-- @@@auto:active-documents -->
 | File | Lines | Status |
 |------|-------|--------|
-| `journal-5.md` | ~1198 | Active |
+| `journal-5.md` | ~1231 | Active |
 | `journal-4.md` | ~1988 | Archived |
 | `journal-3.md` | ~1990 | Archived |
 | `journal-2.md` | ~1990 | Archived |
@@ -33,6 +33,7 @@
 <!-- @@@auto:session-history -->
 | # | Date | Title | Commits | Branch |
 |---|------|-------|---------|--------|
+| 277 | 2026-11-06 | 内测审查修复与发布快照同步 | `9e6a2652` | `master` |
 | 276 | 2026-11-05 | 设置窗口切换尺寸固定 | `c1e0970b` | `master` |
 | 275 | 2026-11-05 | 关于页留白与碎碎念切换 | `c7e9bf55` | `master` |
 | 274 | 2026-11-02 | Loading and scoring UI fixes | `9cdffa62` | `master` |
