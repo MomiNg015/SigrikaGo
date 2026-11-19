@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <link rel="icon" href="data:,">
+  <title>履历平板 · 交互样板</title>
+  <link rel="stylesheet" href="tablet.css">
+  <script src="tablet.js" defer></script>
+</head>
+<body>
+  <header class="toolbar">
+    <h1>履历平板</h1>
+    <nav aria-label="样板">
+      <a data-model="green" href="?model=green">A 校务终端</a>
+      <a data-model="amber" href="?model=amber">B 档案平板</a>
+    </nav>
+    <button id="sound" aria-pressed="true">声音</button>
+  </header>
+  <main class="classroom">
+    <div class="entry">
+      <button id="student-id" aria-label="点击学生证，打开履历平板">
+        <img class="id-shell" alt="" src="../../../public/assets/home/student-id-hanging.webp">
+        <img class="id-portrait" alt="" src="../../../public/assets/characters/handbook-chibi-sprites/sigrika-avatar.webp">
+      </button>
+      <p>点击学生证</p>
+    </div>
+  </main>
+  <dialog aria-label="学生履历">
+    <div class="tablet" data-phase="off">
+      <header class="hardware">
+        <span class="power-light"></span>
+        <span>IRIS <span id="device-code">/ EDU-01</span></span>
+        <button id="power" aria-label="关机并返回学生证" autofocus>⏻</button>
+      </header>
+      <div class="screen">
+        <div class="display" inert>
+          <header class="screen-head"><span>IRIS / 学生履历</span><span class="connection">● 已读取</span></header>
+          <div class="system">
+            <aside class="identity">
+              <figure><img src="../../../public/assets/characters/handbook-chibi-sprites/sigrika-avatar.webp" alt=""></figure>
+              <div><small>学生档案 / <span class="number">0142</span></small><h2>西格莉卡</h2><span>星炬棋社</span></div>
+            </aside>
+            <section class="record" aria-label="对局履历">
+              <div class="modes" aria-label="对局模式">
+                <button aria-pressed="true" data-mode="0">星炬</button>
+                <button aria-pressed="false" data-mode="1">标准</button>
+                <button aria-pressed="false" data-mode="2">五子棋</button>
+              </div>
+              <div class="section-head"><h3>对局总览</h3><button class="screen-button" id="jump-replays">对局回放 ↓</button></div>
+              <dl class="metrics">
+                <div><dt>段位</dt><dd id="rank"></dd></div>
+                <div><dt>总对局</dt><dd class="number" id="games"></dd></div>
+                <div><dt>胜率</dt><dd class="number" id="rate"></dd></div>
+              </dl>
+              <div class="section-head"><h3>最近对局</h3><span>02 / LOG</span></div>
+              <div class="history" aria-label="最近对局"></div>
+              <table>
+                <thead><tr><th scope="col">统计</th><th scope="col">胜</th><th scope="col">负</th><th scope="col">和</th></tr></thead>
+                <tbody><tr><th scope="row">累计局数</th><td class="number" data-result="胜" id="won"></td><td class="number" data-result="负" id="lost"></td><td class="number" data-result="和" id="drawn"></td></tr></tbody>
+              </table>
+              <section class="record-section" id="characters" aria-labelledby="character-heading">
+                <div class="section-head"><h3 id="character-heading">角色战绩</h3></div>
+                <table class="character-table">
+                  <thead><tr><th scope="col">角色</th><th scope="col">局数</th><th scope="col">胜</th><th scope="col">负</th><th scope="col">和</th><th scope="col">胜率</th></tr></thead>
+                  <tbody id="character-rows"></tbody>
+                </table>
+                <p id="character-empty" hidden>此模式无角色战绩</p>
+              </section>
+              <section class="record-section" aria-labelledby="replay-heading">
+                <div class="section-head"><h3 id="replay-heading" tabindex="-1">对局回放</h3></div>
+                <div id="replay-list" aria-label="示例棋谱"></div>
+                <div class="replay-view" id="replay-view" hidden>
+                  <div class="section-head">
+                    <h4 id="replay-title" tabindex="-1">棋谱片段</h4>
+                    <button class="screen-button" id="close-replay">收起回放</button>
+                  </div>
+                  <div id="replay-board" role="img" aria-label="棋盘"></div>
+                  <div class="replay-controls">
+                    <button class="screen-button" id="previous-move">上一手</button>
+                    <output class="number" id="move-count" aria-live="polite"></output>
+                    <button class="screen-button" id="next-move">下一手</button>
+                  </div>
+                </div>
+              </section>
+            </section>
+          </div>
+          <footer class="screen-foot"><span>示例履历</span><span>ESC 返回</span></footer>
+        </div>
+        <div class="scanlines" aria-hidden="true"></div>
+        <div class="beam" aria-hidden="true"></div>
+      </div>
+      <footer class="hardware-bottom" aria-hidden="true"><i></i><span>IRIS SYSTEMS</span><i></i></footer>
+    </div>
+  </dialog>
+</body>
+</html>
