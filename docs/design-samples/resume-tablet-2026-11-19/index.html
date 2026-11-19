@@ -24,6 +24,7 @@
         <img class="id-portrait" alt="" src="../../../public/assets/characters/handbook-chibi-sprites/sigrika-avatar.webp">
       </button>
       <p>点击学生证</p>
+      <button class="preview-player" id="open-player"><img src="../../../public/assets/characters/handbook-chibi-sprites/aemeath-avatar.webp" alt="">查看爱弥斯的详细信息 ›</button>
     </div>
   </main>
   <dialog aria-label="学生履历">
@@ -35,11 +36,26 @@
       </header>
       <div class="screen">
         <div class="display" inert>
-          <header class="screen-head"><span>IRIS / 学生履历</span><span class="connection">● 已读取</span></header>
-          <div class="system">
+          <header class="screen-head">
+            <h2 id="screen-title" tabindex="-1">学生履历</h2>
+            <button class="screen-button" id="back" hidden></button>
+          </header>
+          <div class="system" data-page="profile">
             <aside class="identity">
-              <figure><img src="../../../public/assets/characters/handbook-chibi-sprites/sigrika-avatar.webp" alt=""></figure>
-              <div><small>学生档案 / <span class="number">0142</span></small><h2>西格莉卡</h2><span>星炬棋社</span></div>
+              <div class="identity-main">
+                <figure><img id="profile-avatar" src="../../../public/assets/characters/handbook-chibi-sprites/sigrika-avatar.webp" alt=""></figure>
+                <h3 id="profile-name">西格莉卡</h3>
+              </div>
+              <div class="identity-actions" id="own-actions">
+                <button class="screen-button" data-action="achievements">成就</button>
+                <button class="screen-button" data-action="customize">个性化</button>
+              </div>
+              <div class="identity-actions" id="player-actions" hidden>
+                <button class="screen-button" id="like" aria-pressed="false">点赞 <span class="number">12</span></button>
+                <button class="screen-button" id="friend">加好友</button>
+                <button class="screen-button" id="blacklist" data-action="blacklist">加入黑名单</button>
+                <button class="screen-button" data-action="report">举报</button>
+              </div>
             </aside>
             <section class="record" aria-label="对局履历">
               <div class="modes" aria-label="对局模式">
@@ -47,7 +63,7 @@
                 <button aria-pressed="false" data-mode="1">标准</button>
                 <button aria-pressed="false" data-mode="2">五子棋</button>
               </div>
-              <div class="section-head"><h3>对局总览</h3><button class="screen-button" id="jump-replays">对局回放 ↓</button></div>
+              <div class="section-head"><h3>对局总览</h3><button class="screen-button" id="jump-replays">对局回放 ›</button></div>
               <dl class="metrics">
                 <div><dt>段位</dt><dd id="rank"></dd></div>
                 <div><dt>总对局</dt><dd class="number" id="games"></dd></div>
@@ -67,25 +83,30 @@
                 </table>
                 <p id="character-empty" hidden>此模式无角色战绩</p>
               </section>
-              <section class="record-section" aria-labelledby="replay-heading">
-                <div class="section-head"><h3 id="replay-heading" tabindex="-1">对局回放</h3></div>
-                <div id="replay-list" aria-label="示例棋谱"></div>
-                <div class="replay-view" id="replay-view" hidden>
-                  <div class="section-head">
-                    <h4 id="replay-title" tabindex="-1">棋谱片段</h4>
-                    <button class="screen-button" id="close-replay">收起回放</button>
-                  </div>
-                  <div id="replay-board" role="img" aria-label="棋盘"></div>
-                  <div class="replay-controls">
-                    <button class="screen-button" id="previous-move">上一手</button>
-                    <output class="number" id="move-count" aria-live="polite"></output>
-                    <button class="screen-button" id="next-move">下一手</button>
-                  </div>
-                </div>
-              </section>
             </section>
           </div>
-          <footer class="screen-foot"><span>示例履历</span><span>ESC 返回</span></footer>
+          <section class="record subpage" data-page="replays" aria-labelledby="screen-title" hidden>
+            <p id="replay-context"></p>
+            <div id="replay-list" aria-label="示例棋谱"></div>
+          </section>
+          <section class="record subpage" data-page="board" aria-labelledby="screen-title" hidden>
+            <h3 id="replay-title"></h3>
+            <div id="replay-board" role="img" aria-label="棋盘"></div>
+            <div class="replay-controls">
+              <button class="screen-button" id="previous-move">上一手</button>
+              <output class="number" id="move-count" aria-live="polite"></output>
+              <button class="screen-button" id="next-move">下一手</button>
+            </div>
+          </section>
+          <section class="record subpage" data-page="action" aria-labelledby="screen-title" hidden>
+            <form id="action-form">
+              <p id="action-description"></p>
+              <label id="report-field" hidden>举报原因 <textarea id="report-text" rows="3" maxlength="200"></textarea></label>
+              <button class="screen-button" id="confirm-action" hidden></button>
+              <p id="action-status" role="status"></p>
+            </form>
+          </section>
+          <footer class="screen-foot"><span>示例数据</span><span>ESC 关机</span></footer>
         </div>
         <div class="scanlines" aria-hidden="true"></div>
         <div class="beam" aria-hidden="true"></div>
