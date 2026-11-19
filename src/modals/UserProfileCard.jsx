@@ -11,7 +11,7 @@ import ProfileResumeView, {
   recordStatsFromUser,
   sortCharacterStatsByGames
 } from "./ProfileResumeView.jsx";
-import { HouseReplayDialog } from "./house/HouseNestedDialogs.jsx";
+import ProfileTablet from "./ProfileTablet.jsx";
 import { useReplayPagination } from "./useReplayPagination.js";
 import WindowTitleSticker from "./WindowTitleSticker.jsx";
 
@@ -232,17 +232,92 @@ export function UserProfileCard({
   const blacklistLabel = blacklistPending ? "处理中…" : isBlacklisted ? (onRemoveBlacklist ? "移出黑名单" : "已在黑名单") : "加入黑名单";
 
   return (
-    <ModalDialog
-      className={`room-floating-modal user-profile-modal profile-dossier-modal profile-folder-modal window-bookmark-host user-profile-card${titleStickers ? " window-sticker-host" : ""}`}
-      ariaLabelledBy="user-profile-modal-title"
+    <ProfileTablet
+      className="room-floating-modal user-profile-modal profile-dossier-modal profile-folder-modal window-bookmark-host user-profile-card"
+      title="玩家详细信息"
+      titleId="user-profile-modal-title"
+      closeLabel="关闭详细资料"
       onClose={onClose}
-      onClick={(event) => event.stopPropagation()}
-    >
-      <header className={`profile-modal-header${titleStickers ? " window-sticker-header" : ""}`}>
-        <WindowTitleSticker titleKey="profile" id="user-profile-modal-title" enabled={titleStickers} />
-        <button data-button-role="secondary" className="close-button" type="button" onClick={onClose} aria-label="关闭详细资料"><X size={20} /></button>
-      </header>
+      replay={showReplays ? { characters, currentUser: profileUser, onOpenReplay, pagination: replayPagination } : null}
+      onCloseReplay={() => setShowReplays(false)}
+      overlays={(<>
+        {showReportDialog && profileDialogPortal(
+          <div className="modal-backdrop profile-modal-backdrop" onClick={closeReportDialog}>
+            <ModalDialog
+              className={`room-floating-modal confirm-inline-modal profile-report-dialog${titleStickers ? " window-sticker-host" : ""}`}
+              ariaLabelledBy="profile-report-title"
+              onClose={closeReportDialog}
+              onClick={(event) => event.stopPropagation()}
+            >
+              <button data-button-role="secondary" className="close-button" type="button" aria-label="关闭举报窗口" onClick={closeReportDialog}><X size={18} /></button>
+              {titleStickers && <WindowTitleSticker titleKey="report" as="h3" id="profile-report-title" />}
+              <form onSubmit={submitReport} className={titleStickers ? "window-sticker-scroll" : undefined}>
+                {!titleStickers && <h3 id="profile-report-title">举报用户</h3>}
+                <label htmlFor="profile-report-content">举报内容</label>
+                <textarea
+                  id="profile-report-content"
+                  value={reportContent}
+                  maxLength={400}
+                  onChange={(event) => setReportContent(event.target.value)}
+                  rows={5}
+                />
+                <small>{reportContent.length}/400</small>
+                {reportError && <p className="profile-dialog-error" role="alert">{reportError}</p>}
+                <div>
+                  <ModalActionButton data-button-role="danger" variant="danger" type="submit" disabled={reportPending || reportContent.trim().length === 0}>
+                    {reportPending ? "提交中…" : "提交举报"}
+                  </ModalActionButton>
+                </div>
+              </form>
+            </ModalDialog>
+          </div>
+        )}
 
+        {showFriendRemoval && profileDialogPortal(
+          <div className="modal-backdrop profile-modal-backdrop" onClick={() => { if (!friendPending) setShowFriendRemoval(false); }}>
+            <ModalDialog className="room-floating-modal confirm-inline-modal" ariaLabel="解除好友" onClose={() => { if (!friendPending) setShowFriendRemoval(false); }} onClick={(event) => event.stopPropagation()}>
+              <ConfirmPanel message={`确定解除与${profileUser.username}的好友关系吗？`} confirmDisabled={friendPending}
+                onConfirm={addFriend} onCancel={() => { if (!friendPending) setShowFriendRemoval(false); }} />
+              {profileError && <p role="alert">{profileError}</p>}
+            </ModalDialog>
+          </div>
+        )}
+        {showBlacklistConfirm && profileDialogPortal(
+          <div className="modal-backdrop profile-modal-backdrop" onClick={() => { if (!blacklistPending) setShowBlacklistConfirm(false); }}>
+            <ModalDialog
+              className={`room-floating-modal confirm-inline-modal profile-blacklist-dialog${titleStickers ? " window-sticker-host" : ""}`}
+              ariaLabelledBy="profile-blacklist-title"
+              onClose={() => { if (!blacklistPending) setShowBlacklistConfirm(false); }}
+              onClick={(event) => event.stopPropagation()}
+            >
+              <button data-button-role="secondary"
+                className="close-button"
+                type="button"
+                aria-label="关闭黑名单确认窗口"
+                disabled={blacklistPending}
+                onClick={() => setShowBlacklistConfirm(false)}
+              >
+                <X size={18} />
+              </button>
+              {titleStickers && <WindowTitleSticker titleKey="blacklist" as="h3" id="profile-blacklist-title" />}
+              <section className={`profile-blacklist-confirm${titleStickers ? " window-sticker-scroll" : ""}`}>
+                {!titleStickers && <h3 id="profile-blacklist-title">加入黑名单</h3>}
+                <p>加入后将限制与该用户的社交互动，确定继续吗？</p>
+                {blacklistError && <p className="profile-dialog-error" role="alert">{blacklistError}</p>}
+                <div>
+                  <ModalActionButton data-button-role="danger" variant="danger" type="button" disabled={blacklistPending} onClick={addBlacklist}>
+                    {blacklistPending ? "处理中…" : "确认加入"}
+                  </ModalActionButton>
+                  <ModalActionButton data-button-role="secondary" variant="secondary" type="button" disabled={blacklistPending} onClick={() => setShowBlacklistConfirm(false)}>
+                    暂不处理
+                  </ModalActionButton>
+                </div>
+              </section>
+            </ModalDialog>
+          </div>
+        )}
+      </>)}
+    >
       <ProfileResumeView
         token={token}
         onOpenReplay={onOpenReplay}
@@ -325,94 +400,7 @@ export function UserProfileCard({
           </div>
         ) : null}
       />
-
-      {showReplays && (
-        <HouseReplayDialog
-          titleStickers={titleStickers}
-          characterListView={characters}
-          currentUser={profileUser}
-          onClose={() => setShowReplays(false)}
-          onOpenReplay={onOpenReplay}
-          pagination={replayPagination}
-        />
-      )}
-
-      {showReportDialog && profileDialogPortal(
-        <div className="modal-backdrop profile-modal-backdrop" onClick={closeReportDialog}>
-          <ModalDialog
-            className={`room-floating-modal confirm-inline-modal profile-report-dialog${titleStickers ? " window-sticker-host" : ""}`}
-            ariaLabelledBy="profile-report-title"
-            onClose={closeReportDialog}
-            onClick={(event) => event.stopPropagation()}
-          >
-            <button data-button-role="secondary" className="close-button" type="button" aria-label="关闭举报窗口" onClick={closeReportDialog}><X size={18} /></button>
-            {titleStickers && <WindowTitleSticker titleKey="report" as="h3" id="profile-report-title" />}
-            <form onSubmit={submitReport} className={titleStickers ? "window-sticker-scroll" : undefined}>
-              {!titleStickers && <h3 id="profile-report-title">举报用户</h3>}
-              <label htmlFor="profile-report-content">举报内容</label>
-              <textarea
-                id="profile-report-content"
-                value={reportContent}
-                maxLength={400}
-                onChange={(event) => setReportContent(event.target.value)}
-                rows={5}
-              />
-              <small>{reportContent.length}/400</small>
-              {reportError && <p className="profile-dialog-error" role="alert">{reportError}</p>}
-              <div>
-                <ModalActionButton data-button-role="danger" variant="danger" type="submit" disabled={reportPending || reportContent.trim().length === 0}>
-                  {reportPending ? "提交中…" : "提交举报"}
-                </ModalActionButton>
-              </div>
-            </form>
-          </ModalDialog>
-        </div>
-      )}
-
-      {showFriendRemoval && profileDialogPortal(
-        <div className="modal-backdrop profile-modal-backdrop" onClick={() => { if (!friendPending) setShowFriendRemoval(false); }}>
-          <ModalDialog className="room-floating-modal confirm-inline-modal" ariaLabel="解除好友" onClose={() => { if (!friendPending) setShowFriendRemoval(false); }} onClick={(event) => event.stopPropagation()}>
-            <ConfirmPanel message={`确定解除与${profileUser.username}的好友关系吗？`} confirmDisabled={friendPending}
-              onConfirm={addFriend} onCancel={() => { if (!friendPending) setShowFriendRemoval(false); }} />
-            {profileError && <p role="alert">{profileError}</p>}
-          </ModalDialog>
-        </div>
-      )}
-      {showBlacklistConfirm && profileDialogPortal(
-        <div className="modal-backdrop profile-modal-backdrop" onClick={() => { if (!blacklistPending) setShowBlacklistConfirm(false); }}>
-          <ModalDialog
-            className={`room-floating-modal confirm-inline-modal profile-blacklist-dialog${titleStickers ? " window-sticker-host" : ""}`}
-            ariaLabelledBy="profile-blacklist-title"
-            onClose={() => { if (!blacklistPending) setShowBlacklistConfirm(false); }}
-            onClick={(event) => event.stopPropagation()}
-          >
-            <button data-button-role="secondary"
-              className="close-button"
-              type="button"
-              aria-label="关闭黑名单确认窗口"
-              disabled={blacklistPending}
-              onClick={() => setShowBlacklistConfirm(false)}
-            >
-              <X size={18} />
-            </button>
-            {titleStickers && <WindowTitleSticker titleKey="blacklist" as="h3" id="profile-blacklist-title" />}
-            <section className={`profile-blacklist-confirm${titleStickers ? " window-sticker-scroll" : ""}`}>
-              {!titleStickers && <h3 id="profile-blacklist-title">加入黑名单</h3>}
-              <p>加入后将限制与该用户的社交互动，确定继续吗？</p>
-              {blacklistError && <p className="profile-dialog-error" role="alert">{blacklistError}</p>}
-              <div>
-                <ModalActionButton data-button-role="danger" variant="danger" type="button" disabled={blacklistPending} onClick={addBlacklist}>
-                  {blacklistPending ? "处理中…" : "确认加入"}
-                </ModalActionButton>
-                <ModalActionButton data-button-role="secondary" variant="secondary" type="button" disabled={blacklistPending} onClick={() => setShowBlacklistConfirm(false)}>
-                  暂不处理
-                </ModalActionButton>
-              </div>
-            </section>
-          </ModalDialog>
-        </div>
-      )}
-    </ModalDialog>
+    </ProfileTablet>
   );
 }
 

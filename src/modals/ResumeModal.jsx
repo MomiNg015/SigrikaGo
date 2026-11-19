@@ -1,11 +1,9 @@
 import WindowLoadingState from "./WindowLoadingState.jsx";
-import WindowTitleSticker from "./WindowTitleSticker.jsx";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Award, MonitorPlay, Palette, X } from "lucide-react";
+import { Award, MonitorPlay, Palette } from "lucide-react";
 import StartorchCouponIcon from "../shared/StartorchCouponIcon.jsx";
 import { api } from "../api/client.js";
-import { HouseReplayDialog } from "./house/HouseNestedDialogs.jsx";
-import { ModalDialog } from "./modalComponents.jsx";
+import ProfileTablet from "./ProfileTablet.jsx";
 import ProfileResumeView, { orderedProfileModes } from "./ProfileResumeView.jsx";
 import { useReplayPagination } from "./useReplayPagination.js";
 import { PROFILE_CUSTOMIZATION_ENABLED } from "../shared/profileFeatures.js";
@@ -117,26 +115,25 @@ export default function ResumeModal({ user, token, characterListView, onClose, o
 
   return (
     <div className="modal-backdrop" onClick={onClose}>
-      <ModalDialog
-        className="house-modal resume-modal profile-dossier-modal profile-folder-modal window-bookmark-host window-sticker-host"
-        ariaLabelledBy="resume-modal-title"
+      <ProfileTablet
+        className="house-modal resume-modal profile-dossier-modal profile-folder-modal window-bookmark-host"
+        title="履历"
+        titleId="resume-modal-title"
+        closeLabel="关闭履历"
         onClose={onClose}
-        onClick={(event) => event.stopPropagation()}
+        studentEntry
+        replay={showReplays ? { characters: characterListView, currentUser: modeUser, onOpenReplay, pagination: replayPagination } : null}
+        onCloseReplay={() => setShowReplays(false)}
+        actions={(
+          <p
+            className="shop-wallet resume-wallet"
+            title="星炬券：每胜一局+50，负一局+20，和棋或无效对局不获得星炬券。"
+          >
+            <StartorchCouponIcon />
+            {user.coins}
+          </p>
+        )}
       >
-        <header className="house-header resume-header window-sticker-header">
-          <WindowTitleSticker titleKey="resume" id="resume-modal-title" />
-          <div className="resume-header-actions">
-            <p
-              className="shop-wallet resume-wallet"
-              title="星炬券：每胜一局+50，负一局+20，和棋或无效对局不获得星炬券。"
-            >
-              <StartorchCouponIcon />
-              {user.coins}
-            </p>
-            <button data-button-role="secondary" className="close-button resume-close-button" type="button" onClick={onClose} aria-label="关闭履历"><X size={20} /></button>
-          </div>
-        </header>
-
         <ProfileResumeView
           token={token}
           onOpenReplay={onOpenReplay}
@@ -184,16 +181,7 @@ export default function ResumeModal({ user, token, characterListView, onClose, o
           ) : null}
         />
 
-        {showReplays && (
-          <HouseReplayDialog titleStickers
-            characterListView={characterListView}
-            currentUser={modeUser}
-            onClose={() => setShowReplays(false)}
-            onOpenReplay={onOpenReplay}
-            pagination={replayPagination}
-          />
-        )}
-      </ModalDialog>
+      </ProfileTablet>
     </div>
   );
 }

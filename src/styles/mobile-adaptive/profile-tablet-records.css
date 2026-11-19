@@ -1,0 +1,83 @@
+/* The shared dossier and replay views take their paint from the tablet screen. */
+:is(.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school:not(.is-sigrika-corrupted), .app-shell)
+.profile-tablet.profile-folder-modal.profile-dossier-modal.window-bookmark-host {
+  .profile-tablet-glass:not([data-phase="off"])::before {
+    content: ""; position: absolute; z-index: 1; inset: 0; pointer-events: none;
+    background: linear-gradient(transparent, var(--tablet-ink), transparent) center / 100% 30% no-repeat;
+    opacity: .07; animation: profile-tablet-scan 6s linear infinite;
+  }
+  .profile-tablet-replays :is(.replay-table, .replay-table-heading) { background: var(--tablet-glass) !important; color: var(--tablet-ink) !important; }
+  .profile-tablet-replays :is(.replay-time-cell, .replay-moves-text, .room-move-placard) { font-family: var(--font-iris-dotted) !important; }
+  .profile-folder {
+    height: auto !important; max-height: none !important; overflow: visible !important;
+    padding: 0 !important; color: var(--tablet-ink) !important;
+  }
+  .profile-folder-page { background: none !important; border: 0 !important; padding: 0 !important; }
+  :is(.profile-resume-hero, .profile-summary-item, .profile-recent-section, .profile-character-section, .profile-capture-record) {
+    color: var(--tablet-ink) !important;
+    background: var(--tablet-glass) !important;
+    border: 1px solid var(--tablet-rule) !important;
+    border-radius: 3px !important;
+    box-shadow: none !important;
+  }
+  .profile-resume-hero { margin-bottom: 12px !important; }
+  .profile-identity-block :is(h3, .user-identity-name) { color: var(--tablet-title) !important; }
+  .profile-identity-actions > button :is(svg, svg *) { color: inherit !important; stroke: currentColor !important; }
+  .profile-folder-tabs {
+    position: static !important; display: flex !important; gap: 4px;
+    margin: 0 !important; padding: 0 !important; border-bottom: 1px solid var(--tablet-rule);
+  }
+  :is(.profile-folder-tabs, .profile-play-tabs) button {
+    min-width: 0; color: var(--tablet-ink) !important; background: var(--tablet-glass) !important;
+    border: 1px solid var(--tablet-rule) !important; border-radius: 2px !important;
+    box-shadow: none !important; font-family: var(--font-iris-mixed) !important;
+  }
+  :is(.profile-folder-tabs button[aria-selected="true"], .profile-play-tabs button[aria-pressed="true"]) {
+    color: var(--tablet-glass) !important; background: var(--tablet-ink) !important;
+    border-color: var(--tablet-ink) !important;
+  }
+  .profile-summary-grid { gap: 10px !important; }
+  .profile-record-panel, .profile-character-table-scroll {
+    min-height: 0 !important; height: auto !important; max-height: none !important; overflow: visible !important;
+  }
+  :is(.profile-summary-label, .profile-record-metric dt, .profile-character-table-head > span, .recent-result-label, .profile-character-name, .recent-result-empty, .rank-star) {
+    color: var(--tablet-dim) !important; font-family: var(--font-iris-mixed) !important;
+  }
+  :is(.profile-record-metric dd, .profile-character-table td > strong, .rank-progress-name, .rank-progress-points) {
+    color: var(--tablet-title) !important; font-family: var(--font-iris-dotted) !important;
+  }
+  :is(.profile-character-table td, .profile-like-count) { font-family: var(--font-iris-dotted) !important; }
+  .profile-like-count { color: var(--bright-ink, var(--tablet-edge)) !important; }
+  .profile-record-header .profile-replay-button {
+    background: var(--tablet-panel) !important; color: var(--tablet-title) !important;
+    border-color: var(--tablet-rule) !important;
+  }
+  :is(.profile-summary-label, .profile-record-header .profile-replay-button) :is(svg, svg *) {
+    color: inherit !important; stroke: currentColor !important;
+  }
+  .profile-character-table-head { background: var(--tablet-panel) !important; }
+  .profile-character-table tbody tr :is(th, td) {
+    border-color: var(--tablet-rule) !important;
+    background: var(--tablet-glass) !important;
+    color: var(--tablet-ink) !important;
+    box-shadow: none !important;
+  }
+  :is(.is-win dd, .recent-result-marker-win, .profile-character-table tbody td[data-label="胜"]) {
+    color: var(--tablet-win) !important; background: var(--tablet-win-fill) !important;
+  }
+  :is(.is-loss dd, .recent-result-marker-loss, .profile-character-table tbody td[data-label="负"]) {
+    color: var(--tablet-loss) !important; background: var(--tablet-loss-fill) !important;
+  }
+  :is(.is-draw dd, .recent-result-marker-draw, .profile-character-table tbody td[data-label="和"]) {
+    color: var(--tablet-draw) !important; background: var(--tablet-draw-fill) !important;
+  }
+  .profile-rank-results .recent-result-marker { border-radius: 1px !important; border-color: currentColor !important; box-shadow: none !important; }
+  @media (max-width: 768px) {
+    .profile-character-table-head > span:first-child { white-space: nowrap; }
+  }
+}
+
+@keyframes profile-tablet-scan {
+  from { transform: translateY(-100%); }
+  to { transform: translateY(100%); }
+}

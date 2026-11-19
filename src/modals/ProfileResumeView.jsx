@@ -1,4 +1,3 @@
-import WindowBookmarkTabs from "./WindowBookmarkTabs.jsx";
 import RankProgress from "../shared/RankProgress.jsx";
 import WindowEmptyState from "./WindowEmptyState.jsx";
 import { useRef, useState } from "react";
@@ -149,7 +148,7 @@ export default function ProfileResumeView({
         ) : (
           <section className="profile-character-section" aria-label="角色战绩">
             <div className="profile-character-table-head" aria-hidden="true">
-              <span />
+              <span>角色战绩</span>
               <span>出场次数</span>
               <span>胜</span>
               <span>负</span>
@@ -242,7 +241,7 @@ function ProfileModeTabs({ mode, pending, onModeChange, panelId }) {
   }
 
   return (
-    <WindowBookmarkTabs className="profile-folder-tabs" aria-label="玩法分类">
+    <div className="profile-folder-tabs" role="tablist" aria-label="玩法分类">
       {tabs.map((entry, index) => (
         <button
           key={entry.id}
@@ -261,7 +260,7 @@ function ProfileModeTabs({ mode, pending, onModeChange, panelId }) {
           {entry.id === "spark" ? "星炬" : entry.id === "standard" ? "标准" : "其它"}
         </button>
       ))}
-    </WindowBookmarkTabs>
+    </div>
   );
 }
 

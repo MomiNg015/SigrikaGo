@@ -72,7 +72,7 @@ async function mountPlayingSpecialDuel(page, viewport) {
   await page.locator(".portrait-wrap img").evaluateAll(images => Promise.all(images.map(image => image.decode())));
 }
 
-async function mount(page, surface, suffix = "") {
+async function mount(page, surface, suffix = "", waitForProfile = true) {
   await page.route("**/api/users/*/profile?*", route => route.fulfill({ json: { profile: {
     rank: "3段", stars: 2, rating: 1250,
     recordStats: { totalGames: 62, wins: 42, losses: 18, draws: 2 },
@@ -83,6 +83,9 @@ async function mount(page, surface, suffix = "") {
   await page.evaluate(() => document.fonts.ready);
   for (const image of await page.locator(".character-bust-image").all()) {
     await expect.poll(() => image.evaluate(img => img.complete && img.naturalWidth > 0)).toBe(true);
+  }
+  if (waitForProfile && (surface === "resume" || surface === "profile")) {
+    await expect(page.locator(".profile-tablet-glass")).toHaveAttribute("data-phase", "ready");
   }
 }
 
@@ -97,9 +100,13 @@ for (const viewport of [{ width: 1440, height: 900 }, { width: 390, height: 844 
       await expect(portraits).toHaveCount(surface === "room" ? 2 : 1);
       for (const portrait of await portraits.all()) {
         await expect(portrait).toBeVisible();
+        if (surface === "home") {
+          await expect(portrait.locator("img")).toHaveCSS("object-fit", "contain");
+          continue;
+        }
         const ratio = await portrait.locator("img").evaluate(img => {
-          const bounds = img.getBoundingClientRect();
-          return Math.abs(bounds.width / bounds.height - img.naturalWidth / img.naturalHeight);
+          const style = getComputedStyle(img);
+          return Math.abs(Number.parseFloat(style.width) / Number.parseFloat(style.height) - img.naturalWidth / img.naturalHeight);
         });
         expect(ratio).toBeLessThan(.002);
       }
@@ -129,6 +136,39 @@ for (const viewport of [{ width: 1440, height: 900 }, { width: 390, height: 844 
       }
     }
     expect(errors).toEqual([]);
+  });
+
+  test(`tablet keeps its frame, IRIS figures and profile state across replay navigation at ${viewport.width}`, async ({ page }) => {
+    await page.setViewportSize(viewport);
+    await page.route("**/api/**/replays?*", route => route.fulfill({ json: { records: [], nextCursor: null } }));
+    await page.route("**/api/replays?*", route => route.fulfill({ json: { records: [], nextCursor: null } }));
+    for (const surface of ["resume", "profile"]) {
+      await mount(page, surface);
+      const tablet = page.locator(".profile-tablet");
+      const profilePage = tablet.locator(".profile-tablet-page").first();
+      await expect(profilePage).toHaveCSS("scrollbar-width", "none");
+      await expect(tablet.locator(".profile-record-metric dd").first()).toHaveCSS("font-family", /IRIS Dotted Songti Circle/);
+      await expect(tablet.locator(".rank-progress")).toHaveAttribute("aria-label", /段 .*星/);
+      const frame = await tablet.boundingBox();
+      expect(frame.x).toBeGreaterThanOrEqual(0);
+      expect(frame.y).toBeGreaterThanOrEqual(0);
+      expect(frame.x + frame.width).toBeLessThanOrEqual(viewport.width);
+      expect(frame.y + frame.height).toBeLessThanOrEqual(viewport.height);
+      await tablet.getByRole("tab", { name: "标准" }).click();
+      await expect(tablet.getByRole("tab", { name: "标准" })).toHaveAttribute("aria-selected", "true");
+      const openReplay = tablet.getByRole("button", { name: "对局回放" });
+      await openReplay.scrollIntoViewIfNeeded();
+      const position = await profilePage.evaluate(element => element.scrollTop);
+      await openReplay.click();
+      await expect(tablet.getByText("暂无对局回放")).toBeVisible();
+      await expect(profilePage).toBeHidden();
+      expect(await tablet.boundingBox()).toEqual(frame);
+      await page.keyboard.press("Escape");
+      await expect(openReplay).toBeFocused();
+      await expect(tablet.getByRole("tab", { name: "标准" })).toHaveAttribute("aria-selected", "true");
+      expect(await profilePage.evaluate(element => element.scrollTop)).toBe(position);
+      expect(await tablet.boundingBox()).toEqual(frame);
+    }
   });
 }
 
@@ -161,14 +201,16 @@ test("missing standard sprite falls back once to the same character", async ({ p
   await expect(portrait.locator("img")).toHaveAttribute("alt", "西格莉卡立绘");
 });
 
-test("reduced motion keeps profile immediately readable and usable", async ({ page }) => {
+test("reduced motion keeps the loading message static before revealing the profile", async ({ page }) => {
   await page.emulateMedia({ reducedMotion: "reduce" });
   for (const viewport of [{ width: 1440, height: 900 }, { width: 390, height: 844 }]) {
     await page.setViewportSize(viewport);
-    await mount(page, "profile", "&empty=1&long-name=1");
+    await mount(page, "profile", "&empty=1&long-name=1", false);
     const dialog = page.locator(".user-profile-modal");
     await expect(dialog).toHaveCSS("animation-name", "none");
     await expect(dialog).toHaveCSS("opacity", "1");
+    await expect(page.locator(".profile-tablet-boot")).toBeVisible();
+    await expect(page.locator(".profile-tablet-track")).toBeHidden();
     await expect(page.getByText("暂无角色战绩", { exact: true })).toBeVisible();
     await page.keyboard.press("Escape");
     await expect(dialog).toHaveCount(0);
@@ -202,6 +244,8 @@ test("legal wide mobile usernames stay readable without overlapping actions", as
 
 for (const viewport of [{ width: 320, height: 568 }, { width: 390, height: 844 }, { width: 1440, height: 900 }]) {
   test(`profile identity equipment clears actions at ${viewport.width}`, async ({ page }) => {
+    test.setTimeout(60_000);
+    await page.emulateMedia({ reducedMotion: "reduce" });
     await page.setViewportSize(viewport);
     for (const surface of ["resume", "profile"]) {
       for (const equipment of ["", "&equipped=1", "&equipped=1&decorated=1"]) {
@@ -271,28 +315,15 @@ test("nested social dialogs release entry transforms and restore keyboard focus"
   }
 });
 
-test("quick social actions keep nested backdrops viewport-sized during profile entry", async ({ page }) => {
+test("profile boot defers social actions and keeps nested backdrops viewport-sized", async ({ page }) => {
   for (const viewport of [{ width: 1440, height: 900 }, { width: 390, height: 844 }]) {
     for (const reduce of [false, true]) {
       await page.setViewportSize(viewport);
       await page.emulateMedia({ reducedMotion: reduce ? "reduce" : "no-preference" });
-      await mount(page, "profile");
+      await mount(page, "profile", "", false);
       const profile = page.locator(".user-profile-modal");
-      if (reduce) {
-        await expect(profile).toHaveCSS("animation-name", "none");
-      } else {
-        const entry = await profile.evaluate(element => {
-          element.style.setProperty("animation", "none", "important");
-          void element.offsetWidth;
-          element.style.removeProperty("animation");
-          const animation = element.getAnimations()[0];
-          if (!animation) return false;
-          animation.pause();
-          animation.currentTime = 65;
-          return getComputedStyle(element).scale !== "none";
-        });
-        expect(entry).toBe(true);
-      }
+      await expect(profile.locator(".profile-tablet-interface")).toHaveAttribute("inert", "");
+      await expect(profile.locator(".profile-tablet-glass")).toHaveAttribute("data-phase", "ready");
       for (const action of [
         { name: "举报", dialog: ".profile-report-dialog" },
         { name: "加入黑名单", dialog: ".profile-blacklist-dialog" }
@@ -321,12 +352,7 @@ test("quick social actions keep nested backdrops viewport-sized during profile e
         await expect(profile).toBeVisible();
         await expect(trigger).toBeFocused();
       }
-      if (!reduce) {
-        await profile.evaluate(element => element.getAnimations().forEach(animation => animation.play()));
-        await finishEntry(profile);
-        await expect(profile).toHaveCSS("translate", "none");
-        await expect(profile).toHaveCSS("scale", "none");
-      }
+      await expect(profile).toHaveCSS("transform", "none");
     }
   }
 });

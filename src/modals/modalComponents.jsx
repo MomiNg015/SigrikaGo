@@ -28,7 +28,7 @@ export function ModalDialog({ as = "section", ariaLabel, ariaLabelledBy, classNa
   useEffect(() => {
     restoreFocusRef.current = document.activeElement;
     const dialog = dialogRef.current;
-    const focusTarget = dialog?.querySelector(FOCUSABLE_SELECTOR);
+    const [focusTarget] = modalFocusable(dialog);
     (focusTarget ?? dialog)?.focus();
     return () => {
       if (restoreFocusRef.current?.isConnected) restoreFocusRef.current.focus();
@@ -59,8 +59,7 @@ export function ModalDialog({ as = "section", ariaLabel, ariaLabelledBy, classNa
       return;
     }
     if (event.key !== "Tab") return;
-    const focusable = [...(dialogRef.current?.querySelectorAll(FOCUSABLE_SELECTOR) ?? [])]
-      .filter((element) => !element.disabled && element.getAttribute("aria-hidden") !== "true");
+    const focusable = modalFocusable(dialogRef.current);
     if (!focusable.length) {
       event.preventDefault();
       dialogRef.current?.focus();
@@ -102,3 +101,8 @@ const FOCUSABLE_SELECTOR = [
   "textarea:not([disabled])",
   "[tabindex]:not([tabindex='-1'])"
 ].join(",");
+
+function modalFocusable(dialog) {
+  return [...(dialog?.querySelectorAll(FOCUSABLE_SELECTOR) ?? [])]
+    .filter((element) => !element.disabled && !element.closest('[hidden], [inert], [aria-hidden="true"]'));
+}

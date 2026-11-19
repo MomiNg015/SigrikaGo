@@ -8,7 +8,6 @@ import {
   playUiLeaderboardOpenSound,
   playUiMatchOpenSound,
   playUiRecruitmentOpenSound,
-  playUiResumeOpenSound,
   playUiShopOpenSound,
   playUiWarehouseOpenSound,
   playUiWatchOpenSound
@@ -336,10 +335,7 @@ const HomeRoute = memo(function HomeRoute({
         playUiHouseOpenSound(audioSettings);
         setShowHouse(true);
       }}
-      onOpenResume={() => {
-        playUiResumeOpenSound(audioSettings);
-        setShowResume(true);
-      }}
+      onOpenResume={() => setShowResume(true)}
       onOpenWarehouse={() => {
         playUiWarehouseOpenSound(audioSettings);
         setShowWarehouse(true);

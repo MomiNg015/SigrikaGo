@@ -147,7 +147,7 @@ function playEffectSoundFallback(src, volume) {
   const audio = new Audio(src);
   audio.preload = "auto";
   audio.volume = volume;
-  audio.play().catch(() => {});
+  audio.play()?.catch(() => {});
   return {
     stop() {
       audio.pause();

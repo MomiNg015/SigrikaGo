@@ -53,7 +53,7 @@ describe("UserProfileCard dossier interactions", () => {
 
   it.each([false, true])("opts report titles in explicitly and restores focus (stickers: %s)", (titleStickers) => {
     const { container } = renderProfile({}, { titleStickers });
-    expect(Boolean(container.querySelector(".window-title-sticker"))).toBe(titleStickers);
+    expect(container.querySelector(".profile-tablet-screen-header .window-title-sticker")).toBeNull();
     const trigger = screen.getByRole("button", { name: "举报", exact: true });
     trigger.focus();
     fireEvent.click(trigger);
@@ -318,24 +318,22 @@ describe("UserProfileCard dossier interactions", () => {
     expect(document.querySelectorAll(".profile-chain-portrait.small > .profile-portrait-mask > img")).toHaveLength(2);
   });
 
-  it("opens the shared replay dialog as a standalone portal outside detailed profile", async () => {
+  it("switches the tablet to replay records and returns focus to the profile action", async () => {
     api.mockResolvedValueOnce({ records: [], nextCursor: null });
     renderProfile();
 
-    const profileDialog = screen.getByRole("dialog", { name: "详细资料" });
+    const profileDialog = screen.getByRole("dialog", { name: "玩家详细信息" });
     const replayTrigger = within(profileDialog).getByRole("button", { name: "对局回放" });
     replayTrigger.focus();
     fireEvent.click(replayTrigger);
 
-    const replayDialog = await screen.findByRole("dialog", { name: "对局回放" });
-    expect(replayDialog.classList.contains("nested-modal")).toBe(true);
-    const replayPortalParent = document.querySelector(".standalone-replay-backdrop")?.parentElement;
-    expect(replayPortalParent === document.body || replayPortalParent?.classList.contains("app-shell")).toBe(true);
-    expect(profileDialog.contains(replayDialog)).toBe(false);
+    expect(within(profileDialog).getByRole("heading", { name: "对局回放" })).toBeTruthy();
+    expect(within(profileDialog).queryByRole("tablist")).toBeNull();
+    expect(screen.getAllByRole("dialog")).toEqual([profileDialog]);
+    await within(profileDialog).findByText("暂无对局回放");
 
-    fireEvent.click(within(replayDialog).getByRole("button", { name: "关闭对局回放" }));
-    await waitFor(() => expect(screen.queryByRole("dialog", { name: "对局回放" })).toBeNull());
-    expect(screen.getByRole("dialog", { name: "详细资料" })).toBeTruthy();
+    fireEvent.click(within(profileDialog).getByRole("button", { name: "关闭对局回放" }));
+    expect(within(profileDialog).getByRole("heading", { name: "玩家详细信息" })).toBeTruthy();
     expect(document.activeElement).toBe(replayTrigger);
   });
 });

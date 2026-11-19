@@ -510,8 +510,8 @@ describe("deriveCharacterRecordStats", () => {
       onOpenReplay: () => {}
     }));
 
-    expect(html).toContain('<h2 id="resume-modal-title" class="window-title-sticker"');
-    expect(html).toContain('<span class="window-title-sticker-label">履历</span>');
+    expect(html).toContain('<h2 id="resume-modal-title">履历</h2>');
+    expect(html).toContain('class="profile-tablet-screen-header"');
     expect(html).toContain('role="dialog"');
     expect(html).toContain('data-profile-context="self"');
     expect(html.indexOf(">星炬</button>")).toBeLessThan(html.indexOf(">标准</button>"));
@@ -523,7 +523,7 @@ describe("deriveCharacterRecordStats", () => {
     expect(html).not.toContain("profile-report-button");
     expect(html.indexOf("resume-wallet")).toBeLessThan(html.indexOf("achievement-entry-action"));
     expect(html).toContain("profile-identity-actions");
-    expect(html.indexOf("resume-wallet")).toBeLessThan(html.indexOf("resume-close-button"));
+    expect(html.indexOf("resume-wallet")).toBeLessThan(html.indexOf("profile-tablet-power"));
     expect(html).not.toContain("text-rating-value");
     expect(html).toContain("profile-summary-grid");
     expect(html).toContain("总对局");

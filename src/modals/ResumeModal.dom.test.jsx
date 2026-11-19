@@ -83,11 +83,11 @@ describe("ResumeModal authoritative record stats", () => {
     expect(screen.queryByText("加好友")).toBeNull();
     expect(screen.queryByText("举报")).toBeNull();
     expect(screen.getAllByRole("tab").map((tab) => tab.textContent)).toEqual(["星炬", "标准", "其它"]);
-    expect([...document.querySelector(".resume-header-actions").children].map((element) => {
+    expect([...document.querySelector(".profile-tablet-tools").children].map((element) => {
       if (element.matches(".achievement-entry-action")) return "成就";
       if (element.matches(".personalization-entry-action")) return "个性化";
       if (element.matches(".resume-wallet")) return "金币";
-      if (element.matches(".resume-close-button")) return "关闭";
+      if (element.matches(".profile-tablet-power")) return "关闭";
       return "未知";
     })).toEqual(["金币", "关闭"]);
     expect(screen.getByRole("button", { name: "成就" }).dataset.buttonRole).toBe("tool");
