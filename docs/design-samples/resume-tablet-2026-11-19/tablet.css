@@ -94,15 +94,16 @@ dialog::backdrop { background: #131612bc; }
 .boot-status { width: min(300px, calc(100% - 40px)); color: var(--bright); }
 .boot-track { height: 20px; margin-top: 12px; padding: 3px; border: 1px solid var(--rule); background: var(--glass); }
 .boot-fill {
-  height: 100%; transform: scaleX(0); transform-origin: left;
-  background: repeating-linear-gradient(90deg, var(--ink) 0 7px, transparent 7px 9px);
+  height: 100%; clip-path: inset(0 100% 0 0);
+  background: repeating-linear-gradient(90deg, var(--ink) 0 4.4%, transparent 4.4% 5%);
 }
 .display {
   display: flex; flex-direction: column; block-size: min(640px, calc(100dvh - 135px));
-  overflow: auto; overscroll-behavior: contain; scroll-padding-top: 58px; scrollbar-color: var(--rule) var(--glass);
+  overflow: auto; overscroll-behavior: contain; scroll-padding-top: 58px; scrollbar-width: none;
   background: radial-gradient(ellipse at 50% 35%, var(--soft), var(--glass) 75%);
   visibility: hidden;
 }
+.display::-webkit-scrollbar { display: none; }
 .display > * { flex: none; }
 [data-phase=on] .display { visibility: visible; animation: raster 165ms cubic-bezier(.15,.8,.25,1) both; }
 @keyframes raster {

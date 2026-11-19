@@ -248,8 +248,8 @@ function openTablet(event) {
 function startLoading(animate) {
   tablet.dataset.phase = "loading";
   loadingAnimation = bootFill.animate(
-    [{ transform: "scaleX(0)" }, { transform: animate ? "scaleX(1)" : "scaleX(0)" }],
-    { duration: 1500, easing: "steps(20, end)", fill: "forwards" },
+    [{ clipPath: "inset(0 100% 0 0)" }, { clipPath: animate ? "inset(0)" : "inset(0 100% 0 0)" }],
+    { duration: 1500, easing: "steps(20, start)", fill: "forwards" },
   );
   loadingAnimation.finished.then(() => {
     tablet.dataset.phase = "on";
