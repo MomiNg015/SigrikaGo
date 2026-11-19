@@ -154,7 +154,13 @@ for (const viewport of [{ width: 1440, height: 900 }, { width: 390, height: 844 
       await expect(tablet.locator(".profile-tablet-hardware").first()).toHaveText("");
       await expect(tablet.locator(".profile-tablet-screen-header")).not.toContainText("星炬券");
       await expect(tablet.locator(".profile-record-metric dd").first()).toHaveCSS("font-family", /IRIS Dotted Songti Circle/);
-      await expect(tablet.locator(".rank-progress")).toHaveAttribute("aria-label", /段 .*星/);
+      const rank = tablet.locator(".rank-progress");
+      await expect(rank).toHaveAttribute("aria-label", /段 .*星/);
+      const emptyStar = rank.locator(".rank-star:not(.is-earned)").first();
+      await expect(emptyStar).toHaveCSS("opacity", "1");
+      await expect(emptyStar).toHaveCSS("stroke", "rgb(193, 239, 188)");
+      await expect(emptyStar).toHaveCSS("fill", "rgba(0, 0, 0, 0)");
+      await expect(rank.locator(".rank-star.is-earned").first()).toHaveCSS("fill", "rgb(255, 240, 166)");
       await expect(tablet.locator(".profile-tablet-outcomes > span")).toHaveCSS("color", "rgb(193, 239, 188)");
       const hero = await tablet.locator(".profile-resume-hero").boundingBox();
       if (viewport.width <= 768) {
