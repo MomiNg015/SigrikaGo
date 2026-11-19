@@ -521,9 +521,10 @@ describe("deriveCharacterRecordStats", () => {
     expect(html).not.toContain("profile-like-button");
     expect(html).not.toContain("profile-friend-button");
     expect(html).not.toContain("profile-report-button");
-    expect(html.indexOf("resume-wallet")).toBeLessThan(html.indexOf("achievement-entry-action"));
+    expect(html).toContain('class="profile-tablet-balance"');
+    expect(html).toContain("<span>星炬券</span><strong>1070</strong>");
     expect(html).toContain("profile-identity-actions");
-    expect(html.indexOf("resume-wallet")).toBeLessThan(html.indexOf("profile-tablet-power"));
+    expect(html).not.toContain("shop-wallet resume-wallet");
     expect(html).not.toContain("text-rating-value");
     expect(html).toContain("profile-summary-grid");
     expect(html).toContain("总对局");

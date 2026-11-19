@@ -43,14 +43,13 @@
     gap: 10px;
     padding: 0 3px 6px;
     color: #121910;
-    font: 12px/1 var(--font-iris-mixed);
+    font: 12px/1 var(--font-ui-default);
     letter-spacing: .12em;
   }
   .profile-tablet-bottom { min-height: 24px; justify-content: center; padding: 6px 0 0; }
   .profile-tablet-led { width: 7px; height: 7px; border-radius: 50%; background: var(--tablet-edge); }
   [data-phase]:not([data-phase="off"]) > .profile-tablet-led { background: var(--tablet-title); box-shadow: 0 0 7px var(--tablet-ink); }
   .profile-tablet-tools { display: flex; align-items: center; gap: 8px; margin-inline-start: auto; }
-  .profile-tablet-tools .resume-wallet { margin: 0 !important; }
   :is(.profile-tablet-power, .profile-tablet-back) {
     display: grid; place-items: center; flex: none;
     width: 44px; height: 44px; padding: 0;

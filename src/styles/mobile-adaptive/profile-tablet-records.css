@@ -62,14 +62,17 @@
     box-shadow: none !important;
   }
   :is(.is-win dd, .recent-result-marker-win, .profile-character-table tbody td[data-label="胜"]) {
-    color: var(--tablet-win) !important; background: var(--tablet-win-fill) !important;
+    color: var(--tablet-win) !important;
   }
   :is(.is-loss dd, .recent-result-marker-loss, .profile-character-table tbody td[data-label="负"]) {
-    color: var(--tablet-loss) !important; background: var(--tablet-loss-fill) !important;
+    color: var(--tablet-loss) !important;
   }
   :is(.is-draw dd, .recent-result-marker-draw, .profile-character-table tbody td[data-label="和"]) {
-    color: var(--tablet-draw) !important; background: var(--tablet-draw-fill) !important;
+    color: var(--tablet-draw) !important;
   }
+  .profile-rank-results .recent-result-marker-win { background: var(--tablet-win-fill) !important; }
+  .profile-rank-results .recent-result-marker-loss { background: var(--tablet-loss-fill) !important; }
+  .profile-rank-results .recent-result-marker-draw { background: var(--tablet-draw-fill) !important; }
   .profile-rank-results .recent-result-marker { border-radius: 1px !important; border-color: currentColor !important; box-shadow: none !important; }
   @media (max-width: 768px) {
     .profile-character-table-head > span:first-child { white-space: nowrap; }

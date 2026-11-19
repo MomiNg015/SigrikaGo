@@ -157,6 +157,14 @@ for (const viewport of [{ width: 1440, height: 900 }, { width: 390, height: 844 
       const rankCell = await tablet.locator(".profile-tablet-metrics > .profile-summary-item").boundingBox();
       const totals = await tablet.locator(".profile-tablet-totals").boundingBox();
       expect(rankCell.y).toBeCloseTo(totals.y, 0);
+      const modes = await tablet.getByRole("tablist", { name: "玩法分类" }).boundingBox();
+      const plays = await tablet.locator(".profile-play-tabs").boundingBox();
+      expect(plays.y - modes.y - modes.height).toBeGreaterThanOrEqual(8);
+      if (surface === "resume") {
+        const balance = tablet.locator(".profile-tablet-screen-header .profile-tablet-balance");
+        await expect(balance).toContainText("星炬券");
+        await expect(balance).toHaveCSS("background-image", "none");
+      }
       const frame = await tablet.boundingBox();
       expect(frame.x).toBeGreaterThanOrEqual(0);
       expect(frame.y).toBeGreaterThanOrEqual(0);
@@ -169,7 +177,10 @@ for (const viewport of [{ width: 1440, height: 900 }, { width: 390, height: 844 
       const position = await profilePage.evaluate(element => element.scrollTop);
       await openReplay.click();
       await expect(tablet.getByText("暂无对局回放")).toBeVisible();
-      await expect(tablet.locator(".profile-tablet-replays .profile-tablet-empty-cursor")).toBeVisible();
+      const empty = tablet.locator(".profile-tablet-replays .profile-tablet-empty");
+      await expect(empty).toHaveText("暂无对局回放");
+      await expect(empty).toHaveCSS("background-color", "rgba(0, 0, 0, 0)");
+      await expect(tablet.locator(".profile-tablet-balance")).toHaveCount(0);
       await expect(profilePage).toBeHidden();
       expect(await tablet.boundingBox()).toEqual(frame);
       await page.keyboard.press("Escape");

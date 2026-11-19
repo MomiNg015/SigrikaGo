@@ -146,9 +146,7 @@ export default function ProfileResumeView({
 
         {records.length === 0 ? (
           <section className="profile-character-section profile-character-empty" aria-label="角色战绩">
-            <WindowEmptyState compact appearance="terminal">
-              <span className="recent-result-empty">暂无角色战绩</span>
-            </WindowEmptyState>
+            <WindowEmptyState compact appearance="terminal">暂无角色战绩</WindowEmptyState>
           </section>
         ) : (
           <section className="profile-character-section" aria-label="角色战绩">

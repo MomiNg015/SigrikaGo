@@ -9,7 +9,7 @@ const LOAD_DURATION = 1500;
 const SWING_DURATION = 410;
 
 export default function ProfileTablet({
-  className, title, titleId, closeLabel, onClose, actions, children, overlays,
+  className, title, titleId, closeLabel, onClose, screenActions, children, overlays,
   replay, onCloseReplay, studentEntry = false
 }) {
   const shellRef = useRef(null);
@@ -69,7 +69,6 @@ export default function ProfileTablet({
         <span className="profile-tablet-led" aria-hidden="true" />
         <span aria-hidden="true">IRIS / EDU–01</span>
         <div className="profile-tablet-tools">
-          {actions}
           <button data-button-role="secondary" type="button" className="profile-tablet-power" onClick={onClose} aria-label={closeLabel}>
             <Power size={20} aria-hidden="true" />
           </button>
@@ -83,6 +82,7 @@ export default function ProfileTablet({
         <div className="profile-tablet-interface" inert={phase !== "ready"}>
           <header className="profile-tablet-screen-header">
             <h2 id={titleId}>{showingReplay ? "对局回放" : title}</h2>
+            {!showingReplay && screenActions}
             {showingReplay && <button ref={backRef} className="profile-tablet-back" type="button" onClick={onCloseReplay} aria-label="关闭对局回放" title={`返回${title}`}>
               <ArrowLeft size={18} aria-hidden="true" />
             </button>}

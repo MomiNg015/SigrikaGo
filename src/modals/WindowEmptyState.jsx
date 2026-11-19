@@ -2,8 +2,7 @@
 export default function WindowEmptyState({ children, className = "", compact = false, appearance = "paper", as: Tag = "div", ...props }) {
   if (appearance === "terminal") {
     return <Tag {...props} className={`profile-tablet-empty ${className}`.trim()}>
-      <span className="profile-tablet-empty-cursor" aria-hidden="true" />
-      <span>{children}</span>
+      {children}
     </Tag>;
   }
   return <Tag {...props} className={`window-empty-state${compact ? " window-empty-compact" : ""}${className ? ` ${className}` : ""}`}>

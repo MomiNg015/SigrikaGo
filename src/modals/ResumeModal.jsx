@@ -1,7 +1,6 @@
 import WindowLoadingState from "./WindowLoadingState.jsx";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Award, MonitorPlay, Palette } from "lucide-react";
-import StartorchCouponIcon from "../shared/StartorchCouponIcon.jsx";
 import { api } from "../api/client.js";
 import ProfileTablet from "./ProfileTablet.jsx";
 import ProfileResumeView, { orderedProfileModes } from "./ProfileResumeView.jsx";
@@ -124,13 +123,13 @@ export default function ResumeModal({ user, token, characterListView, onClose, o
         studentEntry
         replay={showReplays ? { characters: characterListView, currentUser: modeUser, onOpenReplay, pagination: replayPagination } : null}
         onCloseReplay={() => setShowReplays(false)}
-        actions={(
+        screenActions={(
           <p
-            className="shop-wallet resume-wallet"
+            className="profile-tablet-balance"
             title="星炬券：每胜一局+50，负一局+20，和棋或无效对局不获得星炬券。"
           >
-            <StartorchCouponIcon />
-            {user.coins}
+            <span>星炬券</span>
+            <strong>{user.coins ?? 0}</strong>
           </p>
         )}
       >
