@@ -93,28 +93,16 @@ export default function FriendsModal({ token, socket, characters, onNotice, onCl
     }
   }
 
-  async function addProfileFriend(profile = profileUser) {
-    if (!profile) return;
-    try {
-      await updateFriend(profile.id, "POST");
-      setActiveTab("friends");
-      setProfileUser(null);
-      notify(`已将${profile.username}加为好友。`, "success");
-    } catch (error) {
-      notify(error.message, "danger");
-    }
+  async function addProfileFriend(profile) {
+    await updateFriend(profile.id, "POST");
+    setActiveTab("friends");
+    notify(`已将${profile.username}加为好友。`, "success");
   }
 
-  async function addProfileBlacklist(profile = profileUser) {
-    if (!profile) return;
-    try {
-      await updateBlacklist(profile.id, "POST");
-      setActiveTab("blacklist");
-      setProfileUser(null);
-      notify(`已将${profile.username}加入黑名单。`, "success");
-    } catch (error) {
-      notify(error.message, "danger");
-    }
+  async function addProfileBlacklist(profile) {
+    await updateBlacklist(profile.id, "POST");
+    setActiveTab("blacklist");
+    notify(`已将${profile.username}加入黑名单。`, "success");
   }
 
   function handleSearchInput(value) {
@@ -194,6 +182,8 @@ export default function FriendsModal({ token, socket, characters, onNotice, onCl
         token={token}
         onAddBlacklist={addProfileBlacklist}
         onAddFriend={addProfileFriend}
+        onRemoveFriend={(profile) => updateFriend(profile.id, "DELETE")}
+        onRemoveBlacklist={(profile) => updateBlacklist(profile.id, "DELETE")}
         onCloseConfirm={() => setConfirmTarget(null)}
         onCloseDuelMode={() => setDuelModeTarget(null)}
         onCloseProfile={() => setProfileUser(null)}

@@ -157,7 +157,10 @@ for (const viewport of [{ width: 1440, height: 900 }, { width: 390, height: 844 
       await expect(tablet.locator(".rank-progress")).toHaveAttribute("aria-label", /段 .*星/);
       await expect(tablet.locator(".profile-tablet-outcomes > span")).toHaveCSS("color", "rgb(193, 239, 188)");
       const hero = await tablet.locator(".profile-resume-hero").boundingBox();
-      if (viewport.width <= 768) expect(hero.height).toBe(162);
+      if (viewport.width <= 768) {
+        expect(hero.height).toBe(162);
+        await expect(tablet.locator(".profile-hero-portrait")).toHaveCSS("width", "112px");
+      }
       const record = await tablet.locator(".profile-folder-page").boundingBox();
       const avatar = await tablet.locator(".profile-hero-portrait").boundingBox();
       const name = await tablet.locator(".profile-identity-block").boundingBox();
@@ -186,7 +189,7 @@ for (const viewport of [{ width: 1440, height: 900 }, { width: 390, height: 844 
       }
       await expect(tablet.locator(".profile-tablet-metrics .profile-record-metric dd").first()).toHaveCSS("text-align", "end");
       await expect(tablet.locator(".profile-rank-results")).toHaveCSS("justify-content", "center");
-      await expect(tablet.locator(".recent-result-label")).toHaveCSS("text-align", "center");
+      await expect(tablet.locator(".recent-result-label")).toHaveCount(0);
       const rankPosition = await tablet.locator(".profile-tablet-metrics .is-primary").evaluate(cell => ({
         value: cell.querySelector(".rank-progress").getBoundingClientRect().right,
         edge: cell.getBoundingClientRect().right - parseFloat(getComputedStyle(cell).paddingRight)

@@ -1,5 +1,10 @@
+import WindowEmptyState from "./WindowEmptyState.jsx";
+
 /** A paper-and-pencil companion to the shared empty state. */
-export default function WindowLoadingState({ children = "加载中…", compact = false }) {
+export default function WindowLoadingState({ children = "加载中…", compact = false, appearance }) {
+  if (appearance === "terminal") {
+    return <WindowEmptyState appearance={appearance} role="status" aria-live="polite">{children}</WindowEmptyState>;
+  }
   return <div className={`window-empty-state window-loading-state${compact ? " window-empty-compact window-loading-compact" : ""}`} role="status" aria-live="polite">
     <svg className="window-empty-art" viewBox="0 0 100 76" fill="none" aria-hidden="true" focusable="false">
       <path className="window-empty-shadow" d="M22 17 74 12 82 64 29 69Z" />

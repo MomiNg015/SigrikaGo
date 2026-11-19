@@ -84,12 +84,6 @@ function RoomPeopleList({
     setActiveMenu(null);
   }
 
-  async function addProfileBlacklist(profile) {
-    if (!profile) return;
-    await updateBlacklist(profile.id, "POST");
-    setProfileUser({ ...profile, relation: "blacklist" });
-  }
-
   function confirmFriendRemoval(person) {
     setActiveMenu(null);
     setProfileUser(null);
@@ -99,12 +93,6 @@ function RoomPeopleList({
   async function addFriend(person) {
     await updateFriend(person.userId, "POST");
     setActiveMenu(null);
-  }
-
-  async function addProfileFriend(profile) {
-    if (!profile) return;
-    await updateFriend(profile.id, "POST");
-    setProfileUser({ ...profile, relation: "friend" });
   }
 
   async function removeFriend(person) {
@@ -177,8 +165,10 @@ function RoomPeopleList({
               token={token}
               replayDisabled
               onClose={() => setProfileUser(null)}
-              onAddFriend={addProfileFriend}
-              onAddBlacklist={addProfileBlacklist}
+              onAddFriend={(profile) => updateFriend(profile.id, "POST")}
+              onRemoveFriend={(profile) => updateFriend(profile.id, "DELETE")}
+              onAddBlacklist={(profile) => updateBlacklist(profile.id, "POST")}
+              onRemoveBlacklist={(profile) => updateBlacklist(profile.id, "DELETE")}
               onOpenReplay={(recordId) => {
                 setProfileUser(null);
                 onOpenReplay?.(recordId);

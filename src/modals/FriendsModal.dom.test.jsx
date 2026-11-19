@@ -17,6 +17,39 @@ describe("FriendsModal keyboard lifecycle", () => {
     return <><button onClick={() => setOpened(true)}>打开社交窗口</button>{opened && <FriendsModal token="token" socket={socket} characters={{}} onNotice={onNotice} onClose={() => setOpened(false)} />}</>;
   }
 
+  it("keeps the same profile open through friend and blacklist changes", async () => {
+    const target = { ...friend, relation: "none" };
+    api.mockImplementation((url, { method } = {}) => {
+      if (url.includes("/search/profile")) return Promise.resolve({ profile: target });
+      if (url.startsWith("/api/social/friends/") && method === "POST") return Promise.resolve({ friends: [target] });
+      if (url.startsWith("/api/social/blacklist/") && method === "POST") return Promise.resolve({ blacklist: [target] });
+      return Promise.resolve({ friends: [], blacklist: [] });
+    });
+    const user = userEvent.setup();
+    render(<Harness />);
+    await user.click(screen.getByRole("button", { name: "打开社交窗口" }));
+    await user.type(screen.getByRole("textbox", { name: "搜索用户名" }), target.username);
+    await user.click(screen.getByRole("button", { name: "搜索用户" }));
+    const profile = await screen.findByRole("dialog", { name: "玩家详细信息" });
+    const actions = within(profile);
+
+    await user.click(actions.getByRole("button", { name: "加好友" }));
+    await user.click(await actions.findByRole("button", { name: "解除好友" }));
+    await user.click(within(screen.getByRole("dialog", { name: "解除好友" })).getByRole("button", { name: "确定" }));
+    await actions.findByRole("button", { name: "加好友" });
+    await user.click(actions.getByRole("button", { name: "加入黑名单" }));
+    await user.click(within(screen.getByRole("dialog", { name: "加入黑名单" })).getByRole("button", { name: "确认加入" }));
+    await user.click(await actions.findByRole("button", { name: "移出黑名单" }));
+    await actions.findByRole("button", { name: "加入黑名单" });
+
+    expect(screen.getByRole("dialog", { name: "玩家详细信息" })).toBe(profile);
+    for (const list of ["friends", "blacklist"]) {
+      for (const method of ["POST", "DELETE"]) {
+        expect(api).toHaveBeenCalledWith(`/api/social/${list}/${target.id}`, { method, token: "token" });
+      }
+    }
+  });
+
   it("focuses and traps the main sheet, then returns to its opener", async () => {
     api.mockResolvedValue({ friends: [friend], blacklist: [] });
     const user = userEvent.setup();

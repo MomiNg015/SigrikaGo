@@ -25,7 +25,7 @@ export function ProfileCaptureRecord({ user, token, characters }) {
   const character = state.record && findCharacter(characters, state.record.characterId);
   return <section className="profile-capture-record" aria-label="吃子挑战成绩" aria-busy={loading}>
     <h3>吃子挑战赛</h3>
-    {loading ? <WindowLoadingState compact>正在读取挑战成绩…</WindowLoadingState>
+    {loading ? <WindowLoadingState appearance="terminal">正在读取挑战成绩…</WindowLoadingState>
       : state.error ? <div role="alert"><p>{state.error}</p><button type="button" onClick={() => setRetry(n => n + 1)}>重新加载</button></div>
       : !state.record ? <WindowEmptyState compact appearance="terminal">暂无吃子挑战成绩</WindowEmptyState>
       : <>

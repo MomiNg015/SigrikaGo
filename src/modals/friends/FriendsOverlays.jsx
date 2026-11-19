@@ -15,6 +15,8 @@ export default function FriendsOverlays({
   token,
   onAddBlacklist,
   onAddFriend,
+  onRemoveFriend,
+  onRemoveBlacklist,
   onCloseConfirm,
   onCloseDuelMode,
   onCloseProfile,
@@ -34,6 +36,8 @@ export default function FriendsOverlays({
             onClose={onCloseProfile}
             onAddFriend={onAddFriend}
             onAddBlacklist={onAddBlacklist}
+            onRemoveFriend={onRemoveFriend}
+            onRemoveBlacklist={onRemoveBlacklist}
             onOpenReplay={onOpenReplay}
             onNotice={onNotice}
           />

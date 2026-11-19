@@ -9,6 +9,7 @@
 - Search remains normalized global username lookup through `/api/users/search/profile?username=...`.
 - Duel requests retain `duel:request` with `{ targetUserId, mode }` and real `modeOrderedEntries()` options. Only online friends may request a duel. Blacklist has no duel button.
 - Relationship mutations retain `/api/social/friends/:id` or `/api/social/blacklist/:id`. Destructive actions use existing confirmations, pending guards and failure/retry behavior.
+- Detail-window relationship changes retain the mounted profile and its current mode, while list data refreshes. Only the nested confirmation closes after success, and the profile updates its relationship action labels.
 - Capture the focused invoking control before every nested operation. Key the companion panel by selected ID so deleting its user removes the old action nodes; close-control focus is the fallback when the opener disappears.
 
 ## Layout and feedback

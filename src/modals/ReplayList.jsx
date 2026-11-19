@@ -93,7 +93,7 @@ export function PaginatedReplayList({ pagination, characters, currentUser, onOpe
         />
       )}
       {!loading && !error && records.length === 0 && <WindowEmptyState compact={compact} appearance={emptyAppearance}>暂无对局回放</WindowEmptyState>}
-      {loading && <WindowLoadingState compact={records.length > 0}>{records.length > 0 ? "正在加载更早的棋谱..." : "加载中..."}</WindowLoadingState>}
+      {loading && <WindowLoadingState appearance={emptyAppearance} compact={records.length > 0}>{records.length > 0 ? "正在加载更早的棋谱..." : "加载中..."}</WindowLoadingState>}
       {error && (
         <div className="replay-pagination-error">
           <p className="room-people-error">{error}</p>

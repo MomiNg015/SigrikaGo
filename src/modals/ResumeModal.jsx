@@ -155,7 +155,7 @@ export default function ResumeModal({ user, token, characterListView, onClose, o
           status={(profileLoading || profileError) ? (
             <div className="profile-mode-feedback">
               {profileLoading && (
-                <WindowLoadingState compact>
+                <WindowLoadingState appearance="terminal">
                   正在载入{profileModeTitle(requestedMode)}战绩，当前仍显示{profileModeTitle(mode)}。
                 </WindowLoadingState>
               )}

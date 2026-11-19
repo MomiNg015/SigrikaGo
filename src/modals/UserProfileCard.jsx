@@ -322,7 +322,7 @@ export function UserProfileCard({
         )}
 
         {showFriendRemoval && profileDialogPortal(
-          <div className="modal-backdrop profile-modal-backdrop" onClick={() => { if (!friendPending) setShowFriendRemoval(false); }}>
+          <div className="modal-backdrop profile-modal-backdrop" onClick={(event) => { event.stopPropagation(); if (!friendPending) setShowFriendRemoval(false); }}>
             <ModalDialog className="room-floating-modal confirm-inline-modal" ariaLabel="解除好友" onClose={() => { if (!friendPending) setShowFriendRemoval(false); }} onClick={(event) => event.stopPropagation()}>
               <ConfirmPanel message={`确定解除与${profileUser.username}的好友关系吗？`} confirmDisabled={friendPending}
                 onConfirm={addFriend} onCancel={() => { if (!friendPending) setShowFriendRemoval(false); }} />
@@ -331,7 +331,7 @@ export function UserProfileCard({
           </div>
         )}
         {showBlacklistConfirm && profileDialogPortal(
-          <div className="modal-backdrop profile-modal-backdrop" onClick={() => { if (!blacklistPending) setShowBlacklistConfirm(false); }}>
+          <div className="modal-backdrop profile-modal-backdrop" onClick={(event) => { event.stopPropagation(); if (!blacklistPending) setShowBlacklistConfirm(false); }}>
             <ModalDialog
               className={`room-floating-modal confirm-inline-modal profile-blacklist-dialog${titleStickers ? " window-sticker-host" : ""}`}
               ariaLabelledBy="profile-blacklist-title"
@@ -388,7 +388,7 @@ export function UserProfileCard({
         status={(loadingProfileMode || profileError || profileNotice) ? (
           <div className="profile-mode-feedback">
             {loadingProfileMode && (
-              <WindowLoadingState compact>
+              <WindowLoadingState appearance="terminal">
                 正在载入{profileModeTitle(requestedMode)}战绩，当前仍显示{profileModeTitle(mode)}。
               </WindowLoadingState>
             )}

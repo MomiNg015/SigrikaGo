@@ -50,7 +50,7 @@
   .profile-record-panel, .profile-character-table-scroll {
     min-height: 0 !important; height: auto !important; max-height: none !important; overflow: visible !important;
   }
-  :is(.profile-summary-label, .profile-record-metric dt, .profile-character-table-head > span, .recent-result-label, .profile-character-name, .recent-result-empty, .rank-star) {
+  :is(.profile-summary-label, .profile-record-metric dt, .profile-character-table-head > span, .profile-character-name, .recent-result-empty, .rank-star) {
     color: var(--tablet-dim) !important; font-family: var(--font-iris-mixed) !important;
   }
   :is(.profile-record-metric dd, .profile-character-table td > strong, .rank-progress-name, .rank-progress-points) {

@@ -130,7 +130,6 @@ export default function ProfileResumeView({
               <RecentResultMarkers
                 results={recentResults}
                 className="profile-rank-results"
-                label="最近十盘"
                 empty={<WindowEmptyState appearance="terminal" as="span">暂无最近十盘</WindowEmptyState>}
               />
             </section>
