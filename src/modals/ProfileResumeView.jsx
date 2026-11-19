@@ -2,7 +2,7 @@ import RankProgress from "../shared/RankProgress.jsx";
 import WindowEmptyState from "./WindowEmptyState.jsx";
 import { useRef, useState } from "react";
 import { ProfileCaptureRecord } from "./ProfilePlayRecords.jsx";
-import { Gamepad2, HelpCircle, Trophy } from "lucide-react";
+import { HelpCircle, Trophy } from "lucide-react";
 import RecentResultMarkers from "../components/RecentResultMarkers.jsx";
 import CharacterChainBadge from "../shared/CharacterChainBadge.jsx";
 import CharacterBustPortrait from "../shared/CharacterBustPortrait.jsx";
@@ -112,36 +112,41 @@ export default function ProfileResumeView({
         {status && <div className="profile-resume-status" aria-live="polite">{status}</div>}
 
         <section className="profile-overview-grid" aria-label="模式战绩摘要">
-          <div className="profile-summary-grid">
-            <ProfileSummaryItem
-              emphasis
-              icon={<Trophy size={17} />}
-              label="段位"
-              value={<RankProgress rank={user.rank} stars={user.stars} rating={user.rating} />}
-              tip="每赢1局加1星，每输一局减1星；满星后再赢1局升段，0星后再输1局掉段；进入新段位后自动获得该段位一半的星数"
-            />
-            <div className="profile-summary-item profile-record-card">
-              <div className="profile-record-header">
-                <span className="profile-summary-label"><Gamepad2 size={17} />{mode === "team" ? "队际赛战绩" : "升降级战绩"}</span>
-                {recentAction}
-              </div>
-              <dl className="profile-record-metrics">
+          <div className="profile-summary-grid profile-record-card profile-summary-item">
+            <div className="profile-record-header">
+              <span className="profile-summary-label">{mode === "team" ? "队际赛战绩" : "升降级战绩"}</span>
+              {recentAction}
+            </div>
+            <div className="profile-tablet-metrics">
+              <ProfileSummaryItem
+                emphasis
+                icon={<Trophy size={17} />}
+                label="段位"
+                value={<RankProgress rank={user.rank} stars={user.stars} rating={user.rating} />}
+                tip="每赢1局加1星，每输一局减1星；满星后再赢1局升段，0星后再输1局掉段；进入新段位后自动获得该段位一半的星数"
+              />
+              <dl className="profile-record-metrics profile-tablet-totals">
                 <div className="profile-record-metric" aria-label={`总对局 ${normalizedStats.totalGames}局`}><dt>总对局</dt><dd>{normalizedStats.totalGames}</dd></div>
-                <div className="profile-record-metric is-win"><dt>胜</dt><dd>{normalizedStats.wins}</dd></div>
-                <div className="profile-record-metric is-loss"><dt>负</dt><dd>{normalizedStats.losses}</dd></div>
-                <div className="profile-record-metric is-draw"><dt>和</dt><dd>{normalizedStats.draws}</dd></div>
                 <div className="profile-record-metric is-rate"><dt>胜率</dt><dd>{winRate}</dd></div>
               </dl>
             </div>
+            <section className="profile-recent-section" aria-label="最近十盘">
+              <RecentResultMarkers results={recentResults} className="profile-rank-results" label="最近十盘" />
+            </section>
+            <div className="profile-tablet-outcomes">
+              <span>累计局数</span>
+              <dl className="profile-record-metrics">
+                <div className="profile-record-metric is-win"><dt>胜</dt><dd>{normalizedStats.wins}</dd></div>
+                <div className="profile-record-metric is-loss"><dt>负</dt><dd>{normalizedStats.losses}</dd></div>
+                <div className="profile-record-metric is-draw"><dt>和</dt><dd>{normalizedStats.draws}</dd></div>
+              </dl>
+            </div>
           </div>
-          <section className="profile-recent-section" aria-label="最近十盘">
-            <RecentResultMarkers results={recentResults} className="profile-rank-results" label="最近十盘" />
-          </section>
         </section>
 
         {records.length === 0 ? (
           <section className="profile-character-section profile-character-empty" aria-label="角色战绩">
-            <WindowEmptyState compact>
+            <WindowEmptyState compact appearance="terminal">
               <span className="recent-result-empty">暂无角色战绩</span>
             </WindowEmptyState>
           </section>

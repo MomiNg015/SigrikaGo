@@ -79,7 +79,7 @@ export function ReplayList({ records = [], characters, onOpenReplay, compact = f
   );
 }
 
-export function PaginatedReplayList({ pagination, characters, currentUser, onOpenReplay, compact = false }) {
+export function PaginatedReplayList({ pagination, characters, currentUser, onOpenReplay, compact = false, emptyAppearance }) {
   const { records, loading, error, hasMore, retry } = pagination;
   return (
     <>
@@ -92,7 +92,7 @@ export function PaginatedReplayList({ pagination, characters, currentUser, onOpe
           compact={compact}
         />
       )}
-      {!loading && !error && records.length === 0 && <ReplayList records={[]} characters={characters} />}
+      {!loading && !error && records.length === 0 && <WindowEmptyState compact={compact} appearance={emptyAppearance}>暂无对局回放</WindowEmptyState>}
       {loading && <WindowLoadingState compact={records.length > 0}>{records.length > 0 ? "正在加载更早的棋谱..." : "加载中..."}</WindowLoadingState>}
       {error && (
         <div className="replay-pagination-error">

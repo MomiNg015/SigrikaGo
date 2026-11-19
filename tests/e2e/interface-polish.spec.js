@@ -149,6 +149,14 @@ for (const viewport of [{ width: 1440, height: 900 }, { width: 390, height: 844 
       await expect(profilePage).toHaveCSS("scrollbar-width", "none");
       await expect(tablet.locator(".profile-record-metric dd").first()).toHaveCSS("font-family", /IRIS Dotted Songti Circle/);
       await expect(tablet.locator(".rank-progress")).toHaveAttribute("aria-label", /段 .*星/);
+      await expect(tablet.locator(".profile-tablet-outcomes > span")).toHaveCSS("color", "rgb(193, 239, 188)");
+      const hero = await tablet.locator(".profile-resume-hero").boundingBox();
+      const record = await tablet.locator(".profile-folder-page").boundingBox();
+      if (viewport.width > 768) expect(hero.x + hero.width).toBeCloseTo(record.x, 0);
+      else expect(hero.y + hero.height).toBeCloseTo(record.y, 0);
+      const rankCell = await tablet.locator(".profile-tablet-metrics > .profile-summary-item").boundingBox();
+      const totals = await tablet.locator(".profile-tablet-totals").boundingBox();
+      expect(rankCell.y).toBeCloseTo(totals.y, 0);
       const frame = await tablet.boundingBox();
       expect(frame.x).toBeGreaterThanOrEqual(0);
       expect(frame.y).toBeGreaterThanOrEqual(0);
@@ -161,6 +169,7 @@ for (const viewport of [{ width: 1440, height: 900 }, { width: 390, height: 844 
       const position = await profilePage.evaluate(element => element.scrollTop);
       await openReplay.click();
       await expect(tablet.getByText("暂无对局回放")).toBeVisible();
+      await expect(tablet.locator(".profile-tablet-replays .profile-tablet-empty-cursor")).toBeVisible();
       await expect(profilePage).toBeHidden();
       expect(await tablet.boundingBox()).toEqual(frame);
       await page.keyboard.press("Escape");

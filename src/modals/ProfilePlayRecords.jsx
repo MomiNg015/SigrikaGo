@@ -27,7 +27,7 @@ export function ProfileCaptureRecord({ user, token, characters }) {
     <h3>吃子挑战赛</h3>
     {loading ? <WindowLoadingState compact>正在读取挑战成绩…</WindowLoadingState>
       : state.error ? <div role="alert"><p>{state.error}</p><button type="button" onClick={() => setRetry(n => n + 1)}>重新加载</button></div>
-      : !state.record ? <WindowEmptyState compact>暂无吃子挑战成绩</WindowEmptyState>
+      : !state.record ? <WindowEmptyState compact appearance="terminal">暂无吃子挑战成绩</WindowEmptyState>
       : <>
     <dl><div><dt>最高提子</dt><dd>{state.record.captures}<small>子</small></dd></div><div><dt>当前排名</dt><dd>{state.record.ranking}<small>名</small></dd></div></dl>
     <div className="profile-capture-character">{character && <img {...characterPortraitImageProps(character, { variant: "avatar", costumeSnapshot: state.record.costumeSnapshot })} alt="" />}<div><span>最佳成绩使用角色</span><strong>{character?.name ?? state.record.characterId}</strong></div></div>

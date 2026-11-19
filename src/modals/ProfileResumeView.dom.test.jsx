@@ -51,11 +51,12 @@ describe("profile character record empty state", () => {
     const { rerender } = render(<ProfileResumeView {...props} />);
     const summary = () => screen.getByText("升降级战绩").closest(".profile-summary-item");
     expect(within(summary()).getByLabelText("总对局 10局")).toBeTruthy();
-    expect([...summary().querySelectorAll("dd")].map((item) => item.textContent)).toEqual(["10", "6", "3", "1", "60.0%"]);
+    expect([...summary().querySelectorAll(".profile-tablet-totals dd")].map((item) => item.textContent)).toEqual(["10", "60.0%"]);
+    expect([...summary().querySelectorAll(".profile-tablet-outcomes dd")].map((item) => item.textContent)).toEqual(["6", "3", "1"]);
     expect(document.querySelectorAll(".profile-summary-item")).toHaveLength(2);
     rerender(<ProfileResumeView {...props} mode="standard" stats={{}} />);
     expect(within(summary()).getByLabelText("总对局 0局")).toBeTruthy();
-    expect([...summary().querySelectorAll("dd")].map((item) => item.textContent)).toEqual(["0", "0", "0", "0", "0.0%"]);
+    expect([...summary().querySelectorAll("dd")].map((item) => item.textContent)).toEqual(["0", "0.0%", "0", "0", "0"]);
   });
 
   it.each(["self", "social"])("preserves the empty record frame and restores the table in %s profiles", (context) => {
@@ -64,9 +65,11 @@ describe("profile character record empty state", () => {
     const empty = screen.getByLabelText("角色战绩");
     expect(empty.classList.contains("profile-character-section")).toBe(true);
     expect(empty.classList.contains("window-empty-state")).toBe(false);
-    expect(empty.querySelector(".window-empty-state")).toBeTruthy();
+    expect(empty.querySelector(".profile-tablet-empty")).toBeTruthy();
     expect(empty.querySelector(".profile-character-table-head")).toBeNull();
     expect(empty.textContent).toBe("暂无角色战绩");
+    expect(empty.querySelector(".profile-tablet-empty-cursor")).toBeTruthy();
+    expect(empty.querySelector(".window-empty-art")).toBeNull();
     expect(empty.querySelector(".recent-result-empty")).toBeTruthy();
     expect(screen.queryByRole("table")).toBeNull();
     expect(screen.queryByLabelText("角色战绩列表")).toBeNull();

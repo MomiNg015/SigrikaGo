@@ -1,0 +1,59 @@
+/* Terminal empty states and text colors stay inside the profile tablet. */
+:is(.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school, .app-shell)
+.modal-backdrop:has(> .profile-tablet) { background-color: rgb(19 22 18 / .74) !important; }
+
+:is(.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school:not(.is-sigrika-corrupted), .app-shell)
+.profile-tablet.profile-folder-modal.profile-dossier-modal.window-bookmark-host {
+  .profile-tablet-empty {
+    display: flex; align-items: center; gap: 8px; padding: 10px;
+    color: var(--tablet-ink); background: var(--tablet-glass);
+    border: 1px dashed var(--tablet-rule); font: 14px/1.45 var(--font-iris-mixed);
+  }
+  .profile-character-empty .profile-tablet-empty { border: 0; }
+  .profile-tablet-empty-cursor, .profile-rank-results .recent-result-empty::before {
+    display: inline-block; flex: none; width: 6px; height: .8em;
+    background: var(--tablet-dim);
+  }
+  .profile-rank-results .recent-result-empty {
+    padding: 3px 0 !important; border: 0 !important; background: none !important;
+    box-shadow: none !important; color: var(--tablet-ink) !important;
+  }
+  .profile-rank-results .recent-result-empty::before { content: ""; margin-inline-end: 7px; }
+  :is(.profile-mode-feedback, .profile-inline-notice, .window-loading-state, .profile-capture-record) {
+    background: var(--tablet-glass) !important; color: var(--tablet-ink) !important;
+    border-color: var(--tablet-rule) !important; box-shadow: none !important;
+  }
+  :is(.window-loading-state, .profile-inline-notice, .profile-capture-record) :is(h3, dt, dd, small, span, strong) {
+    color: var(--tablet-ink) !important; font-family: var(--font-iris-mixed) !important;
+  }
+  .profile-capture-record dl dd { font-family: var(--font-iris-dotted) !important; }
+  :is(.room-people-error, .replay-pagination-error > p, .profile-capture-record [role="alert"] > p) { color: var(--tablet-loss) !important; }
+  .profile-summary-item .stat-tip {
+    color: var(--tablet-title) !important; background: var(--tablet-panel) !important;
+    border-color: var(--tablet-rule) !important;
+  }
+  :is(.profile-tablet-outcomes > span, .profile-tablet-metrics .stat-tip-wrap) { color: var(--tablet-ink) !important; }
+  .profile-tablet-glass .profile-identity-actions > button {
+    background: var(--tablet-panel) !important; color: var(--tablet-title) !important;
+    border-color: var(--tablet-rule) !important; box-shadow: none !important;
+  }
+  .profile-tablet-glass .profile-identity-actions > button:disabled {
+    opacity: 1 !important; background: var(--tablet-glass) !important; color: var(--tablet-dim) !important;
+  }
+  .profile-tablet-glass .profile-identity-actions > .profile-report-button:not(:disabled) { color: var(--tablet-loss) !important; }
+  .profile-tablet-glass .profile-like-count { color: inherit !important; }
+  .profile-tablet-glass :is(.profile-identity-actions > button, .profile-replay-button, .replay-table-row):focus-visible {
+    outline: 2px solid var(--tablet-title) !important; outline-offset: -3px;
+  }
+  .profile-tablet-replays .replay-table-heading > span { color: var(--tablet-title) !important; }
+  .profile-tablet-replays .replay-table .replay-table-row {
+    color: var(--tablet-ink) !important; background: var(--tablet-glass) !important;
+    border-color: var(--tablet-rule) !important; box-shadow: none !important;
+  }
+  .profile-tablet-replays .replay-table .replay-table-row:is(:hover, :focus-visible) { background: var(--tablet-panel) !important; }
+  .profile-tablet-replays .replay-table .replay-table-row :is(span, b, strong) { color: var(--tablet-ink) !important; }
+  .profile-tablet-replays :is(.replay-time-cell > span:last-child, .room-move-placard > strong) { font-family: var(--font-iris-dotted) !important; }
+  .profile-tablet-replays .replay-table-row.outcome-win .replay-result-cell { color: var(--tablet-win) !important; background: var(--tablet-win-fill) !important; }
+  .profile-tablet-replays .replay-table-row.outcome-loss .replay-result-cell { color: var(--tablet-loss) !important; background: var(--tablet-loss-fill) !important; }
+  .profile-tablet-replays .replay-table-row.outcome-draw .replay-result-cell { color: var(--tablet-draw) !important; background: var(--tablet-draw-fill) !important; }
+}

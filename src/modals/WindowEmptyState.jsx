@@ -1,5 +1,11 @@
 /** Shared empty result, with a small paper sketch instead of another framed panel. */
-export default function WindowEmptyState({ children, className = "", compact = false, as: Tag = "div", ...props }) {
+export default function WindowEmptyState({ children, className = "", compact = false, appearance = "paper", as: Tag = "div", ...props }) {
+  if (appearance === "terminal") {
+    return <Tag {...props} className={`profile-tablet-empty ${className}`.trim()}>
+      <span className="profile-tablet-empty-cursor" aria-hidden="true" />
+      <span>{children}</span>
+    </Tag>;
+  }
   return <Tag {...props} className={`window-empty-state${compact ? " window-empty-compact" : ""}${className ? ` ${className}` : ""}`}>
     <svg className="window-empty-art" viewBox="0 0 100 76" fill="none" aria-hidden="true" focusable="false">
       <path className="window-empty-shadow" d="M22 17 74 12 82 64 29 69Z" />

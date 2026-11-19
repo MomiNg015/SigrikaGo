@@ -92,7 +92,7 @@ export default function ProfileTablet({
           </div>
           {showingReplay && (
             <div className="profile-tablet-page profile-tablet-replays" onScroll={replay.pagination.onScroll}>
-              <PaginatedReplayList {...replay} />
+              <PaginatedReplayList {...replay} emptyAppearance="terminal" />
             </div>
           )}
         </div>

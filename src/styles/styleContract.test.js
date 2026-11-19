@@ -708,14 +708,16 @@ describe("root CSS entry contract", () => {
       "./mobile-adaptive/battle-arcade-skill.css",
       "./mobile-adaptive/tutorial-arcade-controls.css",
       "./mobile-adaptive/profile-tablet.css",
-      "./mobile-adaptive/profile-tablet-records.css"
+      "./mobile-adaptive/profile-tablet-records.css",
+      "./mobile-adaptive/profile-tablet-layout.css",
+      "./mobile-adaptive/profile-tablet-feedback.css"
     ]);
     expect(mobileEntry).not.toContain(".gacha-modal {");
     expect(mobileEntry).not.toContain(".mobile-room-screen {");
     expect(mobileEntry).not.toContain(".home-mobile-menu-panel");
 
     const finalNameplateCss = readFileSync(new URL("./mobile-adaptive/user-nameplate-final.css", import.meta.url), "utf8");
-    expect(cssImports(mobileEntry).at(-1)).toBe("./mobile-adaptive/profile-tablet-records.css");
+    expect(cssImports(mobileEntry).at(-1)).toBe("./mobile-adaptive/profile-tablet-feedback.css");
     const corruptionEntry = readFileSync(new URL("./mobile-adaptive/sigrika-corruption.css", import.meta.url), "utf8");
     const corruptionShellCss = readFileSync(new URL("./mobile-adaptive/sigrika-corruption/shell.css", import.meta.url), "utf8");
     const corruptionDamageCss = readFileSync(new URL("./mobile-adaptive/sigrika-corruption/damage-field.css", import.meta.url), "utf8");

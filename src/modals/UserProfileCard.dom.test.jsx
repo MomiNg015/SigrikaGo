@@ -118,7 +118,7 @@ describe("UserProfileCard dossier interactions", () => {
     expect(screen.queryByRole("heading", { name: "角色战绩" })).toBeNull();
     const totalSummary = screen.getByText("升降级战绩").closest(".profile-summary-item");
     expect(within(totalSummary).getByLabelText("总对局 10局")).toBeTruthy();
-    expect([...totalSummary.querySelectorAll("dd")].map((item) => item.textContent)).toEqual(["10", "6", "3", "1", "60.0%"]);
+    expect([...totalSummary.querySelectorAll("dd")].map((item) => item.textContent)).toEqual(["10", "60.0%", "6", "3", "1"]);
     const replayButton = within(totalSummary).getByRole("button", { name: "对局回放" });
     expect(replayButton.textContent).toBe("对局回放");
     expect(screen.getByLabelText("最近十盘").querySelector(".profile-rank-results")).toBeTruthy();

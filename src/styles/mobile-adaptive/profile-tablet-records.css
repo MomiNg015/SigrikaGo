@@ -47,7 +47,6 @@
     color: var(--tablet-title) !important; font-family: var(--font-iris-dotted) !important;
   }
   :is(.profile-character-table td, .profile-like-count) { font-family: var(--font-iris-dotted) !important; }
-  .profile-like-count { color: var(--bright-ink, var(--tablet-edge)) !important; }
   .profile-record-header .profile-replay-button {
     background: var(--tablet-panel) !important; color: var(--tablet-title) !important;
     border-color: var(--tablet-rule) !important;
