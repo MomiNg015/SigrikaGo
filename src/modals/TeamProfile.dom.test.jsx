@@ -17,6 +17,7 @@ it.each(["self", "social"])("loads independent team stats, retries failures, and
   let rejectTeam;
   let teamCalls = 0;
   api.mockImplementation((url) => {
+    if (url.endsWith("/capture-record")) return Promise.resolve({ record: null });
     if (url.includes("/replays?")) return Promise.resolve({ records: [], nextCursor: null });
     if (url.endsWith("profile?mode=team")) {
       teamCalls += 1;
@@ -40,6 +41,14 @@ it.each(["self", "social"])("loads independent team stats, retries failures, and
   expect(screen.getByLabelText("总对局 3局")).toBeTruthy();
   expect(screen.getByRole("columnheader", { name: "出场次数" })).toBeTruthy();
   expect(document.querySelector(".recent-result-marker-draw").textContent).toBe("和");
+  fireEvent.click(screen.getByRole("button", { name: "常规匹配" }));
+  await screen.findByText("8段");
+  fireEvent.click(screen.getByRole("button", { name: "吃子挑战赛" }));
+  await screen.findByText("暂无吃子挑战成绩");
+  fireEvent.click(screen.getByRole("button", { name: "队际赛" }));
+  await screen.findByText("队际赛战绩");
+  expect(screen.getByRole("button", { name: "队际赛" }).getAttribute("aria-pressed")).toBe("true");
+  expect(screen.queryByText("暂无吃子挑战成绩")).toBeNull();
   fireEvent.click(screen.getByRole("button", { name: "对局回放" }));
   await waitFor(() => expect(api.mock.calls.some(([url]) => url.startsWith(context === "self" ? "/api/replays?mode=team" : "/api/users/u/replays?mode=team"))).toBe(true));
   expect(api.mock.calls.filter(([url]) => url.includes("/replays?")).every(([url]) => !url.includes("scope=regular"))).toBe(true);
@@ -47,4 +56,6 @@ it.each(["self", "social"])("loads independent team stats, retries failures, and
   fireEvent.click(screen.getByRole("button", { name: "常规匹配" }));
   await screen.findByText("8段");
   expect(screen.getByText("升降级战绩")).toBeTruthy();
+  expect(screen.getByRole("button", { name: "常规匹配" }).getAttribute("aria-pressed")).toBe("true");
+  expect(screen.queryByText("暂无吃子挑战成绩")).toBeNull();
 });

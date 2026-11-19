@@ -240,6 +240,54 @@ export function UserProfileCard({
       onClose={onClose}
       replay={showReplays ? { characters, currentUser: profileUser, onOpenReplay, pagination: replayPagination } : null}
       onCloseReplay={() => setShowReplays(false)}
+      screenActions={(
+        <div className="profile-identity-actions" role="group" aria-label="用户互动">
+          <button data-button-role="tool"
+            className="profile-like-button"
+            type="button"
+            aria-label={likeLabel}
+            title={likeLabel}
+            disabled={!canLikeProfile}
+            onClick={likeProfile}
+          >
+            <ThumbsUp size={18} aria-hidden="true" />
+            <span className="profile-like-count" aria-hidden="true">{likeCount}</span>
+          </button>
+          <button data-button-role="tool"
+            className="profile-friend-button"
+            type="button"
+            aria-label={friendLabel}
+            title={friendLabel}
+            disabled={!canActOnProfile || friendPending || !(isFriend ? onRemoveFriend : onAddFriend)}
+            onClick={isFriend ? () => setShowFriendRemoval(true) : addFriend}
+          >
+            <UserPlus size={18} aria-hidden="true" />
+          </button>
+          <button data-button-role="tool"
+            className="profile-blacklist-button"
+            type="button"
+            aria-label={blacklistLabel}
+            title={blacklistLabel}
+            disabled={!canActOnProfile || blacklistPending || !(isBlacklisted ? onRemoveBlacklist : onAddBlacklist) || Boolean(onRemoveFriend && isFriend)}
+            onClick={isBlacklisted ? addBlacklist : openBlacklistConfirm}
+          >
+            <UserRoundX size={18} aria-hidden="true" />
+          </button>
+          <button data-button-role="tool"
+            className="profile-report-button"
+            type="button"
+            aria-label="举报"
+            title="举报"
+            disabled={!canActOnProfile || reportPending}
+            onClick={() => {
+              setReportError("");
+              setShowReportDialog(true);
+            }}
+          >
+            <CircleAlert size={18} aria-hidden="true" />
+          </button>
+        </div>
+      )}
       overlays={(<>
         {showReportDialog && profileDialogPortal(
           <div className="modal-backdrop profile-modal-backdrop" onClick={closeReportDialog}>
@@ -331,54 +379,6 @@ export function UserProfileCard({
         stats={{ ...recordStatsFromUser(profileUser), rating: profileUser.rating }}
         recentResults={profileUser.recentResults}
         characterStats={profileUser.characterStats}
-        identityActions={(
-          <>
-            <button data-button-role="tool"
-              className="profile-like-button"
-              type="button"
-              aria-label={likeLabel}
-              title={likeLabel}
-              disabled={!canLikeProfile}
-              onClick={likeProfile}
-            >
-              <ThumbsUp size={18} aria-hidden="true" />
-              <span className="profile-like-count" aria-hidden="true">{likeCount}</span>
-            </button>
-            <button data-button-role="tool"
-              className="profile-friend-button"
-              type="button"
-              aria-label={friendLabel}
-              title={friendLabel}
-              disabled={!canActOnProfile || friendPending || !(isFriend ? onRemoveFriend : onAddFriend)}
-              onClick={isFriend ? () => setShowFriendRemoval(true) : addFriend}
-            >
-              <UserPlus size={18} aria-hidden="true" />
-            </button>
-            <button data-button-role="tool"
-              className="profile-blacklist-button"
-              type="button"
-              aria-label={blacklistLabel}
-              title={blacklistLabel}
-              disabled={!canActOnProfile || blacklistPending || !(isBlacklisted ? onRemoveBlacklist : onAddBlacklist) || Boolean(onRemoveFriend && isFriend)}
-              onClick={isBlacklisted ? addBlacklist : openBlacklistConfirm}
-            >
-              <UserRoundX size={18} aria-hidden="true" />
-            </button>
-            <button data-button-role="tool"
-              className="profile-report-button"
-              type="button"
-              aria-label="举报"
-              title="举报"
-              disabled={!canActOnProfile || reportPending}
-              onClick={() => {
-                setReportError("");
-                setShowReportDialog(true);
-              }}
-            >
-              <CircleAlert size={18} aria-hidden="true" />
-            </button>
-          </>
-        )}
         recentAction={(
           <button data-button-role="tool" className="profile-replay-button" type="button" aria-label="对局回放" title="对局回放" disabled={replayDisabled} onClick={openReplays}>
             <MonitorPlay size={18} aria-hidden="true" />

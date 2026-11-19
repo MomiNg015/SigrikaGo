@@ -142,29 +142,61 @@ for (const viewport of [{ width: 1440, height: 900 }, { width: 390, height: 844 
     await page.setViewportSize(viewport);
     await page.route("**/api/**/replays?*", route => route.fulfill({ json: { records: [], nextCursor: null } }));
     await page.route("**/api/replays?*", route => route.fulfill({ json: { records: [], nextCursor: null } }));
+    await page.route("**/api/users/*/capture-record", route => route.fulfill({ json: { record: null } }));
     for (const surface of ["resume", "profile"]) {
       await mount(page, surface);
       const tablet = page.locator(".profile-tablet");
       const profilePage = tablet.locator(".profile-tablet-page").first();
-      await expect(profilePage).toHaveCSS("scrollbar-width", "none");
+      const scroller = tablet.locator(".profile-folder-page");
+      await expect(scroller).toHaveCSS("scrollbar-width", "none");
+      await expect(tablet.locator(".profile-hero-portrait .character-bust-image")).toHaveCSS("filter", "none");
+      await expect(tablet.locator(".profile-hero-portrait .profile-portrait-mask")).toHaveCSS("border-top-width", "0px");
+      await expect(tablet.locator(".profile-tablet-hardware").first()).toHaveText("");
+      await expect(tablet.locator(".profile-tablet-screen-header")).not.toContainText("星炬券");
       await expect(tablet.locator(".profile-record-metric dd").first()).toHaveCSS("font-family", /IRIS Dotted Songti Circle/);
       await expect(tablet.locator(".rank-progress")).toHaveAttribute("aria-label", /段 .*星/);
       await expect(tablet.locator(".profile-tablet-outcomes > span")).toHaveCSS("color", "rgb(193, 239, 188)");
       const hero = await tablet.locator(".profile-resume-hero").boundingBox();
       const record = await tablet.locator(".profile-folder-page").boundingBox();
-      if (viewport.width > 768) expect(hero.x + hero.width).toBeCloseTo(record.x, 0);
-      else expect(hero.y + hero.height).toBeCloseTo(record.y, 0);
+      const avatar = await tablet.locator(".profile-hero-portrait").boundingBox();
+      const name = await tablet.locator(".profile-identity-block").boundingBox();
+      if (viewport.width > 768) {
+        expect(hero.x + hero.width).toBeCloseTo(record.x, 0);
+        expect(avatar.x + avatar.width / 2).toBeCloseTo(hero.x + (hero.width - 1) / 2, 0);
+        await expect(tablet.locator(".profile-identity-block .user-identity")).toHaveCSS("justify-content", "center");
+      } else {
+        expect(hero.y + hero.height).toBeCloseTo(record.y, 0);
+        expect(avatar.y + avatar.height / 2).toBeCloseTo(name.y + name.height / 2, 0);
+      }
       const rankCell = await tablet.locator(".profile-tablet-metrics > .profile-summary-item").boundingBox();
       const totals = await tablet.locator(".profile-tablet-totals").boundingBox();
       expect(rankCell.y).toBeCloseTo(totals.y, 0);
       const modes = await tablet.getByRole("tablist", { name: "玩法分类" }).boundingBox();
       const plays = await tablet.locator(".profile-play-tabs").boundingBox();
       expect(plays.y - modes.y - modes.height).toBeGreaterThanOrEqual(8);
-      if (surface === "resume") {
-        const balance = tablet.locator(".profile-tablet-screen-header .profile-tablet-balance");
-        await expect(balance).toContainText("星炬券");
-        await expect(balance).toHaveCSS("background-image", "none");
-      }
+      const actions = tablet.locator(".profile-tablet-screen-header .profile-identity-actions");
+      await expect(actions.getByRole("button")).toHaveCount(surface === "resume" ? 2 : 4);
+      await expect(tablet.locator(".profile-tablet-metrics .profile-record-metric dd").first()).toHaveCSS("text-align", "end");
+      await expect(tablet.locator(".profile-rank-results")).toHaveCSS("justify-content", "center");
+      await expect(tablet.locator(".recent-result-label")).toHaveCSS("text-align", "center");
+      const rankPosition = await tablet.locator(".profile-tablet-metrics .is-primary").evaluate(cell => ({
+        value: cell.querySelector(".rank-progress").getBoundingClientRect().right,
+        edge: cell.getBoundingClientRect().right - parseFloat(getComputedStyle(cell).paddingRight)
+      }));
+      expect(rankPosition.value).toBeCloseTo(rankPosition.edge, 0);
+      expect(await tablet.locator(".profile-tablet-screen-header").evaluate(element => element.scrollWidth <= element.clientWidth)).toBe(true);
+      await scroller.evaluate(element => { element.scrollTop = element.scrollHeight; });
+      expect(await scroller.evaluate(element => element.scrollTop)).toBeGreaterThan(0);
+      expect(await tablet.locator(".profile-resume-hero").boundingBox()).toEqual(hero);
+      await scroller.evaluate(element => { element.scrollTop = 0; });
+      await tablet.getByRole("button", { name: "吃子挑战赛" }).click();
+      await expect(tablet.getByText("暂无吃子挑战成绩")).toBeVisible();
+      await tablet.getByRole("button", { name: "队际赛" }).click();
+      await expect(tablet.getByRole("button", { name: "队际赛" })).toHaveAttribute("aria-pressed", "true");
+      await expect(tablet.getByText("队际赛战绩")).toBeVisible();
+      await tablet.getByRole("button", { name: "常规匹配" }).click();
+      await expect(tablet.getByRole("button", { name: "常规匹配" })).toHaveAttribute("aria-pressed", "true");
+      await expect(tablet.getByText("升降级战绩")).toBeVisible();
       const frame = await tablet.boundingBox();
       expect(frame.x).toBeGreaterThanOrEqual(0);
       expect(frame.y).toBeGreaterThanOrEqual(0);
@@ -174,19 +206,20 @@ for (const viewport of [{ width: 1440, height: 900 }, { width: 390, height: 844 
       await expect(tablet.getByRole("tab", { name: "标准" })).toHaveAttribute("aria-selected", "true");
       const openReplay = tablet.getByRole("button", { name: "对局回放" });
       await openReplay.scrollIntoViewIfNeeded();
-      const position = await profilePage.evaluate(element => element.scrollTop);
+      const position = await scroller.evaluate(element => element.scrollTop);
       await openReplay.click();
       await expect(tablet.getByText("暂无对局回放")).toBeVisible();
       const empty = tablet.locator(".profile-tablet-replays .profile-tablet-empty");
       await expect(empty).toHaveText("暂无对局回放");
       await expect(empty).toHaveCSS("background-color", "rgba(0, 0, 0, 0)");
-      await expect(tablet.locator(".profile-tablet-balance")).toHaveCount(0);
+      await expect(actions).toHaveCount(0);
+      await expect.poll(() => empty.locator("img").evaluate(image => image.complete && image.naturalWidth > 0)).toBe(true);
       await expect(profilePage).toBeHidden();
       expect(await tablet.boundingBox()).toEqual(frame);
       await page.keyboard.press("Escape");
       await expect(openReplay).toBeFocused();
       await expect(tablet.getByRole("tab", { name: "标准" })).toHaveAttribute("aria-selected", "true");
-      expect(await profilePage.evaluate(element => element.scrollTop)).toBe(position);
+      expect(await scroller.evaluate(element => element.scrollTop)).toBe(position);
       expect(await tablet.boundingBox()).toEqual(frame);
     }
   });
@@ -221,7 +254,7 @@ test("missing standard sprite falls back once to the same character", async ({ p
   await expect(portrait.locator("img")).toHaveAttribute("alt", "西格莉卡立绘");
 });
 
-test("reduced motion keeps the loading message static before revealing the profile", async ({ page }) => {
+test("reduced motion keeps the loading bar static before revealing the profile", async ({ page }) => {
   await page.emulateMedia({ reducedMotion: "reduce" });
   for (const viewport of [{ width: 1440, height: 900 }, { width: 390, height: 844 }]) {
     await page.setViewportSize(viewport);
@@ -230,7 +263,10 @@ test("reduced motion keeps the loading message static before revealing the profi
     await expect(dialog).toHaveCSS("animation-name", "none");
     await expect(dialog).toHaveCSS("opacity", "1");
     await expect(page.locator(".profile-tablet-boot")).toBeVisible();
-    await expect(page.locator(".profile-tablet-track")).toBeHidden();
+    await expect(page.locator(".profile-tablet-boot")).toHaveText("");
+    await expect(page.locator(".profile-tablet-track")).toBeVisible();
+    await expect(page.locator(".profile-tablet-glass")).toHaveCSS("--profile-tablet-load-time", "1000ms");
+    await expect(page.locator(".profile-tablet-track > div")).toHaveCSS("animation-name", "none");
     await expect(page.getByText("暂无角色战绩", { exact: true })).toBeVisible();
     await page.keyboard.press("Escape");
     await expect(dialog).toHaveCount(0);

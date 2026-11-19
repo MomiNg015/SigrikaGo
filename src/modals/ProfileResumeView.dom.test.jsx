@@ -68,7 +68,7 @@ describe("profile character record empty state", () => {
     expect(empty.querySelector(".profile-tablet-empty")).toBeTruthy();
     expect(empty.querySelector(".profile-character-table-head")).toBeNull();
     expect(empty.textContent).toBe("暂无角色战绩");
-    expect(empty.querySelector(".profile-tablet-empty").childElementCount).toBe(0);
+    expect(empty.querySelector(".profile-tablet-empty-art").getAttribute("src")).toBe("/assets/ui/profile-tablet-empty.svg");
     expect(empty.querySelector(".window-empty-art")).toBeNull();
     expect(screen.queryByRole("table")).toBeNull();
     expect(screen.queryByLabelText("角色战绩列表")).toBeNull();

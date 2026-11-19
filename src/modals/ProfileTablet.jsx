@@ -5,7 +5,7 @@ import { loadAudioSettings } from "../audio/audioSettings.js";
 import { ModalDialog } from "./modalComponents.jsx";
 import { PaginatedReplayList } from "./ReplayList.jsx";
 
-const LOAD_DURATION = 1500;
+const LOAD_DURATION = 1000;
 const SWING_DURATION = 410;
 
 export default function ProfileTablet({
@@ -67,7 +67,6 @@ export default function ProfileTablet({
     >
       <header className="profile-tablet-hardware" ref={shellRef} data-phase={phase}>
         <span className="profile-tablet-led" aria-hidden="true" />
-        <span aria-hidden="true">IRIS / EDU–01</span>
         <div className="profile-tablet-tools">
           <button data-button-role="secondary" type="button" className="profile-tablet-power" onClick={onClose} aria-label={closeLabel}>
             <Power size={20} aria-hidden="true" />
@@ -75,8 +74,7 @@ export default function ProfileTablet({
         </div>
       </header>
       <div className="profile-tablet-glass" data-phase={phase} style={{ "--profile-tablet-load-time": `${LOAD_DURATION}ms` }}>
-        <div className="profile-tablet-boot" hidden={phase !== "loading"} role="status">
-          <span>正在读取{title}…</span>
+        <div className="profile-tablet-boot" hidden={phase !== "loading"} role="status" aria-label={`正在读取${title}…`}>
           <div className="profile-tablet-track" aria-hidden="true"><div /></div>
         </div>
         <div className="profile-tablet-interface" inert={phase !== "ready"}>

@@ -124,13 +124,16 @@ export default function ResumeModal({ user, token, characterListView, onClose, o
         replay={showReplays ? { characters: characterListView, currentUser: modeUser, onOpenReplay, pagination: replayPagination } : null}
         onCloseReplay={() => setShowReplays(false)}
         screenActions={(
-          <p
-            className="profile-tablet-balance"
-            title="星炬券：每胜一局+50，负一局+20，和棋或无效对局不获得星炬券。"
-          >
-            <span>星炬券</span>
-            <strong>{user.coins ?? 0}</strong>
-          </p>
+          <div className="profile-identity-actions" role="group" aria-label="履历操作">
+            <button data-button-role="tool" type="button" className="resume-mini-action achievement-entry-action" aria-label="成就" title={PROFILE_CUSTOMIZATION_ENABLED ? "成就" : "成就暂未开放"} disabled={!PROFILE_CUSTOMIZATION_ENABLED} onClick={onOpenAchievements}>
+              <Award size={20} aria-hidden="true" />
+              <span>成就</span>
+            </button>
+            <button data-button-role="tool" type="button" className="resume-mini-action profile-personalization-button personalization-entry-action" aria-label="个性化" title={PROFILE_CUSTOMIZATION_ENABLED ? "个性化" : "个性化暂未开放"} disabled={!PROFILE_CUSTOMIZATION_ENABLED} onClick={onOpenPersonalization}>
+              <Palette size={20} aria-hidden="true" />
+              <span>个性化</span>
+            </button>
+          </div>
         )}
       >
         <ProfileResumeView
@@ -145,18 +148,6 @@ export default function ResumeModal({ user, token, characterListView, onClose, o
           stats={stats}
           recentResults={modeUser.recentResults}
           characterStats={characterStats}
-          identityActions={(
-            <>
-              <button data-button-role="tool" type="button" className="resume-mini-action achievement-entry-action" aria-label="成就" title={PROFILE_CUSTOMIZATION_ENABLED ? "成就" : "成就暂未开放"} disabled={!PROFILE_CUSTOMIZATION_ENABLED} onClick={onOpenAchievements}>
-                <Award size={20} aria-hidden="true" />
-                <span>成就</span>
-              </button>
-              <button data-button-role="tool" type="button" className="resume-mini-action profile-personalization-button personalization-entry-action" aria-label="个性化" title={PROFILE_CUSTOMIZATION_ENABLED ? "个性化" : "个性化暂未开放"} disabled={!PROFILE_CUSTOMIZATION_ENABLED} onClick={onOpenPersonalization}>
-                <Palette size={20} aria-hidden="true" />
-                <span>个性化</span>
-              </button>
-            </>
-          )}
           recentAction={(
             <button data-button-role="tool" className="profile-replay-button resume-replay-action" type="button" aria-label="对局回放" title="对局回放" onClick={() => { setReplayMode(mode); setShowReplays(true); }}>
               <MonitorPlay size={18} aria-hidden="true" />

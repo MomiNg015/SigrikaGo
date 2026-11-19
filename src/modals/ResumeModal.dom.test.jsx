@@ -72,7 +72,7 @@ describe("ResumeModal authoritative record stats", () => {
     expect(screen.getByRole("tooltip", {
       name: "每赢1局加1星，每输一局减1星；满星后再赢1局升段，0星后再输1局掉段；进入新段位后自动获得该段位一半的星数"
     })).toBeTruthy();
-    expect(document.querySelector(".profile-resume-hero .profile-identity-actions")).toBeTruthy();
+    expect(document.querySelector(".profile-resume-hero .profile-identity-actions")).toBeNull();
     expect(screen.getByRole("button", { name: "成就" }).textContent).toBe("成就");
     expect(screen.getByRole("button", { name: "个性化" }).textContent).toBe("个性化");
     expect(screen.queryByRole("heading", { name: "最近十盘" })).toBeNull();
@@ -84,7 +84,8 @@ describe("ResumeModal authoritative record stats", () => {
     expect(screen.queryByText("举报")).toBeNull();
     expect(screen.getAllByRole("tab").map((tab) => tab.textContent)).toEqual(["星炬", "标准", "其它"]);
     expect(document.querySelector(".profile-tablet-tools").children).toHaveLength(1);
-    expect(document.querySelector(".profile-tablet-screen-header .profile-tablet-balance").textContent).toBe("星炬券100");
+    expect(screen.queryByText("星炬券")).toBeNull();
+    expect(screen.getByRole("group", { name: "履历操作" }).closest(".profile-tablet-screen-header")).toBeTruthy();
     expect(screen.getByRole("button", { name: "成就" }).dataset.buttonRole).toBe("tool");
     expect(screen.getByRole("button", { name: "关闭履历" }).dataset.buttonRole).toBe("secondary");
     fireEvent.click(screen.getByRole("button", { name: "成就" }));

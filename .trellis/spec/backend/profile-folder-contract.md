@@ -5,6 +5,7 @@ Read before changing profile play navigation, challenge summaries, ordinary/team
 
 ## UI and API signatures
 - Families: Spark → regular/capture/team; standard → regular; other → gomoku. Team has independent UserModeStats progression; keep GAME_MODE_IDS limited to the three top-level ordinary entries so it does not create another navigation family or leaderboard.
+- Wait for the requested profile before replacing the active play and its data. When the loaded user or profile mode changes, reset the local play to that mode’s default (team for team, regular otherwise). In particular, capture → team → regular must not reopen a previous capture selection. `TeamProfile.dom.test.jsx` exercises this in both entry points.
 - `GET /api/users/:id/capture-record` uses `authHttp`; returns `{ record: null }` or `{ record: { captures, ranking, characterId, costumeSnapshot } }`.
 - Existing self/user replay endpoints accept `scope=regular`. Absent/unrecognized scope retains the old behavior; ordinary Spark scope sets mode to spark only and filters matchSource to matchmaking/duel/private before pagination.
 - Completed team summaries optionally include `teamLineups.black/white`, at most three `{ characterId, costumeSnapshot }` entries each. The raw room snapshot and character configuration never leave the summary projection.

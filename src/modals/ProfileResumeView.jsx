@@ -30,7 +30,6 @@ export default function ProfileResumeView({
   stats,
   recentResults = [],
   characterStats = [],
-  identityActions = null,
   recentAction = null,
   secondaryActions = null,
   status = null,
@@ -46,8 +45,10 @@ export default function ProfileResumeView({
   const winRate = winRateText(normalizedStats.wins, normalizedStats.totalGames);
   const panelId = `${context}-profile-mode-panel`;
   const playKey = `${user.id}:${mode}`;
-  const [playSelection, setPlaySelection] = useState(null);
-  const play = playSelection?.key === playKey ? playSelection.play : mode === "team" ? "team" : "regular";
+  const defaultPlay = mode === "team" ? "team" : "regular";
+  const [playSelection, setPlaySelection] = useState({ key: playKey, play: defaultPlay });
+  const play = playSelection.key === playKey ? playSelection.play : defaultPlay;
+  if (playSelection.key !== playKey) setPlaySelection({ key: playKey, play: defaultPlay });
   const setPlay = (nextPlay) => setPlaySelection({ key: playKey, play: nextPlay });
 
   return (
@@ -70,18 +71,13 @@ export default function ProfileResumeView({
         <div className="profile-identity-block">
           <h3><UserIdentity user={user} /></h3>
         </div>
-        {identityActions && (
-          <div className="profile-identity-actions" aria-label={context === "self" ? "履历操作" : "用户互动"}>
-            {identityActions}
-          </div>
-        )}
       </section>
 
       <div className="profile-folder-page">
       <ProfileModeTabs
         mode={normalizedMode}
         pending={modePending}
-        onModeChange={(next) => { setPlay("regular"); if (next !== mode) onModeChange?.(next); }}
+        onModeChange={(next) => { if (next === mode) setPlay(defaultPlay); else onModeChange?.(next); }}
         panelId={panelId}
       />
       <nav className="profile-play-tabs" aria-label="具体玩法">
@@ -131,7 +127,12 @@ export default function ProfileResumeView({
               </dl>
             </div>
             <section className="profile-recent-section" aria-label="最近十盘">
-              <RecentResultMarkers results={recentResults} className="profile-rank-results" label="最近十盘" />
+              <RecentResultMarkers
+                results={recentResults}
+                className="profile-rank-results"
+                label="最近十盘"
+                empty={<WindowEmptyState appearance="terminal" as="span">暂无最近十盘</WindowEmptyState>}
+              />
             </section>
             <div className="profile-tablet-outcomes">
               <span>累计局数</span>

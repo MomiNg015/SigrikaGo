@@ -90,12 +90,13 @@ describe("UserProfileCard dossier interactions", () => {
     expect(onClose).not.toHaveBeenCalled();
   });
 
-  it("keeps social actions in the identity area and locks the mode tab order", async () => {
+  it("keeps social actions in the tablet header and locks the mode tab order", async () => {
     const onAddBlacklist = vi.fn().mockResolvedValue(undefined);
     renderProfile({}, { onAddBlacklist });
 
     expect(screen.getAllByRole("tab").map((tab) => tab.textContent)).toEqual(["星炬", "标准", "其它"]);
-    const actions = screen.getByLabelText("用户互动");
+    const actions = screen.getByRole("group", { name: "用户互动" });
+    expect(actions.closest(".profile-tablet-screen-header")).toBeTruthy();
     expect(within(actions).getByRole("button", { name: "点赞 5" })).toBeTruthy();
     expect(within(actions).getByRole("button", { name: "加好友" })).toBeTruthy();
     expect(within(actions).getByRole("button", { name: "加入黑名单" })).toBeTruthy();

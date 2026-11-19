@@ -1,26 +1,28 @@
-/* Profile screen metadata, quiet empty states, and high-contrast feedback. */
+/* Tablet controls, empty states, and feedback. */
 :is(.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school, .app-shell)
 .modal-backdrop:has(> .profile-tablet) { background-color: rgb(19 22 18 / .74) !important; }
 
 :is(.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school:not(.is-sigrika-corrupted), .app-shell)
 .profile-tablet.profile-folder-modal.profile-dossier-modal.window-bookmark-host {
   .profile-tablet-empty {
-    padding: 6px 0; color: var(--tablet-dim) !important;
+    display: flex; align-items: center; gap: 8px; padding: 6px 0; color: var(--tablet-dim) !important;
     font: 14px/1.45 var(--font-iris-mixed) !important;
   }
+  .profile-tablet-empty-art { flex: 0 0 30px; width: 30px; height: auto; }
   .profile-record-panel .profile-character-section.profile-character-empty {
     justify-content: flex-start; background: none !important; border: 0 !important;
   }
-  .profile-rank-results .recent-result-empty {
-    padding: 3px 0 !important; border: 0 !important; background: none !important;
-    box-shadow: none !important; color: var(--tablet-dim) !important; font-weight: 400 !important;
+  .profile-tablet-screen-header .profile-identity-actions { gap: 6px; }
+  .profile-tablet-screen-header .resume-mini-action { min-height: 36px; padding: 4px 8px; border-radius: 4px !important; }
+  @media (max-width: 768px) {
+    .profile-tablet-screen-header .profile-identity-actions { gap: 4px; }
+    .profile-tablet-screen-header .profile-identity-actions > button { min-height: 36px; }
+    .profile-tablet-screen-header .profile-identity-actions > :is(.profile-friend-button, .profile-blacklist-button, .profile-report-button) {
+      width: 36px; min-width: 36px;
+    }
+    .profile-tablet-screen-header .profile-like-button { min-width: 46px; padding-inline: 6px; }
   }
-  .profile-tablet-screen-header .profile-tablet-balance {
-    display: flex; align-items: baseline; gap: 8px; margin: 0 !important;
-    color: var(--tablet-dim) !important; font: 14px/1.4 var(--font-iris-dotted) !important;
-  }
-  .profile-tablet-balance :is(span, strong) { color: inherit !important; font: inherit !important; }
-  .profile-tablet-balance strong { color: var(--tablet-ink) !important; }
+  .profile-play-tabs > button:active:not(:disabled) { transform: none !important; }
   .profile-play-tabs button[aria-pressed="true"] {
     background: var(--tablet-panel) !important; color: var(--tablet-title) !important;
     border-color: var(--tablet-dim) !important;
@@ -28,7 +30,8 @@
   .profile-tablet-outcomes { border-inline: 0; background: none; }
   .profile-tablet-metrics .profile-record-metric { justify-content: flex-start; }
   .profile-tablet-metrics .profile-record-metric dt { font-size: 14px !important; line-height: 1.4; }
-  .profile-tablet-metrics > .profile-summary-item.is-primary > strong { margin: 0 !important; }
+  .profile-tablet-metrics > .profile-summary-item.is-primary > strong { align-self: flex-end; margin: 0 !important; }
+  .profile-tablet-metrics .profile-record-metric dd { text-align: end; }
   .profile-character-table-head > span:first-child { text-align: start; justify-content: flex-start; }
   :is(.profile-mode-feedback, .profile-inline-notice, .window-loading-state, .profile-capture-record) {
     background: var(--tablet-glass) !important; color: var(--tablet-ink) !important;

@@ -1,6 +1,4 @@
-/* The tablet owns the frame and paper paint only. Profile identity controls retain their existing geometry. */
-.app-shell .modal-backdrop:has(> .profile-tablet) { background-color: #131612bc !important; }
-
+/* Tablet frame, fixed screen header, and boot sequence. */
 :is(.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school:not(.is-sigrika-corrupted), .app-shell)
 .profile-tablet.profile-folder-modal.profile-dossier-modal.window-bookmark-host {
   --tablet-case: #6c7465;
@@ -72,7 +70,7 @@
     content: ""; position: absolute; z-index: 1; pointer-events: none; inset: 0;
     background: repeating-linear-gradient(#0000 0 2px, #0002 3px 4px);
   }
-  .profile-tablet-boot { position: absolute; inset: 0; display: grid; place-content: center; gap: 12px; }
+  .profile-tablet-boot { position: absolute; inset: 0; display: grid; place-content: center; }
   .profile-tablet-track { width: min(300px, 68vw); height: 20px; padding: 3px; border: 1px solid var(--tablet-rule); background: var(--tablet-glass); }
   .profile-tablet-track > div {
     height: 100%;
@@ -99,7 +97,11 @@
   }
   .profile-tablet-page::-webkit-scrollbar { display: none !important; }
   .profile-tablet-page[hidden], .profile-tablet-boot[hidden] { display: none; }
+  .profile-resume-view .profile-identity-block .user-identity { justify-content: center !important; }
   @media (max-width: 768px) {
+    .profile-resume-view .profile-identity-block .user-identity { justify-content: flex-start !important; }
+    .profile-tablet-screen-header h2 { font-size: 16px !important; }
+
     width: calc(100vw - 16px) !important;
     height: calc(100dvh - 32px) !important;
     padding: 5px 6px !important;
@@ -108,7 +110,7 @@
     .profile-tablet-screen-header { padding-inline: 9px; }
   }
   @media (prefers-reduced-motion: reduce) {
-    .profile-tablet-track { display: none; }
+    .profile-tablet-track > div { animation: none; }
     .profile-tablet-glass::before { display: none; animation: none; }
     .profile-tablet-glass[data-phase="ready"] .profile-tablet-interface { animation: none; }
   }
