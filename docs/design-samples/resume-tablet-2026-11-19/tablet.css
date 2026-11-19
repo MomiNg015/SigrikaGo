@@ -70,7 +70,7 @@ dialog::backdrop { background: #131612bc; }
   background: repeating-linear-gradient(90deg, var(--case-dark) 0 3px, transparent 3px 6px);
 }
 .power-light { width: 7px; height: 7px; border-radius: 50%; background: #252b20; border: 1px solid #1117; }
-[data-phase=on] .power-light { background: #c8ffa9; box-shadow: 0 0 7px #d3ffa4; }
+[data-phase]:not([data-phase=off]) .power-light { background: #c8ffa9; box-shadow: 0 0 7px #d3ffa4; }
 #power {
   margin-left: auto; width: 44px; height: 44px; border-radius: 7px;
   border: 1px solid var(--case-dark); box-shadow: inset 0 1px #fff5, 0 2px var(--case-dark);
@@ -86,6 +86,17 @@ dialog::backdrop { background: #131612bc; }
   font-family: Iris Latin, Iris Dotted, "Microsoft YaHei", serif;
 }
 .number { font-family: var(--iris-record-font); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.boot-screen {
+  position: absolute; inset: 0; display: grid; place-items: center; visibility: hidden;
+  background: radial-gradient(ellipse at 50% 35%, var(--soft), var(--glass) 75%);
+}
+[data-phase=loading] .boot-screen { visibility: visible; }
+.boot-status { width: min(300px, calc(100% - 40px)); color: var(--bright); }
+.boot-track { height: 20px; margin-top: 12px; padding: 3px; border: 1px solid var(--rule); background: var(--glass); }
+.boot-fill {
+  height: 100%; transform: scaleX(0); transform-origin: left;
+  background: repeating-linear-gradient(90deg, var(--ink) 0 7px, transparent 7px 9px);
+}
 .display {
   display: flex; flex-direction: column; block-size: min(640px, calc(100dvh - 135px));
   overflow: auto; overscroll-behavior: contain; scroll-padding-top: 58px; scrollbar-color: var(--rule) var(--glass);
@@ -182,8 +193,8 @@ thead { color: var(--dim); background: var(--glass); }
   background: linear-gradient(transparent, var(--ink), transparent) center / 100% 44% no-repeat;
   opacity: .07; transform: translateY(-100%);
 }
-[data-phase=on] :is(.scanlines, .beam) { visibility: visible; }
-[data-phase=on] .beam { animation: sweep 6s linear infinite; }
+[data-phase]:not([data-phase=off]) :is(.scanlines, .beam) { visibility: visible; }
+[data-phase]:not([data-phase=off]) .beam { animation: sweep 6s linear infinite; }
 @keyframes sweep { to { transform: translateY(100%); } }
 [data-model=amber] .tablet {
   --ink: #f6cb82; --bright: #ffe6ac; --dim: #d7ad72; --rule: #80572f; --glass: #281b11; --soft: #432c17;
@@ -193,7 +204,7 @@ thead { color: var(--dim); background: var(--glass); }
 [data-model=amber] .hardware { padding: 7px 0 10px; }
 [data-model=amber] #power { position: absolute; right: 10px; top: 47%; background: #4e3527; color: #ffe1b1; }
 [data-model=amber] .tablet { position: relative; }
-[data-model=amber] [data-phase=on] .power-light { background: #ffd888; box-shadow: 0 0 7px #ffb85d; }
+[data-model=amber] [data-phase]:not([data-phase=off]) .power-light { background: #ffd888; box-shadow: 0 0 7px #ffb85d; }
 [data-model=amber] .screen { border-color: #342820; border-radius: 6px; }
 [data-model=amber] .system { grid-template-columns: 1fr; }
 [data-model=amber] .identity {

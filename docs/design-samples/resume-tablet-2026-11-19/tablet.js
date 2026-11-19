@@ -2,6 +2,8 @@ const model = new URLSearchParams(location.search).get("model") === "amber" ? "a
 const dialog = document.querySelector("dialog");
 const tablet = document.querySelector(".tablet");
 const display = document.querySelector(".display");
+const bootLabel = document.querySelector("#boot-label");
+const bootFill = document.querySelector(".boot-fill");
 const studentId = document.querySelector("#student-id");
 const openPlayer = document.querySelector("#open-player");
 const power = document.querySelector("#power");
@@ -12,6 +14,7 @@ let soundOn = true;
 let audio;
 let bootSound;
 let bootTimer;
+let loadingAnimation;
 let entrance;
 
 document.body.dataset.model = model;
@@ -216,6 +219,7 @@ function openTablet(event) {
   const sourcePortrait = profileEntry.querySelector(own ? ".id-portrait" : "img");
   const origin = sourcePortrait.getBoundingClientRect();
   profileName.textContent = own ? "西格莉卡" : "爱弥斯";
+  bootLabel.textContent = own ? "正在读取学生履历…" : "正在读取玩家详细信息…";
   profileName.classList.toggle("nameplate", own && ownNameplate);
   profileAvatar.src = sourcePortrait.src;
   document.querySelector("#own-actions").hidden = !own;
@@ -238,15 +242,26 @@ function openTablet(event) {
       { transform: "translate(0,0) rotate(0) scale(1)", opacity: 1 },
     ], { duration: timing.swing, easing: "cubic-bezier(.19,.88,.27,1)" });
   }
-  bootTimer = setTimeout(() => {
-    if (!dialog.open) return;
+  bootTimer = setTimeout(() => startLoading(animate), bootDelay);
+}
+
+function startLoading(animate) {
+  tablet.dataset.phase = "loading";
+  loadingAnimation = bootFill.animate(
+    [{ transform: "scaleX(0)" }, { transform: animate ? "scaleX(1)" : "scaleX(0)" }],
+    { duration: 1500, easing: "steps(20, end)", fill: "forwards" },
+  );
+  loadingAnimation.finished.then(() => {
     tablet.dataset.phase = "on";
     display.inert = false;
-  }, bootDelay);
+  }, () => {
+    // Closing the tablet cancels the pending reveal.
+  });
 }
 
 function closeTablet() {
   clearTimeout(bootTimer);
+  loadingAnimation?.cancel();
   entrance?.cancel();
   bootSound?.stop();
   bootSound = undefined;
