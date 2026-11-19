@@ -137,7 +137,7 @@
     scroll-behavior: smooth;
   }
 
-  .modal-backdrop {
+  .modal-backdrop:not(:has(> .profile-tablet)) {
     animation: mobile-backdrop-in 180ms ease-out;
   }
 
@@ -145,13 +145,13 @@
   .confirm-modal,
   .result-modal,
   .shop-modal,
-  .house-modal,
+  .house-modal:where(:not(.profile-tablet)),
   .warehouse-modal,
   .leaderboard-modal,
   .friends-modal,
   .settings-modal,
   .message-board-modal,
-  .user-profile-modal,
+  .user-profile-modal:where(:not(.profile-tablet)),
   .confirm-inline-modal,
   .character-target-modal,
   .shop-item-detail-modal {

@@ -28,9 +28,10 @@ export default function ProfileTablet({
     const origin = trigger?.getBoundingClientRect();
     const x = origin ? origin.left + origin.width / 2 - target.left - target.width / 2 : 0;
     const y = origin ? origin.top + origin.height / 2 - target.top - target.height / 2 : 28;
+    // Bright School resets the transform shorthand on modal shells.
     const motion = shell.animate([
-      { transform: `translate(${x}px, ${y}px) rotate(-24deg) scale(.16)`, opacity: .35 },
-      { transform: "none", opacity: 1 }
+      { translate: `${x}px ${y}px`, rotate: "-24deg", scale: ".16", opacity: .35 },
+      { translate: "0px 0px", rotate: "0deg", scale: "1", opacity: 1 }
     ], { duration: SWING_DURATION, easing: "cubic-bezier(.19,.88,.27,1)" });
     return () => motion.cancel();
   }, [studentEntry]);

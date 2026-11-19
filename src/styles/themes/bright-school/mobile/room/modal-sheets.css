@@ -1,6 +1,6 @@
 /* Bright School portrait mobile room modal sheets. */
 @media (max-width: 760px) and (orientation: portrait) {
-  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .modal-backdrop {
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .modal-backdrop:not(:has(> .profile-tablet)) {
     animation: bright-mobile-backdrop-in 180ms ease-out !important;
   }
 
@@ -22,7 +22,7 @@
     .message-board-modal,
     .watch-list-modal,
     .user-profile-modal
-  ) {
+  ):where(:not(.profile-tablet)) {
     transform-origin: center bottom !important;
     animation: bright-mobile-sheet-in 220ms cubic-bezier(0.16, 1, 0.3, 1) backwards !important;
   }

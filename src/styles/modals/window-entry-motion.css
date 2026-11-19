@@ -13,7 +13,7 @@
     .settings-modal,
     .message-board-modal,
     .information-center-modal
-  )),
+  ):not(.profile-tablet)),
   .nested-modal-backdrop {
     animation: modal-backdrop-enter 200ms cubic-bezier(0.16, 1, 0.3, 1) backwards;
   }
@@ -28,7 +28,7 @@
     .result-modal,
     .settings-modal,
     .information-center-modal
-  ) {
+  ):not(.profile-tablet) {
     transform-origin: center;
     animation: modal-window-enter 260ms cubic-bezier(0.16, 1, 0.3, 1) backwards;
   }
@@ -42,7 +42,7 @@
     .profile-report-dialog,
     .profile-blacklist-dialog,
     .confirm-inline-modal:not(.sigrika-duel-confirm-modal)
-  ) {
+  ):not(.profile-tablet) {
     transform-origin: center;
     animation: modal-data-window-enter 200ms cubic-bezier(0.16, 1, 0.3, 1) backwards;
   }

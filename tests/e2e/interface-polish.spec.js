@@ -385,6 +385,41 @@ test("nested social dialogs release entry transforms and restore keyboard focus"
   }
 });
 
+test("tablets visibly rotate and scale before boot on desktop and phone", async ({ page }) => {
+  await page.addInitScript(() => {
+    const animate = Element.prototype.animate;
+    Element.prototype.animate = function (...args) {
+      const animation = animate.apply(this, args);
+      if (this.matches(".profile-tablet")) {
+        animation.pause();
+        animation.currentTime = 30;
+      }
+      return animation;
+    };
+  });
+  for (const width of [1440, 390]) {
+    await page.setViewportSize({ width, height: 844 });
+    for (const surface of ["resume", "profile"]) {
+      await mount(page, surface === "resume" ? "home" : surface, "&keep-home=1", false);
+      if (surface === "resume") await page.locator(".home-student-id-portrait").click();
+      const tablet = page.locator(".profile-tablet");
+      const pose = await tablet.evaluate(element => {
+        const { rotate, scale, animationName } = getComputedStyle(element);
+        const swing = element.getAnimations().find(animation => animation.currentTime === 30);
+        const start = swing?.effect.getKeyframes()[0];
+        swing?.finish();
+        return { rotate: parseFloat(rotate), scale: parseFloat(scale), animationName, start };
+      });
+      expect(pose.rotate).toBeLessThan(-5);
+      expect(pose.scale).toBeLessThan(.75);
+      expect(pose.animationName).toBe("none");
+      if (surface === "resume") expect(pose.start.translate).not.toBe("0px 28px");
+      await expect(tablet).toHaveCSS("rotate", "none");
+      await expect(tablet.locator(".profile-tablet-glass")).toHaveAttribute("data-phase", "ready");
+    }
+  }
+});
+
 test("profile boot defers social actions and keeps nested backdrops viewport-sized", async ({ page }) => {
   for (const viewport of [{ width: 1440, height: 900 }, { width: 390, height: 844 }]) {
     for (const reduce of [false, true]) {

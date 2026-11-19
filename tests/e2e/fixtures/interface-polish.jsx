@@ -59,10 +59,11 @@ function InterfaceReview() {
     { id: "move", type: "player-move", pointId: "2,2", color: "black", nextNodeId: "continue" },
     { id: "continue", type: "player-choice", options: [{ label: "继续", nextNodeId: "done" }] }
   ] } }} onClose={noop} />;
-  if (surface === "resume") return <ResumeModal user={user} token="fixture-profile" characterListView={Object.values(CHARACTERS)} onClose={() => setSurface("home")} onOpenAchievements={noop} onOpenPersonalization={noop} onOpenReplay={noop} />;
+  const home = <HomeScreen user={user} characters={CHARACTERS} audioSettings={{ master: 0 }} matchModePickerOpen={surface === "practice"} onStartPractice={action => window.__interfaceReviewActions.push(action)} onOpenResume={() => setSurface("resume")} onNotice={noop} onLogout={noop} />;
+  if (surface === "resume") return <>{query.has("keep-home") && home}<ResumeModal user={user} token="fixture-profile" characterListView={Object.values(CHARACTERS)} onClose={() => setSurface("home")} onOpenAchievements={noop} onOpenPersonalization={noop} onOpenReplay={noop} /></>;
   if (surface === "profile") return <div className="modal-backdrop profile-modal-backdrop"><UserProfileCard titleStickers user={user} characters={CHARACTERS} token="fixture-profile" onClose={() => setSurface("home")} onAddFriend={noop} onAddBlacklist={noop} onOpenReplay={noop} /></div>;
   if (surface === "room") return <RoomScreen room={specialRoomPayload?.room || room} user={specialRoomPayload?.user || user} characters={CHARACTERS} replayStep={null} setReplayStep={noop} setPendingSkill={noop} audioSettings={{ master: 0 }} siteSettings={{}} onGameAction={specialRoomPayload ? action => window.__interfaceReviewActions.push(action) : noop} onScoringAction={noop} onBack={() => setSurface("home")} />;
-  return <HomeScreen user={user} characters={CHARACTERS} audioSettings={{ master: 0 }} matchModePickerOpen={surface === "practice"} onStartPractice={action => window.__interfaceReviewActions.push(action)} onOpenResume={() => setSurface("resume")} onNotice={noop} onLogout={noop} />;
+  return home;
 }
 
 createRoot(document.getElementById("root")).render(<InterfaceReview />);
