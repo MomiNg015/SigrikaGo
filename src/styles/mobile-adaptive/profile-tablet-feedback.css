@@ -4,16 +4,11 @@
 
 :is(.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school:not(.is-sigrika-corrupted), .app-shell)
 .profile-tablet.profile-folder-modal.profile-dossier-modal.window-bookmark-host {
-  .profile-tablet-empty {
-    display: flex; align-items: center; gap: 8px; padding: 6px 0; color: var(--tablet-dim) !important;
-    font: 14px/1.45 var(--font-iris-mixed) !important;
-  }
-  .profile-tablet-empty-art { flex: 0 0 30px; width: 30px; height: auto; }
   .profile-record-panel .profile-character-section.profile-character-empty {
-    justify-content: flex-start; background: none !important; border: 0 !important;
+    background: none !important; border: 0 !important;
   }
   .profile-tablet-screen-header .profile-identity-actions { gap: 6px; }
-  .profile-tablet-screen-header .resume-mini-action { min-height: 36px; padding: 4px 8px; border-radius: 4px !important; }
+  .profile-tablet-screen-header .resume-mini-action { width: 44px; min-width: 44px; height: 44px; padding: 0; border-radius: 6px !important; }
   @media (max-width: 768px) {
     .profile-tablet-screen-header .profile-identity-actions { gap: 4px; }
     .profile-tablet-screen-header .profile-identity-actions > button { min-height: 36px; }

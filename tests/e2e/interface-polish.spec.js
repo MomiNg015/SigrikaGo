@@ -150,13 +150,14 @@ for (const viewport of [{ width: 1440, height: 900 }, { width: 390, height: 844 
       const scroller = tablet.locator(".profile-folder-page");
       await expect(scroller).toHaveCSS("scrollbar-width", "none");
       await expect(tablet.locator(".profile-hero-portrait .character-bust-image")).toHaveCSS("filter", "none");
-      await expect(tablet.locator(".profile-hero-portrait .profile-portrait-mask")).toHaveCSS("border-top-width", "0px");
+      await expect(tablet.locator(".profile-hero-portrait .profile-portrait-mask")).toHaveCSS("border-top-width", "1px");
       await expect(tablet.locator(".profile-tablet-hardware").first()).toHaveText("");
       await expect(tablet.locator(".profile-tablet-screen-header")).not.toContainText("星炬券");
       await expect(tablet.locator(".profile-record-metric dd").first()).toHaveCSS("font-family", /IRIS Dotted Songti Circle/);
       await expect(tablet.locator(".rank-progress")).toHaveAttribute("aria-label", /段 .*星/);
       await expect(tablet.locator(".profile-tablet-outcomes > span")).toHaveCSS("color", "rgb(193, 239, 188)");
       const hero = await tablet.locator(".profile-resume-hero").boundingBox();
+      if (viewport.width <= 768) expect(hero.height).toBe(162);
       const record = await tablet.locator(".profile-folder-page").boundingBox();
       const avatar = await tablet.locator(".profile-hero-portrait").boundingBox();
       const name = await tablet.locator(".profile-identity-block").boundingBox();
@@ -176,6 +177,13 @@ for (const viewport of [{ width: 1440, height: 900 }, { width: 390, height: 844 
       expect(plays.y - modes.y - modes.height).toBeGreaterThanOrEqual(8);
       const actions = tablet.locator(".profile-tablet-screen-header .profile-identity-actions");
       await expect(actions.getByRole("button")).toHaveCount(surface === "resume" ? 2 : 4);
+      if (surface === "resume") {
+        for (const name of ["成就", "个性化"]) {
+          const button = actions.getByRole("button", { name });
+          await expect(button).toHaveText("");
+          await expect(button).toHaveCSS("width", "44px");
+        }
+      }
       await expect(tablet.locator(".profile-tablet-metrics .profile-record-metric dd").first()).toHaveCSS("text-align", "end");
       await expect(tablet.locator(".profile-rank-results")).toHaveCSS("justify-content", "center");
       await expect(tablet.locator(".recent-result-label")).toHaveCSS("text-align", "center");
@@ -211,6 +219,9 @@ for (const viewport of [{ width: 1440, height: 900 }, { width: 390, height: 844 
       await expect(tablet.getByText("暂无对局回放")).toBeVisible();
       const empty = tablet.locator(".profile-tablet-replays .profile-tablet-empty");
       await expect(empty).toHaveText("暂无对局回放");
+      await expect(empty).toHaveCSS("justify-content", "center");
+      await expect(empty.locator(".window-empty-label")).toHaveCSS("color", "rgb(225, 255, 216)");
+      await expect(empty.locator(".window-empty-label")).toHaveCSS("font-size", "16px");
       await expect(empty).toHaveCSS("background-color", "rgba(0, 0, 0, 0)");
       await expect(actions).toHaveCount(0);
       await expect.poll(() => empty.locator("img").evaluate(image => image.complete && image.naturalWidth > 0)).toBe(true);

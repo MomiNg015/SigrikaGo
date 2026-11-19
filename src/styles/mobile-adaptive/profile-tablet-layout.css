@@ -79,7 +79,7 @@
     .profile-resume-view .profile-resume-hero {
       display: grid !important; grid-template: auto / 64px minmax(0, 1fr) !important;
       align-items: center !important; gap: 10px !important; padding: 8px 12px !important;
-      min-height: auto !important; border-inline-end: 0 !important; border-bottom: 1px solid var(--tablet-rule) !important;
+      min-height: 162px !important; border-inline-end: 0 !important; border-bottom: 1px solid var(--tablet-rule) !important;
     }
     .profile-resume-view .profile-hero-portrait { width: 64px !important; height: 64px !important; }
     .profile-resume-view .profile-identity-block { text-align: start; }

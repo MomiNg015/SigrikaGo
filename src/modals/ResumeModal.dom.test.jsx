@@ -73,8 +73,8 @@ describe("ResumeModal authoritative record stats", () => {
       name: "每赢1局加1星，每输一局减1星；满星后再赢1局升段，0星后再输1局掉段；进入新段位后自动获得该段位一半的星数"
     })).toBeTruthy();
     expect(document.querySelector(".profile-resume-hero .profile-identity-actions")).toBeNull();
-    expect(screen.getByRole("button", { name: "成就" }).textContent).toBe("成就");
-    expect(screen.getByRole("button", { name: "个性化" }).textContent).toBe("个性化");
+    expect(screen.getByRole("button", { name: "成就" }).textContent).toBe("");
+    expect(screen.getByRole("button", { name: "个性化" }).textContent).toBe("");
     expect(screen.queryByRole("heading", { name: "最近十盘" })).toBeNull();
     expect(screen.queryByRole("heading", { name: "角色战绩" })).toBeNull();
     expect(screen.getByRole("button", { name: "对局回放" }).textContent).toBe("对局回放");

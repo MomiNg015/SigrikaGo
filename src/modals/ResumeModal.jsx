@@ -127,11 +127,9 @@ export default function ResumeModal({ user, token, characterListView, onClose, o
           <div className="profile-identity-actions" role="group" aria-label="履历操作">
             <button data-button-role="tool" type="button" className="resume-mini-action achievement-entry-action" aria-label="成就" title={PROFILE_CUSTOMIZATION_ENABLED ? "成就" : "成就暂未开放"} disabled={!PROFILE_CUSTOMIZATION_ENABLED} onClick={onOpenAchievements}>
               <Award size={20} aria-hidden="true" />
-              <span>成就</span>
             </button>
             <button data-button-role="tool" type="button" className="resume-mini-action profile-personalization-button personalization-entry-action" aria-label="个性化" title={PROFILE_CUSTOMIZATION_ENABLED ? "个性化" : "个性化暂未开放"} disabled={!PROFILE_CUSTOMIZATION_ENABLED} onClick={onOpenPersonalization}>
               <Palette size={20} aria-hidden="true" />
-              <span>个性化</span>
             </button>
           </div>
         )}

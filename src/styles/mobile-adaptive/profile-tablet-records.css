@@ -20,7 +20,16 @@
     border-radius: 3px !important;
     box-shadow: none !important;
   }
-  .profile-hero-portrait .profile-portrait-mask { background: none !important; border: 0 !important; box-shadow: none !important; }
+  .profile-hero-portrait .profile-portrait-mask { background: var(--tablet-glass) !important; border: 1px solid var(--tablet-dim) !important; box-shadow: none !important; }
+  .profile-tablet-empty {
+    display: flex; justify-content: center; align-items: center;
+    gap: 8px; padding: 6px 0; text-align: center;
+  }
+  .profile-tablet-empty-art { flex: 0 0 30px; width: 30px; height: auto; }
+  .profile-tablet-empty > .window-empty-label {
+    color: var(--tablet-title) !important;
+    font: 16px/1.5 var(--font-ui-default) !important;
+  }
   .profile-hero-portrait .character-bust-image { filter: none !important; }
   .profile-identity-block :is(h3, .user-identity-name) { color: var(--tablet-title) !important; }
   .profile-identity-actions > button :is(svg, svg *) { color: inherit !important; stroke: currentColor !important; }
