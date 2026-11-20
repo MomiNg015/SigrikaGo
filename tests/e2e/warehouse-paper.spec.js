@@ -39,6 +39,8 @@ for (const [width, height] of [[1440, 900], [800, 900], [390, 844], [360, 800], 
     expect(Math.abs(close.x + close.width - (shell.x + shell.width * .948))).toBeLessThan(2);
     expect(Math.abs(close.y - (shell.y + shell.height * .072))).toBeLessThan(2);
     await expect(page.locator(".wg-box-title img")).toBeVisible();
+    await expect(page.locator(".wg-drawer-toggle .window-bookmark-paper")).toHaveCSS("scale", "-1 1");
+    await expect(page.locator(".wg-drawer-toggle .window-bookmark-label")).toHaveCSS("writing-mode", "horizontal-tb");
     const posters = page.locator('.wg-loot[aria-label^="查看道具详情：招募海报"]');
     const placements = () => posters.evaluateAll(items => items.map(({ style }) => [style.left, style.top, parseFloat(style.getPropertyValue("--wg-angle"))]));
     const startingPlacements = await placements();
@@ -128,6 +130,20 @@ test("27 copies spread across the box and respect the overlap limit after resizi
   const copies = page.locator(".wg-loot");
   await expect(copies).toHaveCount(27);
   await settleWindow(page);
+  const respectsFloorAndControls = () => page.locator(".wg-pile").evaluate(pile => {
+    const floor = pile.getBoundingClientRect();
+    const toggle = pile.parentElement.querySelector(".wg-drawer-toggle").getBoundingClientRect();
+    const close = pile.closest(".warehouse-box").querySelector(".close-button").getBoundingClientRect();
+    const boxes = [...pile.querySelectorAll(".wg-loot")].map(button => button.getBoundingClientRect());
+    return boxes.some(box => box.top < toggle.bottom - 10 && box.left > toggle.right)
+      && boxes.every(box => box.left >= floor.left + floor.width * .085 + 5
+        && box.right <= floor.left + floor.width * .91 - 5
+        && box.top >= floor.top + floor.height * .12 + 8
+        && box.bottom <= floor.top + floor.height * .85 - 8
+        && [toggle, close].every(control => box.right <= control.left || box.left >= control.right
+          || box.bottom <= control.top || box.top >= control.bottom));
+  });
+  expect(await respectsFloorAndControls()).toBe(true);
   expect(await largestCover(page)).toBeLessThanOrEqual(.20);
   const meanFootprint = await copies.evaluateAll(buttons => buttons.reduce((total, button) => total + button.getBoundingClientRect().width, 0) / buttons.length);
   expect(meanFootprint).toBeGreaterThan(102);
@@ -135,6 +151,7 @@ test("27 copies spread across the box and respect the overlap limit after resizi
   await page.screenshot({ path: testInfo.outputPath("spread-desktop.png") });
   await page.setViewportSize({ width: 390, height: 844 });
   await expect.poll(() => copies.first().evaluate(button => button.offsetWidth)).toBeLessThan(firstSize);
+  expect(await respectsFloorAndControls()).toBe(true);
   expect(await largestCover(page)).toBeLessThanOrEqual(.20);
 });
 

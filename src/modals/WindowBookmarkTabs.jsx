@@ -107,7 +107,7 @@ export default function WindowBookmarkTabs({ children, className, ...props }) {
   return <><span ref={anchorRef} hidden data-bookmark-anchor="" />{host ? createPortal(list, host) : list}</>;
 }
 
-function BookmarkPaper() {
+export function BookmarkPaper() {
   return <svg className="window-bookmark-paper" viewBox="0 0 124 60" preserveAspectRatio="none" aria-hidden="true" focusable="false">
     <path className="window-bookmark-fill" d="M10 3 Q26 1 46 3 L80 2 L123 4 L123 56 L87 57 Q63 56 43 58 L10 56 L4 53 L5 39 L3 23 L5 8 Z" />
     <path className="window-bookmark-pencil" d="M11 7 Q30 5 46 7 L80 6 L118 7 M8 14 L9 35 L8 49 Q37 54 53 52 L116 53" />

@@ -1,6 +1,7 @@
 import { useLayoutEffect, useMemo, useRef, useState } from "react";
 import { X } from "lucide-react";
-import { ModalActionButton, ModalDialog } from "../modalComponents.jsx";
+import { ModalDialog } from "../modalComponents.jsx";
+import { BookmarkPaper } from "../WindowBookmarkTabs.jsx";
 import WindowEmptyState from "../WindowEmptyState.jsx";
 import { ItemArt, WarehouseDirectory, WarehouseInspector } from "./WarehouseItemGrid.jsx";
 import { useWarehouseListRows } from "./useWarehouseListRows.js";
@@ -48,26 +49,37 @@ function scatterItems(items, seed) {
   });
 }
 
-function placeItems(entries, width, height, seed) {
+function placeItems(entries, width, height, seed, obstacles) {
   if (!entries.length) return new Map();
-  const floorWidth = width * .84;
-  const floorTop = height * .16 + 48;
-  const floorHeight = Math.max(1, height * .88 - floorTop);
+  const floorLeft = width * .085 + 6;
+  const floorRight = width * .91 - 6;
+  const floorTop = height * .12 + 9;
+  const floorBottom = height * .85 - 9;
+  const floorWidth = floorRight - floorLeft;
+  const floorHeight = floorBottom - floorTop;
   const maximumSize = entries.length <= 5 ? 188 : 148;
-  let columns = 1;
-  let bestCell = 0;
-  for (let candidate = 1; candidate <= entries.length; candidate++) {
-    const side = Math.min(floorWidth / candidate, floorHeight / Math.ceil(entries.length / candidate));
-    if (side > bestCell) {
-      bestCell = side;
-      columns = candidate;
+  const hasControl = (left, top, right, bottom) => obstacles.some(control =>
+    left < control.right && right > control.left && top < control.bottom && bottom > control.top);
+  let grid;
+  for (let columns = 1; columns <= entries.length + 3; columns++) {
+    const cellWidth = floorWidth / columns;
+    const minimumRows = Math.ceil(entries.length / columns);
+    for (let rows = minimumRows; rows <= minimumRows + 3; rows++) {
+      const cellHeight = floorHeight / rows;
+      const side = Math.min(cellWidth, cellHeight);
+      if (side <= (grid?.side ?? 0)) break;
+      const slots = [];
+      for (let slot = 0; slot < columns * rows; slot++) {
+        const left = floorLeft + slot % columns * cellWidth;
+        const top = floorTop + Math.floor(slot / columns) * cellHeight;
+        if (!hasControl(left, top, left + cellWidth, top + cellHeight)) slots.push({ left, top });
+      }
+      if (slots.length >= entries.length) grid = { slots, cellWidth, cellHeight, side };
     }
   }
-  const rows = Math.ceil(entries.length / columns);
-  const cellWidth = floorWidth / columns;
-  const cellHeight = floorHeight / rows;
+  if (!grid) return new Map();
+  const { slots, cellWidth, cellHeight, side } = grid;
   const random = itemRandom(seed, "floor");
-  const slots = Array.from({ length: columns * rows }, (_, index) => index);
   const boxes = entries.map(entry => {
     const pick = Math.floor(random() * slots.length);
     const slot = slots[pick];
@@ -75,21 +87,25 @@ function placeItems(entries, width, height, seed) {
     slots.pop();
     const radians = entry.angle * Math.PI / 180;
     const rotationFootprint = Math.abs(Math.cos(radians)) + Math.abs(Math.sin(radians));
-    const size = Math.min(maximumSize, bestCell * .91 / rotationFootprint);
+    const size = Math.min(maximumSize, side * .91 / rotationFootprint);
     const footprint = size * rotationFootprint;
-    const left = width * .08 + slot % columns * cellWidth + footprint / 2 + random() * (cellWidth - footprint);
-    const top = floorTop + Math.floor(slot / columns) * cellHeight + footprint / 2 + random() * (cellHeight - footprint);
+    const left = slot.left + footprint / 2 + random() * (cellWidth - footprint);
+    const top = slot.top + footprint / 2 + random() * (cellHeight - footprint);
     return { entry, left, top, size, radius: footprint / 2, budget: footprint ** 2 * MAX_COVERAGE, coverage: 0 };
   });
   const constrain = (value, minimum, maximum) => Math.min(maximum, Math.max(minimum, value));
+  function tryFloorPlacement(box, candidate) {
+    const { left, top, radius } = candidate;
+    if (!hasControl(left - radius, top - radius, left + radius, top + radius)) tryPlacement(box, candidate, boxes);
+  }
   for (let pass = 0; pass < 2; pass++) {
     for (const box of boxes) {
       const candidate = {
         radius: box.radius,
-        left: constrain(box.left + (random() - .5) * cellWidth * .75, width * .08 + box.radius, width * .92 - box.radius),
+        left: constrain(box.left + (random() - .5) * cellWidth * .75, floorLeft + box.radius, floorRight - box.radius),
         top: constrain(box.top + (random() - .5) * cellHeight * .75, floorTop + box.radius, floorTop + floorHeight - box.radius)
       };
-      tryPlacement(box, candidate, boxes);
+      tryFloorPlacement(box, candidate);
     }
   }
   for (let pass = 0; pass < 4; pass++) {
@@ -98,11 +114,11 @@ function placeItems(entries, width, height, seed) {
       if (size === box.size) continue;
       const radius = box.radius * size / box.size;
       if (radius * 2 > Math.min(floorWidth, floorHeight)) continue;
-      tryPlacement(box, {
+      tryFloorPlacement(box, {
         size, radius,
-        left: constrain(box.left, width * .08 + radius, width * .92 - radius),
+        left: constrain(box.left, floorLeft + radius, floorRight - radius),
         top: constrain(box.top, floorTop + radius, floorTop + floorHeight - radius)
-      }, boxes);
+      });
     }
   }
   return new Map(boxes.map(({ entry, left, top, size }) => [
@@ -110,19 +126,25 @@ function placeItems(entries, width, height, seed) {
   ]));
 }
 
-function useBoxPlacements(entries, seed, pileRef) {
+function useBoxPlacements(entries, seed, pileRef, toggleRef) {
   const [layout, setLayout] = useState(null);
   useLayoutEffect(() => {
     const pile = pileRef.current;
+    const controls = [toggleRef.current, pile.closest(".warehouse-box")?.querySelector(":scope > .close-button")].filter(Boolean);
     function measure() {
       const width = pile.clientWidth;
       const height = pile.clientHeight;
       if (!width || !height) return;
+      const obstacles = controls.map(control => ({
+        left: control.offsetLeft - 8, top: control.offsetTop - 8,
+        right: control.offsetLeft + control.offsetWidth + 8,
+        bottom: control.offsetTop + control.offsetHeight + 8
+      }));
       setLayout(previous => {
         const sparse = entries.length <= 5;
         if (previous?.width === width && previous.height === height && previous.sparse === sparse
           && entries.every(entry => previous.placements.has(entry.key))) return previous;
-        return { width, height, sparse, placements: placeItems(entries, width, height, seed) };
+        return { width, height, sparse, placements: placeItems(entries, width, height, seed, obstacles) };
       });
     }
     measure();
@@ -130,7 +152,7 @@ function useBoxPlacements(entries, seed, pileRef) {
     const observer = new ResizeObserver(measure);
     observer.observe(pile);
     return () => observer.disconnect();
-  }, [entries, seed, pileRef]);
+  }, [entries, seed, pileRef, toggleRef]);
   return layout?.placements;
 }
 
@@ -143,7 +165,7 @@ export default function WarehouseBox({ items, targetOpen, ...actions }) {
   const listRef = useWarehouseListRows(drawerOpen);
   const stocked = useMemo(() => items.filter(item => item.quantity > 0), [items]);
   const entries = useMemo(() => scatterItems(stocked, scatterSeed), [stocked, scatterSeed]);
-  const placements = useBoxPlacements(entries, scatterSeed, pileRef);
+  const placements = useBoxPlacements(entries, scatterSeed, pileRef, toggleRef);
   const item = stocked.find(entry => entry.itemId === itemId);
   const detailOpen = Boolean(item) && !targetOpen;
 
@@ -156,9 +178,10 @@ export default function WarehouseBox({ items, targetOpen, ...actions }) {
   }
 
   return <div className="wg-box-content" onKeyDown={handleEscape}>
-    <ModalActionButton ref={toggleRef} variant="secondary" className="wg-drawer-toggle" disabled={!stocked.length} aria-controls="warehouse-box-directory" aria-expanded={drawerOpen && Boolean(stocked.length)} onClick={() => setDrawerOpen(open => !open)}>
-      {drawerOpen && stocked.length ? "收起持有详情" : "展开持有详情"}
-    </ModalActionButton>
+    <button ref={toggleRef} type="button" className="window-bookmark-tab wg-drawer-toggle" disabled={!stocked.length} aria-controls="warehouse-box-directory" aria-expanded={drawerOpen && Boolean(stocked.length)} onClick={() => setDrawerOpen(open => !open)}>
+      <BookmarkPaper />
+      <span className="window-bookmark-label">{drawerOpen && stocked.length ? "收起持有详情" : "展开持有详情"}</span>
+    </button>
     <div className="wg-pile" ref={pileRef} inert={drawerOpen && Boolean(stocked.length)} aria-label="箱内道具">
       {entries.map(({ item: entry, key, zIndex }) => <button type="button" className="wg-loot" key={key} style={{ ...placements?.get(key), zIndex }} hidden={Boolean(placements && !placements.has(key))} aria-label={`查看道具详情：${entry.name}，持有 ${entry.quantity}`} onClick={() => setItemId(entry.itemId)}>
         <ItemArt item={entry} />
