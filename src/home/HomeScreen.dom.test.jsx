@@ -33,6 +33,30 @@ describe("HomeScreen practice difficulty picker", () => {
     expect(onSelectCharacter).toHaveBeenCalledTimes(1);
   });
 
+  it("keeps the student-ID fallback local while Sigrika's candy effect blocks sortie", async () => {
+    const user = {
+      id: "candy-identity", username: "同学", selectedCharacter: "denia",
+      ownedCharacters: ["sigrika", "denia"], itemEffects: { sigrikaCandyDisabled: true },
+      modeStats: {}
+    };
+    localStorage.setItem("sigrika-match-characters:candy-identity", JSON.stringify({ regular: ["sigrika"] }));
+    const onSelectCharacter = vi.fn().mockRejectedValueOnce(new Error("糖果效果中，暂时无法出战"))
+      .mockResolvedValue(undefined);
+    const onNotice = vi.fn();
+    const props = { user, characters: CHARACTERS, onSelectCharacter, onNotice };
+    const { rerender } = render(<HomeScreen {...props} />);
+    await act(async () => {});
+    expect(screen.getByAltText("当前出战角色").getAttribute("src")).toContain("/sigrika.webp");
+    expect(onSelectCharacter).not.toHaveBeenCalled();
+    expect(onNotice).not.toHaveBeenCalled();
+
+    onSelectCharacter.mockReset().mockResolvedValue(undefined);
+    rerender(<HomeScreen {...props} user={{ ...user, itemEffects: {} }} />);
+    await act(async () => {});
+    expect(onSelectCharacter).toHaveBeenCalledExactlyOnceWith("sigrika");
+    expect(onNotice).not.toHaveBeenCalled();
+  });
+
   it("opens three levels and starts the selected one with a random color", async () => {
     const onMatchModePickerOpenChange = vi.fn();
     const onStartPractice = vi.fn();

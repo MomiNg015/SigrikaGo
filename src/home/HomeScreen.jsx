@@ -36,6 +36,7 @@ export default function HomeScreen({ user, token, onUserChange, characters, audi
   const cancellation = useCandyEffectCancellation({ token, user, onUserChange, onNotice });
   const blocked = candyBlockedCharacters(user, characters, available);
   const identityId = studentIdentityCharacterId(user, { regularSelection: selections.regular });
+  const canPublishIdentity = available.some((character) => character.id === identityId);
   const selectedCharacter = characters[identityId] ?? CHARACTERS[identityId] ?? CHARACTERS.sigrika;
   const [characterEntry, setCharacterEntry] = useState(null);
   useEffect(() => {
@@ -45,17 +46,22 @@ export default function HomeScreen({ user, token, onUserChange, characters, audi
   const identitySync = useRef(Promise.resolve());
   const identitySyncTarget = useRef("");
   useEffect(() => {
-    if (!onSelectCharacter || sigrikaCorrupted) return;
-    if (!user.ownedCharacters?.includes(identityId)) return;
+    if (!onSelectCharacter || sigrikaCorrupted || !canPublishIdentity) {
+      identitySyncTarget.current = "";
+      return;
+    }
     const target = `${user.id ?? user.username}:${identityId}`;
     if (identitySyncTarget.current === target) return;
     const firstSync = !identitySyncTarget.current;
     identitySyncTarget.current = target;
     if (firstSync && user.selectedCharacter === identityId) return;
     // Serialize writes so rapid choices cannot leave a previous identity on the server.
-    identitySync.current = identitySync.current.then(() => onSelectCharacter(identityId))
-      .catch((error) => onNotice?.(error.message, "danger"));
-  }, [identityId, onNotice, onSelectCharacter, sigrikaCorrupted, user.id, user.username, user.ownedCharacters, user.selectedCharacter]);
+    identitySync.current = identitySync.current.then(() => {
+      if (identitySyncTarget.current === target) return onSelectCharacter(identityId);
+    }).catch((error) => {
+      if (identitySyncTarget.current === target) onNotice?.(error.message, "danger");
+    });
+  }, [canPublishIdentity, identityId, onNotice, onSelectCharacter, sigrikaCorrupted, user.id, user.username, user.selectedCharacter]);
   const sigrikaDuelActive = user.sigrikaCandyArc?.phase === SIGRIKA_CANDY_PHASES.duelActive;
   const {
     availability: sigrikaDuelAvailability,

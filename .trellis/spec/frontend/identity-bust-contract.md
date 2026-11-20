@@ -6,6 +6,8 @@ Read this contract before changing hanging student-ID art, self/social profile h
 
 ## Effective appearance
 
+- Only publish a student-ID character that is currently eligible for sortie. The visual Sigrika fallback can still be shown while her candy effect blocks sortie. Recheck the current sync target before a queued write and before showing its error.
+
 - `studentIdentityCharacterId` owns the student-ID and own-profile identity: account-local regular Spark selection, or Sigrika when absent/unavailable. Both self resume and social details with `relation="self"` use it; record-mode tabs never change the hero character. Home publishes the identity through the existing account character API with serialized writes. Remote profiles use the server account selection, never the viewer's local cache or a battle-specific character when account selection is supplied.
 
 - Forward `user`, `itemEffects`, explicit `equippedCostumes`, and frozen `costumeSnapshot` to the effective resolver. Snapshot equipment wins over explicit equipment and account equipment. Do not reinterpret a frozen replay appearance from the current account.

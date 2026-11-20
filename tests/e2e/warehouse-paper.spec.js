@@ -3,6 +3,26 @@ import { settleWindow } from "./window-surfaces-fixture.js";
 
 const preview = "/docs/design-samples/warehouse-paper-2026-10-22/production.html";
 
+test("warehouse places the box before the items and honors reduced motion", async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto(preview);
+  const box = page.locator(".warehouse-box");
+  const pile = box.locator(".wg-pile");
+  await expect(pile.locator(".wg-loot")).toHaveCount(14);
+  await expect(box).toHaveCSS("animation-name", "warehouse-box-settle");
+  await expect(pile).toHaveCSS("animation-name", "warehouse-items-settle");
+  const boxDuration = await box.evaluate(el => parseFloat(getComputedStyle(el).animationDuration));
+  const pileDelay = await pile.evaluate(el => parseFloat(getComputedStyle(el).animationDelay));
+  expect(boxDuration).toBeGreaterThan(0);
+  expect(pileDelay).toBeGreaterThanOrEqual(boxDuration);
+  await settleWindow(page);
+  await expect(pile).toHaveCSS("opacity", "1");
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await expect(box).toHaveCSS("animation-name", "none");
+  await expect(pile).toHaveCSS("animation-name", "none");
+  await expect(pile).toHaveCSS("opacity", "1");
+});
+
 async function largestCover(page) {
   return page.locator(".wg-loot").evaluateAll(buttons => {
     const bounds = buttons.map(button => button.getBoundingClientRect());

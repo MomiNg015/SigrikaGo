@@ -2,6 +2,8 @@
 
 ## Desktop entry (approved 2026-10-29)
 
+Keep the ordinary handbook shell and backdrop stationary during strip entry, with a single diagonal clip on each tile. Start strip motion with a 3D translate and end at no transform. When full-body details open, finish the strip collapse immediately and animate only the detail panel, using async decoding for its portrait.
+
 `mobile-adaptive/handbook-strip-entry.css` owns the approved production entrance on normal `.handbook-modal` strips at widths above 768px and `prefers-reduced-motion: no-preference`. Whole strips alternate -102%/+102% vertical translation with 300ms duration and 40ms catalog-order stagger (660ms for ten). The existing board clip contains travel. Keep portrait geometry, hit handlers and hover/focus expansion untouched; no runtime timers, blocking overlay or permanent will-change layer. Mount/reopen and character-tab remount play entry; hover and detail close preserve the current animation. Corrupted handbooks and portrait phones retain existing behavior.
 
 The independent review page under `docs/design-samples/handbook-desktop-entry-2026-10-29/` imports this same production owner. Its only motion override is 0.4x slow observation through `--handbook-entry-duration` / `--handbook-entry-stagger`; do not keep a second keyframe implementation. Real fixture tests in `tests/e2e/handbook-entry.spec.js` validate direction/timing, clipping, stable portrait dimensions, detail/reopen behavior and viewport/reduced-motion/corruption exclusions. The sample continues to reject account API requests.

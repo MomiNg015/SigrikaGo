@@ -11,6 +11,8 @@ for (const viewport of [{ width: 1440, height: 900 }, { width: 1920, height: 108
     const pieces = page.locator(".handbook-puzzle-piece");
     await expect(pieces).toHaveCount(10);
     if (viewport.width > 768) {
+      await expect(page.locator(".handbook-modal")).toHaveCSS("animation-name", "none");
+      await expect(page.locator(".modal-backdrop:has(> .handbook-modal)")).toHaveCSS("animation-name", "none");
       const states = await pieces.evaluateAll(elements => elements.map((el, index) => {
         const animation = el.getAnimations().find(a => a.animationName?.startsWith("handbook-strip-from-"));
         const timing = animation.effect.getTiming();
@@ -48,6 +50,8 @@ for (const viewport of [{ width: 1440, height: 900 }, { width: 1920, height: 108
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
     await page.getByRole("button", { name: "西格莉卡角色详情", exact: true }).click();
     await expect(page.locator(".character-details-modal")).toBeVisible();
+    await expect(page.locator(".character-details-modal")).toHaveCSS("animation-name", "handbook-detail-enter");
+    await expect(pieces.first()).toHaveCSS("transition-property", "none");
     await page.keyboard.press("Escape");
     await expect(page.locator(".character-details-modal")).toHaveCount(0);
     expect(await pieces.evaluateAll(elements => elements.flatMap(el => el.getAnimations()).filter(a => a.animationName?.startsWith("handbook-strip-from-") && a.playState === "running").length)).toBe(0);

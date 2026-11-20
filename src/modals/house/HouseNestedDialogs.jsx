@@ -56,7 +56,7 @@ export function CharacterDetailDialog({
             <Shirt aria-hidden="true" />
           </button>
           <div className={`character-detail-figure${portrait.isStandard ? " is-standard-figure" : ""}`}>
-            <img src={portrait.src} style={portrait.style} alt={character.name} />
+            <img src={portrait.src} style={portrait.style} alt={character.name} decoding="async" />
           </div>
         </div>
         <div className="character-detail-copy">

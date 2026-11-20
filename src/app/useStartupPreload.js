@@ -155,7 +155,10 @@ async function warmCatalogImages(token, isCancelled) {
   const catalogs = await Promise.all(["/api/shop", "/api/items/inventory", "/api/recruitment"]
     .map((path) => api(path, { token }).catch(() => ({ items: [] }))));
   if (isCancelled()) return;
-  await preloadLoginAssets({ images: catalogs.flatMap((catalog) => (catalog.items ?? []).map((item) => item.imageUrl)) }, {
+  await preloadLoginAssets({ images: [
+    "/assets/home/warehouse-box-overhead.webp",
+    ...catalogs.flatMap((catalog) => (catalog.items ?? []).map((item) => item.imageUrl))
+  ] }, {
     concurrency: 2, taskTimeoutMs: 8000
   });
 }

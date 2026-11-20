@@ -32,9 +32,9 @@
   min-width: 0;
   margin-left: calc(-1 * var(--handbook-strip-slant));
   pointer-events: none;
-  clip-path: var(--handbook-piece-clip);
   transition: flex-grow 260ms cubic-bezier(.25, 1, .5, 1);
 }
+.handbook-modal[data-character-detail-open] :is(.handbook-puzzle-piece, .handbook-puzzle-portrait) { transition: none; }
 .handbook-puzzle-piece:first-child {
   margin-left: 0;
   --handbook-piece-clip: polygon(0 0, 100% 0, calc(100% - var(--handbook-strip-slant)) 100%, 0 100%);
