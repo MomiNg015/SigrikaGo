@@ -84,6 +84,22 @@ const PLAYER_WINDOWS = [
 ];
 
 for (const viewport of [{ width: 1440, height: 900 }, { width: 390, height: 844 }]) {
+  test(`warehouse box opens real inventory from home at ${viewport.width}`, async ({ page, request }) => {
+    await page.setViewportSize(viewport);
+    const player = await newPlayer(request, db);
+    await openHome(page, player);
+    await page.getByRole("button", { name: "仓库", exact: true }).click();
+    const warehouse = page.locator(".warehouse-modal");
+    await expect(warehouse).toHaveCSS("background-image", /warehouse-box-overhead/);
+    await warehouse.getByRole("button", { name: "展开持有详情" }).click();
+    await warehouse.getByRole("button", { name: "彩虹豆豆跳跳糖，数量 2" }).click();
+    const detail = warehouse.getByRole("dialog", { name: "道具详情：彩虹豆豆跳跳糖" });
+    await expect(detail.getByRole("button", { name: "使用：彩虹豆豆跳跳糖" })).toBeVisible();
+    await detail.getByRole("button", { name: "关闭道具详情" }).click();
+    await warehouse.getByRole("button", { name: "关闭仓库" }).click();
+    await expect(warehouse).toHaveCount(0);
+  });
+
   test(`player windows load and close without horizontal overflow at ${viewport.width}`, async ({ page, request }) => {
     test.setTimeout(120_000);
     await page.setViewportSize(viewport);

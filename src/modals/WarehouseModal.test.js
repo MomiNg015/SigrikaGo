@@ -35,7 +35,7 @@ describe("WarehouseModal candy feedback", () => {
     expect(html).toContain(item.disabledCharacterReasons.sigrika);
   });
 
-  it("preserves the original warehouse sticker title and close control", () => {
+  it("uses the box without a visible title and preserves the shared close control", () => {
     const html = renderToStaticMarkup(createElement(WarehouseModal, {
       token: "token",
       user: { ownedCharacters: [] },
@@ -43,9 +43,10 @@ describe("WarehouseModal candy feedback", () => {
       onClose: () => {}
     }));
 
-    expect(html).toContain('<header class="warehouse-header window-sticker-header">');
     expect(html).toContain('warehouse-field-guide');
-    expect(html).toContain('/assets/window-titles/warehouse.webp');
+    expect(html).toContain('warehouse-box');
+    expect(html).not.toContain('/assets/window-titles/warehouse.webp');
+    expect(html).toContain('class="close-button"');
     expect(html).not.toContain('收藏图鉴');
     expect(html).toContain('aria-label="关闭仓库"');
     expect(html).not.toContain("查看并使用已经购买的道具。");

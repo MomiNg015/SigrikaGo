@@ -37,6 +37,7 @@ for (const width of [1440, 390, 320]) {
 
     await page.route("**/api/items/inventory", route => route.fulfill({ json: { items: [{ itemId: "candy", name: "彩虹糖", quantity: 3, description: denseText.repeat(12), type: "consumable", imageUrl: "/assets/items/rainbow-candy.webp" }] } }));
     await page.goto("/tests/e2e/fixtures/window-surfaces.html?surface=Warehouse");
+    await page.locator(".wg-loot").first().click();
     const description = page.locator(".wg-details > p");
     await expectReadable(description);
     await settleWindow(page);

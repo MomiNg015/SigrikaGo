@@ -25,6 +25,7 @@ describe("warehouse candy story", () => {
     api.mockResolvedValueOnce({ items: [{ itemId: "campus-recruitment-poster", name: "招募海报", quantity: 2, usable: false }] });
     const onOpenRecruitment = vi.fn();
     render(<WarehouseModal token="test-token" user={{}} characters={{}} onClose={vi.fn()} onOpenRecruitment={onOpenRecruitment} />);
+    fireEvent.click((await screen.findAllByRole("button", { name: "查看道具详情：招募海报，持有 2" }))[0]);
     fireEvent.click(await screen.findByRole("button", { name: "前去招募：招募海报" }));
     expect(onOpenRecruitment).toHaveBeenCalledOnce();
     expect(api).toHaveBeenCalledTimes(1);
@@ -70,17 +71,15 @@ describe("warehouse candy story", () => {
       sigrika: { id: "sigrika", name: "西格莉卡", portrait: "/assets/sigrika_centered.webp" },
       aemeath: { id: "aemeath", name: "爱弥斯", portrait: "/assets/aemeath_centered.webp" }
     }} onNotice={onNotice} onUserChange={vi.fn()} onClose={vi.fn()} />);
-    fireEvent.click(await screen.findByRole("button", { name: "使用：彩虹豆豆跳跳糖" }));
+    fireEvent.click((await screen.findAllByRole("button", { name: "查看道具详情：彩虹豆豆跳跳糖，持有 2" }))[0]);
+    fireEvent.click(screen.getByRole("button", { name: "使用：彩虹豆豆跳跳糖" }));
     const target = screen.getByRole("button", { name: "西格莉卡" });
     expect(target.closest(".warehouse-modal")).toBeNull();
     target.focus();
     fireEvent.click(target);
     expect(target.disabled).toBe(true);
     expect(screen.getByRole("button", { name: "爱弥斯" }).disabled).toBe(true);
-    expect(screen.getByRole("button", { name: "使用中：彩虹豆豆跳跳糖" }).disabled).toBe(true);
-    fireEvent.click(screen.getByRole("button", { name: "其他道具，数量 1" }));
-    expect(screen.getByRole("button", { name: "使用：其他道具" }).disabled).toBe(true);
-    fireEvent.click(screen.getByRole("button", { name: "彩虹豆豆跳跳糖，数量 2" }));
+    expect(screen.queryByRole("dialog", { name: /道具详情/ })).toBeNull();
     expect(screen.getByRole("button", { name: "关闭仓库" }).disabled).toBe(false);
     expect(screen.getByRole("button", { name: "关闭角色选择" }).disabled).toBe(false);
     expect(document.activeElement).toBe(screen.getByRole("dialog", { name: "选择角色" }));
@@ -89,8 +88,6 @@ describe("warehouse candy story", () => {
     expect(api).toHaveBeenCalledTimes(2);
     await act(async () => rejectRequest(new Error("请重试")));
     expect(target.disabled).toBe(false);
-    fireEvent.click(screen.getByRole("button", { name: "其他道具，数量 1" }));
-    expect(screen.getByRole("button", { name: "使用：其他道具" }).disabled).toBe(false);
     expect(onNotice).toHaveBeenCalledTimes(1);
     api.mockResolvedValueOnce({ items: [{ ...item, quantity: 1 }, other], user: {}, target: { characterId: "sigrika" }, effectText: "效果已同步" });
     await act(async () => fireEvent.click(target));

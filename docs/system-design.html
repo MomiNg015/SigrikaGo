@@ -53,6 +53,8 @@
 </head>
 <body>
 <h1>SigrikaGo 系统设计</h1>
+<h2>2026-11-20 正式仓库俯视收纳箱</h2>
+<p>主页仓库以无标题的俯视收纳箱取代并列目录。盒内道具使用项目原图，每种最多五张，少量道具位于上层；完整持有数仍显示在左侧清单和详情。窗口右上角沿用项目关闭按钮，详情复用纸质卡片及二级弹窗。角色对象选取、自用道具、招募和库存刷新仍使用现有服务与流程。详见 <a href="./system-design/06-ui-theme-mobile.md">UI 分篇</a>。</p>
 <h2>2026-11-19 履历与玩家详细信息绿屏平板</h2>
 <p>正式履历和玩家详细信息复用样板 1 的 IRIS 绿屏平板。设备从学生证头像或详情入口旋转移入，找不到入口时从窗口中心下方展开。平板使用独立的位移、旋转与缩放属性播放样板的入场效果，亮屏时配合专属音效。开机画面只显示 20 格进度条，读取 1 秒后即可操作，减少动态效果时显示静态进度条。外壳尺寸随视口调整，战绩与回放列表均可纵向滚动并隐藏滚动条。从回放返回时恢复原玩法、滚动位置和操作焦点。</p>
 <p>屏幕标题右侧放置该窗口的功能按钮，沿用原有顺序和权限，成就与个性化使用等宽纯图标按钮。桌面固定左侧身份栏，彩色头像和用户名各自水平居中。彩色头像使用绿屏细线头像框。手机竖屏固定上方身份栏，常规高度为 162 像素，112 像素见方的头像与用户名在同一行垂直居中。</p>
@@ -6223,7 +6225,7 @@
 </ul>
 <h2>玩家窗口空状态</h2>
 <p><code>WindowEmptyState</code> 保留调用方原有文案与语义容器，以 <code>aria-hidden</code> 的手绘纸页替代重复的粗虚线卡片。普通校园主题使用透明无边框容器、深墨色常规霞鹜文字与静态纸页；其他主题隐藏插画，保留文字。<code>window-empty-states.css</code> 在书签样式后、黑化样式前加载，显式覆盖旧空状态容器、伪元素和 SVG 的强规则。</p>
-<p>仓库采用确认的纸卡目录与详情布局：数量以「持有 + 数字」右侧对齐，保留硬阴影、悬停／按下反馈及详情圆纹与图片倾斜；分类、种类计数及详情翻页均移除。手机每行一种物品，详情为约 196–226px 的紧凑图文布局。<code>useWarehouseListRows</code> 观察列表高度并分配整数行，配合原生纵向吸附让滑动停止、首尾及尺寸变化后上下边缘均为完整卡片；滚动内边距保留阴影。空库存保留目录和详情，空提示仅在目录内，详情无旧数据，使用按钮禁用。选中项从最新库存解析，移除后就近回退；角色道具、自用道具、招募入口及请求中禁用仍走原流程。队际赛选人页底部“开始队际赛匹配”在三名不同且可出战的已拥有角色全部有效时，直接复用模式卡片的 team 匹配流程并关闭两层窗口。</p>
+<p>仓库的外壳使用俯视收纳箱图 <code>warehouse-box-overhead.webp</code>，不显示标题且不叠加通用方格纸背景；原有关闭按钮中心对准盒沿右上角。盒内按实际持有数叠放道具原图，每种最多五张，较少的在上层；左上角按钮展开纸卡清单，清单保留完整数量，并复用 <code>useWarehouseListRows</code> 的整卡吸附滚动。道具与清单均打开项目既有二级弹窗及纸质详情卡供使用。选中项从最新库存解析，用完时关闭详情；空箱仅显示空状态且禁用清单入口。角色道具、自用道具、招募入口及请求中禁用仍走原流程。队际赛选人页底部“开始队际赛匹配”在三名不同且可出战的已拥有角色全部有效时，直接复用模式卡片的 team 匹配流程并关闭两层窗口。</p>
 <p>普通空状态最小高度 154px，紧凑版为 88px；后者用于履历战绩、装饰区及公告/邮件列表。覆盖观战、好友、排行榜、成就、仓库、公告、邮件、回放、履历战绩、装饰与服装商店。加载提示与错误状态不复用空结果插画；观战只有存在房间时渲染表格，空结果不留空表头，也不会在加载失败时同时显示暂无房间。接入书签的观战窗口移除旧选项卡网格轨道，使正文/空状态在剩余内容区布局。</p>
 <h2>Star rank presentation (2026-09-30)</h2>
 <p><code>RankProgress</code> owns rank plus progress on player/profile/leaderboard/result/invitation/admin surfaces. Four slots form one row, six form two rows of three, and eight form two rows of four. Empty slots remain outlined and earned slots filled using the existing school palette. Ninth dan renders points inline instead of stars. The former separate rating field/column is removed. The final <code>mobile-adaptive/rank-progress.css</code> owner preserves this geometry under the theme cascade; current and pinned leaderboard rows share the same component. Profile summaries now contain rank, total games and win rate.</p>

@@ -44,10 +44,18 @@ for (const width of [1440, 390, 320]) {
       await page.setViewportSize({ width, height: width === 1440 ? 1000 : width === 390 ? 844 : 568 });
       await page.goto(`${base}sample.html?v=screenprint-roles&window=${surface}`);
       if (surface === "announcement") await page.locator(".announcement-list-item").first().click();
+      if (surface === "warehouse") {
+        await page.getByRole("button", { name: "展开持有详情" }).click();
+        await page.locator(".wg-entry").first().click();
+      }
       await settle(page, roles[0][0]);
       const approved = await Promise.all(roles.map(role => cards(page, role)));
       await page.goto(`${base}production.html?window=${surface}`);
       if (surface === "announcement") await page.locator(".announcement-list-item").first().click();
+      if (surface === "warehouse") {
+        await page.getByRole("button", { name: "展开持有详情" }).click();
+        await page.locator(".wg-entry").first().click();
+      }
       await settle(page, roles[0][0]);
       await expect(page.locator("[data-material], #material-preview")).toHaveCount(0);
       expect(await page.evaluate(() => [...document.styleSheets].some(sheet => /\/(?:materials|screenprint-roles|preview-isolation|harness)\.css/.test(sheet.href || sheet.ownerNode?.getAttribute("data-vite-dev-id") || "")))).toBe(false);
@@ -93,6 +101,7 @@ test("every public print loads and non-campus/corrupted surfaces stay isolated",
 test("selection, finished-room hover and pressed cards preserve their print and fill", async ({ page }) => {
   for (const [surface, selector] of [["friends", ".fc-person"], ["warehouse", ".wg-entry"]]) {
     await page.goto(`${base}production.html?window=${surface}`);
+    if (surface === "warehouse") await page.getByRole("button", { name: "展开持有详情" }).click();
     await settle(page, selector);
     const card = page.locator(selector).nth(1);
     const paint = () => card.evaluate(element => ({ image:getComputedStyle(element).backgroundImage, fill:getComputedStyle(element).backgroundColor }));
@@ -100,6 +109,7 @@ test("selection, finished-room hover and pressed cards preserve their print and 
     await card.click();
     await expect(card).toHaveAttribute("aria-pressed", "true");
     expect((await paint()).image).toBe(before.image);
+    if (surface === "warehouse") await page.getByRole("button", { name: "关闭道具详情" }).click();
     await card.hover();
     await page.mouse.down();
     expect((await paint()).image).toBe(before.image);

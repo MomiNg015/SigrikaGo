@@ -2,7 +2,7 @@ import { expect, test } from "@playwright/test";
 import { mockWindowData, settleWindow } from "./window-surfaces-fixture.js";
 
 for (const width of [1440, 390, 320]) {
-  test(`empty warehouse retains the book and disabled controls at ${width}`, async ({ page }, testInfo) => {
+  test(`empty warehouse keeps the box and disables opening an empty list at ${width}`, async ({ page }, testInfo) => {
     await page.setViewportSize({ width, height: 900 });
     await mockWindowData(page);
     await page.route("**/api/items/inventory", route => route.fulfill({ json: { items: [] } }));
@@ -10,18 +10,9 @@ for (const width of [1440, 390, 320]) {
     await expect(page.getByText("暂无道具", { exact: true })).toBeVisible();
     await settleWindow(page);
     const shell = page.locator(".warehouse-modal");
-    const original = await shell.boundingBox();
-    for (const label of ["道具目录", "道具详情"]) await expect(page.getByLabel(label, { exact: true })).toBeVisible();
-    await expect(page.getByRole("button", { name: "使用", exact: true })).toBeDisabled();
-    await expect(page.locator(".wg-filters,.wg-page-turn,.wg-directory-footer")).toHaveCount(0);
-    await expect(page.getByLabel("持有 0", { exact: true })).toBeVisible();
-    const directory = await page.locator(".wg-directory").boundingBox();
-    const inspector = await page.locator(".wg-inspector").boundingBox();
-    if (width > 768) expect(inspector.x).toBeGreaterThanOrEqual(directory.x + directory.width - 1);
-    else expect(inspector.y).toBeGreaterThanOrEqual(directory.y + directory.height - 1);
-    const action = await page.locator(".wg-action-row").boundingBox();
-    expect(action.y + action.height).toBeLessThan(original.y + original.height);
-    expect(await shell.boundingBox()).toEqual(original);
+    await expect(shell).toHaveCSS("background-image", /warehouse-box-overhead/);
+    await expect(page.getByRole("button", { name: "展开持有详情" })).toBeDisabled();
+    await expect(page.locator(".wg-loot,.wg-inspector,.wg-use")).toHaveCount(0);
     expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBe(width);
     await page.screenshot({ path: testInfo.outputPath(`empty-warehouse-${width}.png`), fullPage: true });
   });

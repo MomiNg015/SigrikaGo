@@ -1,0 +1,45 @@
+:is(.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school, .app-shell) .warehouse-modal.warehouse-field-guide.warehouse-box {
+  padding: 0 !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  background: transparent url('/assets/home/warehouse-box-overhead.webp') center / 100% 100% no-repeat !important;
+
+  &.window-sticker-host > .close-button {
+    top: 7.2% !important;
+    right: 5.2% !important;
+    translate: 50% -50% !important;
+    z-index: 4;
+  }
+  .wg-box-content { position: relative; flex: 1; min-height: 0; }
+  .wg-drawer-toggle { position: absolute; z-index: 2; top: 12%; left: 8%; min-height: 36px; }
+  .wg-pile { position: absolute; inset: 0; display: grid; place-items: center; isolation: isolate; }
+  button.wg-loot {
+    position: absolute; display: grid; place-items: center;
+    width: clamp(44px, 17%, 128px); height: clamp(44px, 17%, 120px);
+    padding: 0 !important; border: 0 !important;
+    background: transparent !important; box-shadow: none !important;
+    translate: -50% -50%; rotate: var(--wg-angle);
+  }
+  .wg-loot :is(img, svg) { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; pointer-events: none; filter: drop-shadow(0 4px 3px var(--wg-line)); }
+  .wg-loot:focus-visible { z-index: 100 !important; }
+  .wg-drawer {
+    position: absolute; z-index: 1; inset: calc(12% + 46px) auto 13% 8%;
+    width: min(355px, 84%); display: grid; padding: 8px;
+    border: 2px solid var(--wg-ink); border-radius: 8px; background: var(--wg-paper);
+    transition: opacity 160ms ease-out, translate 160ms ease-out, visibility 160ms;
+  }
+  .wg-drawer[inert] { translate: -12px 0; opacity: 0; visibility: hidden; }
+  .wg-detail-backdrop {
+    position: absolute; z-index: 5; inset: 7.2% 5.2% 10% 4.2%;
+    display: grid; place-items: center; padding: 12px; border-radius: 8px;
+    background: color-mix(in srgb, var(--wg-ink) 35%, transparent);
+  }
+  .wg-item-dialog { position: relative; width: min(100%, 470px); min-width: 0; max-height: 100%; }
+  .wg-item-dialog .wg-inspector { height: clamp(240px, 52dvh, 400px); padding-top: 46px; }
+  .wg-item-dialog .nested-modal-close { position: absolute !important; inset: 6px 10px auto auto !important; z-index: 1; }
+  > .window-loading-state { margin: auto; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .warehouse-box .wg-drawer { transition: none !important; }
+}

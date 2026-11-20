@@ -1,6 +1,8 @@
 # Warehouse paper layout
 
 ## Ownership and approved presentation
+
+The live `WarehouseModal` uses `WarehouseBox`: the top-down art owns the outer shell (no title or notebook background), the shared close button is centered on the painted upper-right corner, and the existing paper directory and inspector are reused. The left drawer is optional and shows exact quantities; the scatter uses up to five copies per stocked type and higher layers for lower quantities. Both paths open the same shared `ModalDialog`. While a character target or result is open, suspend that detail; if the selected item leaves inventory, remove its detail. Empty inventory disables the drawer and offers no use action. The previous layout notes below describe the historical side-by-side prototype and the shared paper cards, not the live outer layout.
 `WarehouseItemGrid` owns selectable single-column item cards, the inspector and its action. `warehouse-field-guide.css`, `warehouse-field-guide-detail.css` and `warehouse-field-guide-mobile.css` are the existing final style owners. Keep import order and the unrelated target-dialog declarations in those files. Do not add a second override layer.
 
 Use aligned `持有` plus a numeral in the directory and beside the action; keep inventory numbers off the artwork. No category tabs, category text, kind counters or detail paging controls. The inspector keeps its circular backdrop, dashed ring and -7 degree artwork rotation. Paper cards have 3px/4px hard shadows, fine-pointer hover lift and press sink. Disabled actions cannot move; reduced motion disables transitions.
