@@ -26,6 +26,10 @@ for (const [width, height] of [[1440, 900], [800, 900], [390, 844], [360, 800], 
     expect(Math.abs(close.x + close.width - (shell.x + shell.width * .948))).toBeLessThan(2);
     expect(Math.abs(close.y - (shell.y + shell.height * .072))).toBeLessThan(2);
     await expect(page.locator(".wg-box-title img")).toBeVisible();
+    const posters = page.locator('.wg-loot[aria-label^="查看道具详情：招募海报"]');
+    const placements = () => posters.evaluateAll(items => items.map(({ style }) => [style.left, style.top, parseFloat(style.getPropertyValue("--wg-angle"))]));
+    const startingPlacements = await placements();
+    expect(Math.max(...startingPlacements.map(([, , angle]) => angle)) - Math.min(...startingPlacements.map(([, , angle]) => angle))).toBeGreaterThan(180);
     if (width === 1440) {
       const loot = page.locator(".wg-loot").first();
       const art = loot.locator("img");
@@ -66,6 +70,7 @@ for (const [width, height] of [[1440, 900], [800, 900], [390, 844], [360, 800], 
     await page.locator(".wg-entry").last().click();
     await expect(page.getByRole("heading", { name: "金币袋" })).toBeVisible();
     await page.getByRole("button", { name: "使用：金币袋", exact: true }).click();
+    expect(await placements()).toEqual(startingPlacements);
     await expect(page.locator(".wg-entry")).toHaveCount(5);
     await expect(page.getByText("目前已持有5种物品")).toBeVisible();
     await expect(page.getByRole("dialog", { name: /道具详情/ })).toHaveCount(0);
@@ -73,6 +78,8 @@ for (const [width, height] of [[1440, 900], [800, 900], [390, 844], [360, 800], 
     await page.mouse.move(0,0);await wholeCards(page);
     await page.getByRole("button", { name: "关闭仓库" }).click();
     await page.getByRole("button", { name: "打开仓库", exact: true }).click();
+    await expect(posters).toHaveCount(5);
+    expect(await placements()).not.toEqual(startingPlacements);
     await page.getByRole("button", { name: "展开持有详情" }).click();
     await expect(page.locator(".wg-entry")).toHaveCount(5);await wholeCards(page);
     expect(errors).toEqual([]);
