@@ -21,7 +21,7 @@ Observe the list and viewport resizing; disconnect observer and listener when di
 
 ## Verification
 
-Rainbow Bean Candy acceptance/rejection must never dispatch an immediate use-outcome Toast. Play its returned branch if available; use the existing effect dialog for a rejected response without a story. Keep genuine API errors, achievement notifications and other items' feedback unchanged.
+Item-use outcomes must never dispatch an immediate Toast. Play the returned story if available or use the existing effect dialog for a rejected character response without a story. Recruitment acceleration success is communicated by the existing countdown presentation, not a Toast. Keep genuine API errors and achievement notifications unchanged.
 
 ### Sigrika corruption debug entry
 

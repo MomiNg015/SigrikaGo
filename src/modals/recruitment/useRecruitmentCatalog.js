@@ -160,7 +160,6 @@ export function useRecruitmentCatalog({ token, user, onNotice, onUserChange, onS
       setPresentationReadyAt(new Date(localReadyAt).toISOString());
       onUserChange?.(data.user);
       onStatusChange?.(nextTask);
-      onNotice?.("指针拨动，招新时间正在快速流逝", "success");
       return data;
     } catch (error) {
       onNotice?.(error.message, "danger");

@@ -97,11 +97,14 @@ describe("warehouse candy story", () => {
   });
 
   it.each([
-    ["accepted", true],
-    ["rejected", true],
-    ["rejected", false]
-  ])("keeps candy outcome %s out of Toasts (story: %s)", async (itemUseOutcome, hasStory) => {
-    const item = { itemId: "rainbow-bean-candy", name: "彩虹豆豆跳跳糖", quantity: 2 };
+    ["rainbow-bean-candy", "accepted", true],
+    ["rainbow-bean-candy", "rejected", true],
+    ["rainbow-bean-candy", "rejected", false],
+    ["other-item", "accepted", false],
+    ["other-item", "accepted", true],
+    ["other-item", "rejected", false]
+  ])("keeps %s outcome %s out of Toasts (story: %s)", async (itemId, itemUseOutcome, hasStory) => {
+    const item = { itemId, name: "道具", quantity: 2 };
     const onNotice = vi.fn();
     const onStoryScript = vi.fn();
     const storyScript = hasStory ? candyStory() : null;
@@ -117,7 +120,7 @@ describe("warehouse candy story", () => {
     expect(onNotice).not.toHaveBeenCalled();
     expect(result.current.items[0].quantity).toBe(quantity);
     if (hasStory) expect(onStoryScript).toHaveBeenCalledWith(storyScript, expect.any(Object));
-    else expect(result.current.targetResult?.effectText).toContain("道具未消耗");
+    else if (itemUseOutcome === "rejected") expect(result.current.targetResult?.effectText).toContain("道具未消耗");
   });
 
   it.each([

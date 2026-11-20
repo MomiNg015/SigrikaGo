@@ -5,7 +5,6 @@ import WarehouseModal, { warehouseTargetState } from "./WarehouseModal.jsx";
 import WarehouseItemGrid from "./warehouse/WarehouseItemGrid.jsx";
 import WarehouseTargetModal, { warehouseCharacterTargetAvailability } from "./warehouse/WarehouseTargetModal.jsx";
 import {
-  characterItemUseNotice,
   itemStoryLabels,
   warehouseOwnedCharactersForDisplay
 } from "./warehouse/useWarehouseInventory.js";
@@ -53,11 +52,7 @@ describe("WarehouseModal candy feedback", () => {
     expect(html).not.toContain("lucide-package");
   });
 
-  it("uses rejection-specific toast and skip copy without claiming the item succeeded", () => {
-    expect(characterItemUseNotice("达妮娅", "彩虹豆豆跳跳糖", "rejected")).toEqual({
-      message: "达妮娅拒绝了彩虹豆豆跳跳糖，道具未消耗",
-      type: "danger"
-    });
+  it("uses rejection-specific skip copy without claiming the item succeeded", () => {
     expect(itemStoryLabels("彩虹豆豆跳跳糖", "rejected").skipMessage).toBe(
       "跳过只会关闭这段演出，道具没有消耗，效果也没有生效。"
     );

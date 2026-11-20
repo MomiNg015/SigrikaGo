@@ -97,28 +97,23 @@ export function useWarehouseInventory({
             }
           });
         }
-        if (!isCandy) {
-          const notice = characterItemUseNotice(characters[data.target.characterId]?.name ?? data.target.characterId, item.name, data.itemUseOutcome);
-          onNotice?.(notice.message, notice.type);
-        }
       } else if (rejected && data.target?.characterId) {
-        const character = characters[data.target.characterId];
-        const notice = characterItemUseNotice(character?.name ?? data.target.characterId, item.name, data.itemUseOutcome);
+        const targetName = characters[data.target.characterId]?.name ?? data.target.characterId;
         setTargetItem(null);
-        setTargetResult(isCandy ? { item, characterId: data.target.characterId, effectText: notice.message } : null);
-        if (!isCandy) onNotice?.(notice.message, notice.type);
+        setTargetResult({
+          item,
+          characterId: data.target.characterId,
+          effectText: `${targetName}拒绝了${item.name}，道具未消耗`
+        });
       } else if (data.effectText && data.target?.characterId) {
-        const character = characters[data.target.characterId];
         setTargetResult({
           item,
           characterId: data.target.characterId,
           effectText: data.effectText,
           itemEffects: data.user?.itemEffects
         });
-        if (!isCandy) onNotice?.(`对${character?.name ?? data.target.characterId}成功使用了${item.name}`, "success");
       } else {
         setTargetItem(null);
-        if (!isCandy) onNotice?.(`成功使用了${item.name}`, "success");
       }
       notifyAchievementUnlocks(data.achievementUnlocks, onNotice);
     } catch (apiError) {
@@ -205,10 +200,4 @@ export function withSigrikaCandyDebugJumpOption(script, {
       ]
     } : node)
   };
-}
-
-export function characterItemUseNotice(characterName, itemName, itemUseOutcome = "accepted") {
-  return itemUseOutcome === "rejected"
-    ? { message: `${characterName}拒绝了${itemName}，道具未消耗`, type: "danger" }
-    : { message: `对${characterName}成功使用了${itemName}`, type: "success" };
 }
