@@ -35,7 +35,7 @@ describe("WarehouseModal candy feedback", () => {
     expect(html).toContain(item.disabledCharacterReasons.sigrika);
   });
 
-  it("uses the box without a visible title and preserves the shared close control", () => {
+  it("uses the original warehouse sticker and shared close control on the box", () => {
     const html = renderToStaticMarkup(createElement(WarehouseModal, {
       token: "token",
       user: { ownedCharacters: [] },
@@ -45,7 +45,7 @@ describe("WarehouseModal candy feedback", () => {
 
     expect(html).toContain('warehouse-field-guide');
     expect(html).toContain('warehouse-box');
-    expect(html).not.toContain('/assets/window-titles/warehouse.webp');
+    expect(html).toContain('/assets/window-titles/warehouse.webp');
     expect(html).toContain('class="close-button"');
     expect(html).not.toContain('收藏图鉴');
     expect(html).toContain('aria-label="关闭仓库"');

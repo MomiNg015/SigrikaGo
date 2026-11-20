@@ -7,11 +7,13 @@
   &.window-sticker-host > .close-button {
     top: 7.2% !important;
     right: 5.2% !important;
-    translate: 50% -50% !important;
+    width: 44px !important; height: 44px !important;
+    translate: none !important;
     z-index: 4;
   }
+  .wg-box-title { position: absolute; z-index: 3; inset: 7.2% 12% auto 4.2%; pointer-events: none; --window-title-left: -8px; }
   .wg-box-content { position: relative; flex: 1; min-height: 0; }
-  .wg-drawer-toggle { position: absolute; z-index: 2; top: 12%; left: 8%; min-height: 36px; }
+  .wg-drawer-toggle { position: absolute; z-index: 2; top: 16%; left: 8%; min-height: 36px; }
   .wg-pile { position: absolute; inset: 0; display: grid; place-items: center; isolation: isolate; }
   button.wg-loot {
     position: absolute; display: grid; place-items: center;
@@ -21,13 +23,23 @@
     translate: -50% -50%; rotate: var(--wg-angle);
   }
   .wg-loot :is(img, svg) { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; pointer-events: none; filter: drop-shadow(0 4px 3px var(--wg-line)); }
-  .wg-loot:focus-visible { z-index: 100 !important; }
+  .wg-pile[data-sparse] .wg-loot { width: clamp(58px, 23%, 170px); height: clamp(58px, 24%, 160px); }
+  .wg-loot-label {
+    display: none; position: absolute; bottom: 100%; left: 50%; translate: -50% 0;
+    rotate: calc(-1 * var(--wg-angle)); width: max-content; max-width: 150px; padding: 3px 8px;
+    border-radius: 5px; background: var(--wg-ink); color: var(--wg-paper); pointer-events: none;
+    font: 400 13px/1.4 var(--font-ui-default); overflow-wrap: anywhere;
+  }
+  .wg-loot:is(:focus-visible, :hover) { z-index: 100 !important; }
+  .wg-loot:is(:focus-visible, :hover) :is(img, svg) { filter: drop-shadow(0 0 2px var(--wg-paper)) drop-shadow(0 4px 4px var(--wg-ink)); }
+  .wg-loot:is(:focus-visible, :hover) .wg-loot-label { display: block; }
   .wg-drawer {
-    position: absolute; z-index: 1; inset: calc(12% + 46px) auto 13% 8%;
-    width: min(355px, 84%); display: grid; padding: 8px;
+    position: absolute; z-index: 1; inset: calc(16% + 46px) auto 13% 8%;
+    width: min(355px, 84%); display: grid; grid-template-rows: auto minmax(0, 1fr); gap: 5px; padding: 8px;
     border: 2px solid var(--wg-ink); border-radius: 8px; background: var(--wg-paper);
     transition: opacity 160ms ease-out, translate 160ms ease-out, visibility 160ms;
   }
+  .wg-drawer-summary { margin: 0 3px; color: var(--wg-ink); font: 400 14px/1.5 var(--font-ui-default); }
   .wg-drawer[inert] { translate: -12px 0; opacity: 0; visibility: hidden; }
   .wg-detail-backdrop {
     position: absolute; z-index: 5; inset: 7.2% 5.2% 10% 4.2%;

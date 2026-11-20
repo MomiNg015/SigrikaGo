@@ -21,12 +21,24 @@ for (const [width, height] of [[1440, 900], [800, 900], [390, 844], [360, 800], 
     await expect(page.locator(".wg-loot").first()).toHaveCSS("background-color", "rgba(0, 0, 0, 0)");
     const shell = await page.locator(".warehouse-modal").boundingBox();
     const close = await page.getByRole("button", { name: "关闭仓库" }).boundingBox();
-    expect(Math.abs(close.x + close.width / 2 - (shell.x + shell.width * .948))).toBeLessThan(2);
-    expect(Math.abs(close.y + close.height / 2 - (shell.y + shell.height * .072))).toBeLessThan(2);
+    expect(close.width).toBe(44);
+    expect(close.height).toBe(44);
+    expect(Math.abs(close.x + close.width - (shell.x + shell.width * .948))).toBeLessThan(2);
+    expect(Math.abs(close.y - (shell.y + shell.height * .072))).toBeLessThan(2);
+    await expect(page.locator(".wg-box-title img")).toBeVisible();
+    if (width === 1440) {
+      const loot = page.locator(".wg-loot").first();
+      await loot.hover();
+      await expect(loot.locator(".wg-loot-label")).toBeVisible();
+      await page.mouse.move(0, 0);
+      await loot.focus();
+      await expect(loot.locator(".wg-loot-label")).toBeVisible();
+    }
     await page.locator(".wg-loot").first().click();
     await expect(page.getByRole("dialog", { name: /道具详情/ })).toBeVisible();
     await page.keyboard.press("Escape");
     await page.getByRole("button", { name: "展开持有详情" }).click();
+    await expect(page.getByText("目前已持有6种物品")).toBeVisible();
     await wholeCards(page);
     await page.locator(".wg-entry").first().click();
     const detail = await page.locator(".wg-inspector").boundingBox();
@@ -47,6 +59,7 @@ for (const [width, height] of [[1440, 900], [800, 900], [390, 844], [360, 800], 
     await expect(page.getByRole("heading", { name: "金币袋" })).toBeVisible();
     await page.getByRole("button", { name: "使用：金币袋", exact: true }).click();
     await expect(page.locator(".wg-entry")).toHaveCount(5);
+    await expect(page.getByText("目前已持有5种物品")).toBeVisible();
     await expect(page.getByRole("dialog", { name: /道具详情/ })).toHaveCount(0);
     await expect(page.locator(".wg-use")).toHaveCount(0);
     await page.mouse.move(0,0);await wholeCards(page);
@@ -57,6 +70,23 @@ for (const [width, height] of [[1440, 900], [800, 900], [390, 844], [360, 800], 
     expect(errors).toEqual([]);
   });
 }
+
+test("a nearly empty warehouse enlarges its item without changing the window", async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  const route = "**/api/items/inventory";
+  const entry = { itemId: "bag", name: "金币袋", imageUrl: "/assets/items/gacha-coin-bag.svg" };
+  const openWithQuantity = async quantity => {
+    await page.route(route, request => request.fulfill({ json: { items: [{ ...entry, quantity }, ...(quantity === 1 ? [] : [{ ...entry, itemId: "other", quantity: 2 }])] } }), { times: 1 });
+    await page.goto("/tests/e2e/fixtures/window-surfaces.html?surface=Warehouse");
+    await expect(page.locator(".wg-loot").first()).toBeVisible();
+    return page.locator(".wg-loot").first().evaluate(button => button.offsetWidth);
+  };
+  const regular = await openWithQuantity(5);
+  const sparse = await openWithQuantity(1);
+  expect(sparse).toBeGreaterThan(regular);
+  await page.getByRole("button", { name: "展开持有详情" }).click();
+  await expect(page.getByText("目前已持有1种物品")).toBeVisible();
+});
 
 test("warehouse character use, recruitment and feedback keep their real component routes", async ({ page }) => {
   await page.goto(preview);

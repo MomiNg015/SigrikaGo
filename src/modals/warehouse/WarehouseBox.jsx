@@ -5,7 +5,7 @@ import WindowEmptyState from "../WindowEmptyState.jsx";
 import { ItemArt, WarehouseDirectory, WarehouseInspector } from "./WarehouseItemGrid.jsx";
 import { useWarehouseListRows } from "./useWarehouseListRows.js";
 
-function scatterItems(items) {
+function scatterItems(items, sparse) {
   let slot = 0;
   return [...items].sort((first, second) => first.quantity - second.quantity).flatMap((item, index) =>
     Array.from({ length: Math.min(5, item.quantity) }, (_, copy) => {
@@ -13,8 +13,8 @@ function scatterItems(items) {
       return {
         item, key: `${item.itemId}-${copy}`,
         style: {
-          left: `${14 + (position * 0.618 % 1) * 72}%`,
-          top: `${24 + (position * 0.414 % 1) * 56}%`,
+          left: `${sparse ? 24 + (position * 0.618 % 1) * 52 : 14 + (position * 0.618 % 1) * 72}%`,
+          top: `${sparse ? 33 + (position * 0.414 % 1) * 43 : 27 + (position * 0.414 % 1) * 53}%`,
           "--wg-angle": `${(position * 7 % 41) - 20}deg`,
           zIndex: items.length - index
         }
@@ -29,6 +29,7 @@ export default function WarehouseBox({ items, targetOpen, ...actions }) {
   const toggleRef = useRef(null);
   const listRef = useWarehouseListRows(drawerOpen);
   const stocked = items.filter(item => item.quantity > 0);
+  const sparse = stocked.reduce((total, entry) => total + Math.min(5, entry.quantity), 0) <= 5;
   const item = stocked.find(entry => entry.itemId === itemId);
   const detailOpen = Boolean(item) && !targetOpen;
 
@@ -44,13 +45,15 @@ export default function WarehouseBox({ items, targetOpen, ...actions }) {
     <ModalActionButton ref={toggleRef} variant="secondary" className="wg-drawer-toggle" disabled={!stocked.length} aria-controls="warehouse-box-directory" aria-expanded={drawerOpen && Boolean(stocked.length)} onClick={() => setDrawerOpen(open => !open)}>
       {drawerOpen && stocked.length ? "收起持有详情" : "展开持有详情"}
     </ModalActionButton>
-    <div className="wg-pile" inert={drawerOpen && Boolean(stocked.length)} aria-label="箱内道具">
-      {scatterItems(stocked).map(({ item: entry, key, style }) => <button type="button" className="wg-loot" key={key} style={style} aria-label={`查看道具详情：${entry.name}，持有 ${entry.quantity}`} onClick={() => setItemId(entry.itemId)}>
+    <div className="wg-pile" data-sparse={sparse || undefined} inert={drawerOpen && Boolean(stocked.length)} aria-label="箱内道具">
+      {scatterItems(stocked, sparse).map(({ item: entry, key, style }) => <button type="button" className="wg-loot" key={key} style={style} aria-label={`查看道具详情：${entry.name}，持有 ${entry.quantity}`} onClick={() => setItemId(entry.itemId)}>
         <ItemArt item={entry} />
+        <span className="wg-loot-label" aria-hidden="true">{entry.name}</span>
       </button>)}
       {!stocked.length && <WindowEmptyState compact>暂无道具</WindowEmptyState>}
     </div>
     <div className="wg-drawer" id="warehouse-box-directory" inert={!drawerOpen || !stocked.length}>
+      <p className="wg-drawer-summary">目前已持有{stocked.length}种物品</p>
       {stocked.length > 0 && <WarehouseDirectory items={stocked} listRef={listRef} item={item} onSelect={entry => setItemId(entry.itemId)} />}
     </div>
     {detailOpen && <div className="wg-detail-backdrop" onClick={() => setItemId("")}>

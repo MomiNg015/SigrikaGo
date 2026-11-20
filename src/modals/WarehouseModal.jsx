@@ -1,4 +1,5 @@
 import WindowLoadingState from "./WindowLoadingState.jsx";
+import WindowTitleSticker from "./WindowTitleSticker.jsx";
 import { X } from "lucide-react";
 import WarehouseBox from "./warehouse/WarehouseBox.jsx";
 import WarehouseTargetModal from "./warehouse/WarehouseTargetModal.jsx";
@@ -21,7 +22,8 @@ export default function WarehouseModal({ token, user, characters, onUserChange, 
     <div className="modal-backdrop warehouse-guide-backdrop" onClick={(event) => {
       if (event.target === event.currentTarget) onClose();
     }}>
-      <section className="warehouse-modal warehouse-field-guide warehouse-box window-sticker-host" role="dialog" aria-modal="true" aria-label="物品收纳箱">
+      <section className="warehouse-modal warehouse-field-guide warehouse-box window-sticker-host" role="dialog" aria-modal="true" aria-labelledby="warehouse-box-title">
+        <div className="wg-box-title"><WindowTitleSticker titleKey="warehouse" id="warehouse-box-title" /></div>
         <button className="close-button" type="button" aria-label="关闭仓库" onClick={onClose}><X size={20} /></button>
         {loading && <WindowLoadingState>加载中...</WindowLoadingState>}
         {!loading && (
