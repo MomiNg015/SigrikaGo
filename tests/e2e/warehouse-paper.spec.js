@@ -41,6 +41,8 @@ for (const [width, height] of [[1440, 900], [800, 900], [390, 844], [360, 800], 
     await expect(page.locator(".wg-box-title img")).toBeVisible();
     await expect(page.locator(".wg-drawer-toggle .window-bookmark-paper")).toHaveCSS("scale", "-1 1");
     await expect(page.locator(".wg-drawer-toggle .window-bookmark-label")).toHaveCSS("writing-mode", "horizontal-tb");
+    const bookmark = await page.locator(".wg-drawer-toggle .window-bookmark-paper").boundingBox();
+    expect(Math.abs(bookmark.x + 1 - (shell.x + shell.width * .0435))).toBeLessThan(1);
     const posters = page.locator('.wg-loot[aria-label^="查看道具详情：招募海报"]');
     const placements = () => posters.evaluateAll(items => items.map(({ style }) => [style.left, style.top, parseFloat(style.getPropertyValue("--wg-angle"))]));
     const startingPlacements = await placements();

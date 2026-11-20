@@ -16,7 +16,7 @@
   button.wg-drawer-toggle {
     --bookmark-paper: var(--wg-paper);
     --bookmark-tilt: 0deg;
-    position: absolute; z-index: 2; top: 16%; left: 5.5%; isolation: isolate;
+    position: absolute; z-index: 2; top: 16%; left: calc(4.35% - 1px); isolation: isolate;
     display: grid; place-items: center; width: 126px; min-height: 44px; padding: 4px 15px 4px 10px;
     background: transparent !important; border: 0 !important; box-shadow: none !important;
   }
