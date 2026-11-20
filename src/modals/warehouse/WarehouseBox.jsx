@@ -7,12 +7,22 @@ import { useWarehouseListRows } from "./useWarehouseListRows.js";
 
 const MAX_COPIES_PER_ITEM = 10;
 const GOLDEN_ANGLE = 137.508;
-const MAX_COVERAGE = .20;
+const MAX_COVERAGE = .195;
 
 function overlap(first, second) {
   const span = (axis) => Math.max(0, Math.min(first[axis] + first.radius, second[axis] + second.radius)
     - Math.max(first[axis] - first.radius, second[axis] - second.radius));
   return span("left") * span("top");
+}
+
+function tryPlacement(box, candidate, boxes) {
+  const budget = (candidate.radius * 2) ** 2 * MAX_COVERAGE;
+  const neighbors = boxes.filter(other => other !== box);
+  const intersections = neighbors.map(other => overlap(candidate, other));
+  const coverage = intersections.reduce((total, intersection) => total + intersection, 0);
+  if (coverage > budget || neighbors.some((other, index) => other.coverage - overlap(box, other) + intersections[index] > other.budget)) return;
+  neighbors.forEach((other, index) => { other.coverage += intersections[index] - overlap(box, other); });
+  Object.assign(box, candidate, { budget, coverage });
 }
 
 function itemRandom(seed, itemId) {
@@ -43,7 +53,7 @@ function placeItems(entries, width, height, seed) {
   const floorWidth = width * .84;
   const floorTop = height * .16 + 48;
   const floorHeight = Math.max(1, height * .88 - floorTop);
-  const maximumSize = entries.length <= 5 ? 170 : 128;
+  const maximumSize = entries.length <= 5 ? 188 : 148;
   let columns = 1;
   let bestCell = 0;
   for (let candidate = 1; candidate <= entries.length; candidate++) {
@@ -79,12 +89,20 @@ function placeItems(entries, width, height, seed) {
         left: constrain(box.left + (random() - .5) * cellWidth * .75, width * .08 + box.radius, width * .92 - box.radius),
         top: constrain(box.top + (random() - .5) * cellHeight * .75, floorTop + box.radius, floorTop + floorHeight - box.radius)
       };
-      const neighbors = boxes.filter(other => other !== box);
-      const intersections = neighbors.map(other => overlap(candidate, other));
-      const coverage = intersections.reduce((total, intersection) => total + intersection, 0);
-      if (coverage > box.budget || neighbors.some((other, index) => other.coverage - overlap(box, other) + intersections[index] > other.budget)) continue;
-      neighbors.forEach((other, index) => { other.coverage += intersections[index] - overlap(box, other); });
-      Object.assign(box, candidate, { coverage });
+      tryPlacement(box, candidate, boxes);
+    }
+  }
+  for (let pass = 0; pass < 4; pass++) {
+    for (const box of boxes) {
+      const size = Math.min(maximumSize, box.size * (pass < 2 ? 1.12 : 1.045));
+      if (size === box.size) continue;
+      const radius = box.radius * size / box.size;
+      if (radius * 2 > Math.min(floorWidth, floorHeight)) continue;
+      tryPlacement(box, {
+        size, radius,
+        left: constrain(box.left, width * .08 + radius, width * .92 - radius),
+        top: constrain(box.top, floorTop + radius, floorTop + floorHeight - radius)
+      }, boxes);
     }
   }
   return new Map(boxes.map(({ entry, left, top, size }) => [

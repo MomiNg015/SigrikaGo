@@ -129,6 +129,8 @@ test("27 copies spread across the box and respect the overlap limit after resizi
   await expect(copies).toHaveCount(27);
   await settleWindow(page);
   expect(await largestCover(page)).toBeLessThanOrEqual(.20);
+  const meanFootprint = await copies.evaluateAll(buttons => buttons.reduce((total, button) => total + button.getBoundingClientRect().width, 0) / buttons.length);
+  expect(meanFootprint).toBeGreaterThan(102);
   const firstSize = await copies.first().evaluate(button => button.offsetWidth);
   await page.screenshot({ path: testInfo.outputPath("spread-desktop.png") });
   await page.setViewportSize({ width: 390, height: 844 });
