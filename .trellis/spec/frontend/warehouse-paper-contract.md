@@ -21,6 +21,8 @@ Observe the list and viewport resizing; disconnect observer and listener when di
 
 ## Verification
 
+Rainbow Bean Candy acceptance/rejection must never dispatch an immediate use-outcome Toast. Play its returned branch if available; use the existing effect dialog for a rejected response without a story. Keep genuine API errors, achievement notifications and other items' feedback unchanged.
+
 ### Sigrika corruption debug entry
 
 Only when `SIGRIKA_CANDY_CORRUPTION_ENABLED` is enabled and in non-production builds, `useWarehouseInventory` augments Sigrika's `rainbow-bean-candy` story at `use-1-start` through `use-7-start` with the existing eighth-use debug choice. Preserve authored options (or synthesize the existing next-node continuation), never mutate server nodes, and require `corruption-start` to exist. Other items/characters, recovery scripts and production playback remain unchanged.

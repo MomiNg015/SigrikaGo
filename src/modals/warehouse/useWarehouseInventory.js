@@ -47,6 +47,7 @@ export function useWarehouseInventory({
 
   async function useItem(item, characterId = "") {
     if (itemUseInFlightRef.current) return;
+    const isCandy = item.itemId === RAINBOW_BEAN_CANDY_ID;
     itemUseInFlightRef.current = true;
     setUsingItemId(item.itemId);
     try {
@@ -59,9 +60,8 @@ export function useWarehouseInventory({
       onUserChange(data.user);
       const rejected = data.itemUseOutcome === "rejected";
       if (data.storyScript && data.target?.characterId) {
-        const character = characters[data.target.characterId];
         const labels = itemStoryLabels(data.item?.name ?? item.name, data.itemUseOutcome);
-        const storyScript = item.itemId === RAINBOW_BEAN_CANDY_ID
+        const storyScript = isCandy
           ? withSigrikaCandyDebugJumpOption(data.storyScript, { characterId: data.target.characterId })
           : data.storyScript;
         setTargetItem(null);
@@ -97,14 +97,16 @@ export function useWarehouseInventory({
             }
           });
         }
-        const notice = characterItemUseNotice(character?.name ?? data.target.characterId, item.name, data.itemUseOutcome);
-        onNotice?.(notice.message, notice.type);
+        if (!isCandy) {
+          const notice = characterItemUseNotice(characters[data.target.characterId]?.name ?? data.target.characterId, item.name, data.itemUseOutcome);
+          onNotice?.(notice.message, notice.type);
+        }
       } else if (rejected && data.target?.characterId) {
         const character = characters[data.target.characterId];
         const notice = characterItemUseNotice(character?.name ?? data.target.characterId, item.name, data.itemUseOutcome);
         setTargetItem(null);
-        setTargetResult(null);
-        onNotice?.(notice.message, notice.type);
+        setTargetResult(isCandy ? { item, characterId: data.target.characterId, effectText: notice.message } : null);
+        if (!isCandy) onNotice?.(notice.message, notice.type);
       } else if (data.effectText && data.target?.characterId) {
         const character = characters[data.target.characterId];
         setTargetResult({
@@ -113,10 +115,10 @@ export function useWarehouseInventory({
           effectText: data.effectText,
           itemEffects: data.user?.itemEffects
         });
-        onNotice?.(`对${character?.name ?? data.target.characterId}成功使用了${item.name}`, "success");
+        if (!isCandy) onNotice?.(`对${character?.name ?? data.target.characterId}成功使用了${item.name}`, "success");
       } else {
         setTargetItem(null);
-        onNotice?.(`成功使用了${item.name}`, "success");
+        if (!isCandy) onNotice?.(`成功使用了${item.name}`, "success");
       }
       notifyAchievementUnlocks(data.achievementUnlocks, onNotice);
     } catch (apiError) {

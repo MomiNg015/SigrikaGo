@@ -93,7 +93,31 @@ describe("warehouse candy story", () => {
     await act(async () => fireEvent.click(target));
     expect(screen.getByRole("dialog", { name: "道具效果" }).textContent).toContain("效果已同步");
     expect(api).toHaveBeenCalledTimes(3);
-    expect(onNotice).toHaveBeenCalledTimes(2);
+    expect(onNotice).toHaveBeenCalledExactlyOnceWith("请重试", "danger");
+  });
+
+  it.each([
+    ["accepted", true],
+    ["rejected", true],
+    ["rejected", false]
+  ])("keeps candy outcome %s out of Toasts (story: %s)", async (itemUseOutcome, hasStory) => {
+    const item = { itemId: "rainbow-bean-candy", name: "彩虹豆豆跳跳糖", quantity: 2 };
+    const onNotice = vi.fn();
+    const onStoryScript = vi.fn();
+    const storyScript = hasStory ? candyStory() : null;
+    const quantity = itemUseOutcome === "rejected" ? 2 : 1;
+    api.mockResolvedValueOnce({ items: [item] }).mockResolvedValueOnce({
+      items: [{ ...item, quantity }], user: {}, itemUseOutcome, storyScript, target: { characterId: "denia" }
+    });
+    const { result } = renderHook(() => useWarehouseInventory({
+      token: "test-token", characters: { denia: { name: "达妮娅" } }, onUserChange: vi.fn(), onStoryScript, onNotice
+    }));
+    await waitFor(() => expect(result.current.loading).toBe(false));
+    await act(() => result.current.useItem(item, "denia"));
+    expect(onNotice).not.toHaveBeenCalled();
+    expect(result.current.items[0].quantity).toBe(quantity);
+    if (hasStory) expect(onStoryScript).toHaveBeenCalledWith(storyScript, expect.any(Object));
+    else expect(result.current.targetResult?.effectText).toContain("道具未消耗");
   });
 
   it.each([
