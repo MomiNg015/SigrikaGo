@@ -2,6 +2,18 @@ import { expect, test } from "@playwright/test";
 import { settleWindow } from "./window-surfaces-fixture.js";
 
 const preview = "/docs/design-samples/warehouse-paper-2026-10-22/production.html";
+
+async function largestCover(page) {
+  return page.locator(".wg-loot").evaluateAll(buttons => {
+    const bounds = buttons.map(button => button.getBoundingClientRect());
+    return Math.max(0, ...bounds.map((box, index) => (
+      bounds.filter((_, otherIndex) => otherIndex !== index).reduce((total, other) => total
+        + Math.max(0, Math.min(box.right, other.right) - Math.max(box.left, other.left))
+        * Math.max(0, Math.min(box.bottom, other.bottom) - Math.max(box.top, other.top)), 0)
+      / (box.width * box.height)
+    )));
+  });
+}
 async function wholeCards(page) {
   await expect.poll(() => page.locator(".wg-list").evaluate(list => {
     const bounds = list.getBoundingClientRect();
@@ -18,6 +30,7 @@ for (const [width, height] of [[1440, 900], [800, 900], [390, 844], [360, 800], 
     await page.goto(preview);
     await expect(page.locator(".wg-loot")).toHaveCount(14);
     await settleWindow(page);
+    expect(await largestCover(page)).toBeLessThanOrEqual(.20);
     await expect(page.locator(".wg-loot").first()).toHaveCSS("background-color", "rgba(0, 0, 0, 0)");
     const shell = await page.locator(".warehouse-modal").boundingBox();
     const close = await page.getByRole("button", { name: "关闭仓库" }).boundingBox();
@@ -101,6 +114,26 @@ test("a nearly empty warehouse enlarges its item without changing the window", a
   expect(sparse).toBeGreaterThan(regular);
   await page.getByRole("button", { name: "展开持有详情" }).click();
   await expect(page.getByText("目前已持有1种物品")).toBeVisible();
+});
+
+test("27 copies spread across the box and respect the overlap limit after resizing", async ({ page }, testInfo) => {
+  await page.route("**/api/items/inventory", route => route.fulfill({ json: { items: [
+    { itemId: "clock", name: "魔法时钟", quantity: 9, imageUrl: "/assets/items/magic-clock.svg" },
+    { itemId: "candy", name: "彩虹豆豆跳跳糖", quantity: 10, imageUrl: "/assets/items/rainbow-bean-candy.webp" },
+    { itemId: "radio", name: "电台招募券", quantity: 5, imageUrl: "/assets/items/radio-recruitment-ticket.webp" },
+    { itemId: "poster", name: "招募海报", quantity: 3, imageUrl: "/assets/items/recruitment-poster.webp" }
+  ] } }));
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto("/tests/e2e/fixtures/window-surfaces.html?surface=Warehouse");
+  const copies = page.locator(".wg-loot");
+  await expect(copies).toHaveCount(27);
+  await settleWindow(page);
+  expect(await largestCover(page)).toBeLessThanOrEqual(.20);
+  const firstSize = await copies.first().evaluate(button => button.offsetWidth);
+  await page.screenshot({ path: testInfo.outputPath("spread-desktop.png") });
+  await page.setViewportSize({ width: 390, height: 844 });
+  await expect.poll(() => copies.first().evaluate(button => button.offsetWidth)).toBeLessThan(firstSize);
+  expect(await largestCover(page)).toBeLessThanOrEqual(.20);
 });
 
 test("warehouse character use, recruitment and feedback keep their real component routes", async ({ page }) => {

@@ -17,13 +17,12 @@
   .wg-pile { position: absolute; inset: 0; display: grid; place-items: center; isolation: isolate; }
   button.wg-loot {
     position: absolute; display: grid; place-items: center;
-    width: clamp(44px, 17%, 128px); height: clamp(44px, 17%, 120px);
+    width: var(--wg-size, 44px); height: var(--wg-size, 44px);
     padding: 0 !important; border: 0 !important;
     background: transparent !important; box-shadow: none !important;
     translate: -50% -50%; rotate: var(--wg-angle);
   }
   .wg-loot :is(img, svg) { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; pointer-events: none; filter: drop-shadow(0 4px 3px var(--wg-line)); }
-  .wg-pile[data-sparse] .wg-loot { width: clamp(58px, 23%, 170px); height: clamp(58px, 24%, 160px); }
   .wg-loot:focus-visible { z-index: 100 !important; }
   .wg-loot:focus-visible :is(img, svg) { filter: drop-shadow(0 0 2px var(--wg-paper)); }
   @media (hover: hover) and (pointer: fine) {
