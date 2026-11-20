@@ -5,10 +5,12 @@ import WindowEmptyState from "../WindowEmptyState.jsx";
 import { ItemArt, WarehouseDirectory, WarehouseInspector } from "./WarehouseItemGrid.jsx";
 import { useWarehouseListRows } from "./useWarehouseListRows.js";
 
+const MAX_COPIES_PER_ITEM = 10;
+
 function scatterItems(items, sparse) {
   let slot = 0;
   return [...items].sort((first, second) => first.quantity - second.quantity).flatMap((item, index) =>
-    Array.from({ length: Math.min(5, item.quantity) }, (_, copy) => {
+    Array.from({ length: Math.min(MAX_COPIES_PER_ITEM, item.quantity) }, (_, copy) => {
       const position = slot++ + 1;
       return {
         item, key: `${item.itemId}-${copy}`,
@@ -29,7 +31,7 @@ export default function WarehouseBox({ items, targetOpen, ...actions }) {
   const toggleRef = useRef(null);
   const listRef = useWarehouseListRows(drawerOpen);
   const stocked = items.filter(item => item.quantity > 0);
-  const sparse = stocked.reduce((total, entry) => total + Math.min(5, entry.quantity), 0) <= 5;
+  const sparse = stocked.reduce((total, entry) => total + Math.min(MAX_COPIES_PER_ITEM, entry.quantity), 0) <= 5;
   const item = stocked.find(entry => entry.itemId === itemId);
   const detailOpen = Boolean(item) && !targetOpen;
 
@@ -48,7 +50,6 @@ export default function WarehouseBox({ items, targetOpen, ...actions }) {
     <div className="wg-pile" data-sparse={sparse || undefined} inert={drawerOpen && Boolean(stocked.length)} aria-label="箱内道具">
       {scatterItems(stocked, sparse).map(({ item: entry, key, style }) => <button type="button" className="wg-loot" key={key} style={style} aria-label={`查看道具详情：${entry.name}，持有 ${entry.quantity}`} onClick={() => setItemId(entry.itemId)}>
         <ItemArt item={entry} />
-        <span className="wg-loot-label" aria-hidden="true">{entry.name}</span>
       </button>)}
       {!stocked.length && <WindowEmptyState compact>暂无道具</WindowEmptyState>}
     </div>

@@ -28,11 +28,19 @@ for (const [width, height] of [[1440, 900], [800, 900], [390, 844], [360, 800], 
     await expect(page.locator(".wg-box-title img")).toBeVisible();
     if (width === 1440) {
       const loot = page.locator(".wg-loot").first();
+      const art = loot.locator("img");
+      const hitbox = await loot.boundingBox();
       await loot.hover();
-      await expect(loot.locator(".wg-loot-label")).toBeVisible();
+      await expect(art).toHaveCSS("translate", "3px -7px");
+      await expect(art).toHaveCSS("rotate", "8deg");
+      expect(await loot.boundingBox()).toEqual(hitbox);
+      await expect(loot.locator(".wg-loot-label")).toHaveCount(0);
+      await page.emulateMedia({ reducedMotion: "reduce" });
+      await expect(art).toHaveCSS("translate", "none");
+      await expect(art).toHaveCSS("rotate", "none");
       await page.mouse.move(0, 0);
       await loot.focus();
-      await expect(loot.locator(".wg-loot-label")).toBeVisible();
+      await expect(loot).toHaveCSS("z-index", "100");
     }
     await page.locator(".wg-loot").first().click();
     await expect(page.getByRole("dialog", { name: /道具详情/ })).toBeVisible();
@@ -112,7 +120,7 @@ test("warehouse character use, recruitment and feedback keep their real componen
 test("warehouse large inventory and long text keep quantities, actions and whole rows reachable", async ({ page }) => {
   await page.setViewportSize({ width:320,height:740 });
   await page.goto(`${preview}?many&long&largeCounts`);
-  await expect(page.getByRole("button", { name: /查看道具详情：彩虹豆豆跳跳糖 1特别/ })).toHaveCount(5);
+  await expect(page.getByRole("button", { name: /查看道具详情：彩虹豆豆跳跳糖 1特别/ })).toHaveCount(10);
   await page.getByRole("button", { name: "展开持有详情" }).click();
   await expect(page.locator(".wg-entry")).toHaveCount(30);await settleWindow(page);await wholeCards(page);
   await page.locator(".wg-entry").first().click();

@@ -24,15 +24,16 @@
   }
   .wg-loot :is(img, svg) { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; pointer-events: none; filter: drop-shadow(0 4px 3px var(--wg-line)); }
   .wg-pile[data-sparse] .wg-loot { width: clamp(58px, 23%, 170px); height: clamp(58px, 24%, 160px); }
-  .wg-loot-label {
-    display: none; position: absolute; bottom: 100%; left: 50%; translate: -50% 0;
-    rotate: calc(-1 * var(--wg-angle)); width: max-content; max-width: 150px; padding: 3px 8px;
-    border-radius: 5px; background: var(--wg-ink); color: var(--wg-paper); pointer-events: none;
-    font: 400 13px/1.4 var(--font-ui-default); overflow-wrap: anywhere;
+  .wg-loot:focus-visible { z-index: 100 !important; }
+  .wg-loot:focus-visible :is(img, svg) { filter: drop-shadow(0 0 2px var(--wg-paper)); }
+  @media (hover: hover) and (pointer: fine) {
+    .wg-loot :is(img, svg) { transition: translate 160ms ease-out, rotate 160ms ease-out; }
+    .wg-loot:hover { z-index: 100 !important; }
+    .wg-loot:hover :is(img, svg) {
+      translate: 3px -7px; rotate: 8deg;
+      filter: drop-shadow(0 0 2px var(--wg-paper)) drop-shadow(0 4px 4px var(--wg-ink));
+    }
   }
-  .wg-loot:is(:focus-visible, :hover) { z-index: 100 !important; }
-  .wg-loot:is(:focus-visible, :hover) :is(img, svg) { filter: drop-shadow(0 0 2px var(--wg-paper)) drop-shadow(0 4px 4px var(--wg-ink)); }
-  .wg-loot:is(:focus-visible, :hover) .wg-loot-label { display: block; }
   .wg-drawer {
     position: absolute; z-index: 1; inset: calc(16% + 46px) auto 13% 8%;
     width: min(355px, 84%); display: grid; grid-template-rows: auto minmax(0, 1fr); gap: 5px; padding: 8px;
@@ -54,4 +55,7 @@
 
 @media (prefers-reduced-motion: reduce) {
   .warehouse-box .wg-drawer { transition: none !important; }
+  :is(.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school, .app-shell) .warehouse-modal.warehouse-field-guide.warehouse-box .wg-loot:hover :is(img, svg) {
+    transition: none; translate: none; rotate: none;
+  }
 }
