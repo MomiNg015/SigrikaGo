@@ -165,6 +165,7 @@ export default function WarehouseBox({ items, targetOpen, ...actions }) {
   const listRef = useWarehouseListRows(drawerOpen);
   const stocked = useMemo(() => items.filter(item => item.quantity > 0), [items]);
   const entries = useMemo(() => scatterItems(stocked, scatterSeed), [stocked, scatterSeed]);
+  const [batchEntry] = useState(() => entries.length > 16);
   const placements = useBoxPlacements(entries, scatterSeed, pileRef, toggleRef);
   const item = stocked.find(entry => entry.itemId === itemId);
   const detailOpen = Boolean(item) && !targetOpen;
@@ -177,7 +178,7 @@ export default function WarehouseBox({ items, targetOpen, ...actions }) {
     toggleRef.current?.focus();
   }
 
-  return <div className="wg-box-content" onKeyDown={handleEscape}>
+  return <div className="wg-box-content" data-batch-entry={batchEntry || undefined} onKeyDown={handleEscape}>
     <button ref={toggleRef} type="button" className="window-bookmark-tab wg-drawer-toggle" disabled={!stocked.length} aria-controls="warehouse-box-directory" aria-expanded={drawerOpen && Boolean(stocked.length)} onClick={() => setDrawerOpen(open => !open)}>
       <BookmarkPaper />
       <span className="window-bookmark-label">{drawerOpen && stocked.length ? "收起持有详情" : "展开持有详情"}</span>

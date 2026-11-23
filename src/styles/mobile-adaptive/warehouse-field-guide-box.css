@@ -63,27 +63,6 @@
   > .window-loading-state { margin: auto; }
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  :is(.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school, .app-shell) .warehouse-modal.warehouse-field-guide.warehouse-box {
-    --warehouse-box-settle-time: 150ms;
-    animation: warehouse-box-settle var(--warehouse-box-settle-time) cubic-bezier(.23, 1, .32, 1) backwards;
-
-    .wg-pile:has(.wg-loot) {
-      animation: warehouse-items-settle 150ms cubic-bezier(.23, 1, .32, 1) var(--warehouse-box-settle-time) backwards;
-    }
-  }
-}
-
-@keyframes warehouse-box-settle {
-  from { opacity: 0; transform: translateY(-12px) scale(1.025); }
-  to { opacity: 1; transform: none; }
-}
-
-@keyframes warehouse-items-settle {
-  from { opacity: 0; transform: translateY(-16px) scale(1.04); }
-  to { opacity: 1; transform: none; }
-}
-
 @media (prefers-reduced-motion: reduce) {
   .warehouse-box .wg-drawer { transition: none !important; }
   :is(.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school, .app-shell) .warehouse-modal.warehouse-field-guide.warehouse-box .wg-loot:hover :is(img, svg) {

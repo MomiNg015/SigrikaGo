@@ -3,25 +3,64 @@ import { settleWindow } from "./window-surfaces-fixture.js";
 
 const preview = "/docs/design-samples/warehouse-paper-2026-10-22/production.html";
 
-test("warehouse places the box before the items and honors reduced motion", async ({ page }) => {
-  await page.setViewportSize({ width: 390, height: 844 });
-  await page.goto(preview);
-  const box = page.locator(".warehouse-box");
-  const pile = box.locator(".wg-pile");
-  await expect(pile.locator(".wg-loot")).toHaveCount(14);
-  await expect(box).toHaveCSS("animation-name", "warehouse-box-settle");
-  await expect(pile).toHaveCSS("animation-name", "warehouse-items-settle");
-  const boxDuration = await box.evaluate(el => parseFloat(getComputedStyle(el).animationDuration));
-  const pileDelay = await pile.evaluate(el => parseFloat(getComputedStyle(el).animationDelay));
-  expect(boxDuration).toBeGreaterThan(0);
-  expect(pileDelay).toBeGreaterThanOrEqual(boxDuration);
-  await settleWindow(page);
-  await expect(pile).toHaveCSS("opacity", "1");
-  await page.emulateMedia({ reducedMotion: "reduce" });
-  await expect(box).toHaveCSS("animation-name", "none");
-  await expect(pile).toHaveCSS("animation-name", "none");
-  await expect(pile).toHaveCSS("opacity", "1");
-});
+for (const [width, height] of [[1440, 900], [390, 844]]) {
+  test(`warehouse lands the box and item waves before revealing controls at ${width}px`, async ({ page }) => {
+    await page.setViewportSize({ width, height });
+    await page.addInitScript(() => {
+      document.addEventListener("DOMContentLoaded", () => {
+        const style = document.createElement("style");
+        style.textContent = ".warehouse-box, .warehouse-box :is(.wg-loot, .wg-box-title, .close-button, .wg-drawer-toggle) { animation-play-state: paused !important; }";
+        document.head.append(style);
+      }, { once: true });
+    });
+    await page.goto(preview);
+    const box = page.locator(".warehouse-box");
+    const loot = box.locator(".wg-loot");
+    await expect(loot).toHaveCount(14);
+    const frames = await box.evaluate(el => {
+      const [first, , , fourth] = el.querySelectorAll(".wg-loot");
+      const controls = [...el.querySelectorAll(":scope > .wg-box-title, :scope > .close-button, .wg-drawer-toggle")];
+      const animationFor = node => node.getAnimations().find(animation => animation.animationName?.startsWith("warehouse-"));
+      const boxEnd = animationFor(el).effect.getComputedTiming().endTime;
+      const lastItemEnd = animationFor(fourth).effect.getComputedTiming().endTime;
+      const entrants = [el, first, fourth, ...controls];
+      const animations = entrants.map(animationFor);
+      const sample = time => {
+        animations.forEach(animation => { animation.currentTime = time; });
+        return entrants.map(node => {
+          const style = getComputedStyle(node);
+          const bounds = node.getBoundingClientRect();
+          return { centerY: bounds.y + bounds.height / 2, y: node === el ? parseFloat(style.translate.split(" ")[1]) || 0 : new DOMMatrix(style.transform).m42, opacity: Number(style.opacity), visible: style.visibility === "visible" };
+        });
+      };
+      return {
+        early: sample(40),
+        impact: sample(boxEnd * .65),
+        falling: sample(boxEnd + 16),
+        firstWave: sample(boxEnd + 80),
+        lastWave: sample(lastItemEnd - 40),
+        finished: sample(lastItemEnd + 140),
+        delays: animations.map(animation => animation.effect.getTiming().delay),
+        boxEnd, lastItemEnd
+      };
+    });
+    expect(frames.early[0].y).toBeLessThan(-30);
+    expect(frames.impact[0].y).toBeGreaterThan(4);
+    expect(frames.early.slice(1).every(layer => !layer.visible)).toBe(true);
+    expect(frames.delays[1]).toBe(frames.boxEnd);
+    expect(frames.delays[2]).toBeGreaterThan(frames.delays[1]);
+    expect(frames.falling[1].centerY).toBeLessThan(frames.finished[1].centerY - 30);
+    expect(frames.firstWave[1].opacity).toBeGreaterThan(.7);
+    expect(frames.firstWave[2].visible).toBe(false);
+    expect(frames.delays.slice(3)).toEqual(Array(3).fill(frames.lastItemEnd));
+    expect(frames.lastWave.slice(3).every(layer => !layer.visible)).toBe(true);
+    expect(frames.finished.every(layer => layer.visible && layer.opacity === 1 && layer.y === 0)).toBe(true);
+    await page.emulateMedia({ reducedMotion: "reduce" });
+    await expect(box).toHaveCSS("animation-name", "none");
+    await expect(loot.first()).toHaveCSS("animation-name", "none");
+    await expect(box.getByRole("button", { name: "关闭仓库" })).toBeVisible();
+  });
+}
 
 async function largestCover(page) {
   return page.locator(".wg-loot").evaluateAll(buttons => {
@@ -151,6 +190,8 @@ test("27 copies spread across the box and respect the overlap limit after resizi
   await page.goto("/tests/e2e/fixtures/window-surfaces.html?surface=Warehouse");
   const copies = page.locator(".wg-loot");
   await expect(copies).toHaveCount(27);
+  await expect(page.locator(".wg-pile")).toHaveCSS("animation-name", "warehouse-items-settle");
+  await expect(copies.first()).toHaveCSS("animation-name", "none");
   await settleWindow(page);
   const respectsFloorAndControls = () => page.locator(".wg-pile").evaluate(pile => {
     const floor = pile.getBoundingClientRect();

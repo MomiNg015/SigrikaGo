@@ -1,0 +1,78 @@
+@media (prefers-reduced-motion: no-preference) {
+  :is(.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school, .app-shell) .warehouse-modal.warehouse-field-guide.warehouse-box {
+    --wg-box-time: 280ms;
+    --wg-item-time: 240ms;
+    --wg-item-step: 42ms;
+    --wg-drop-delay: var(--wg-box-time);
+    --wg-controls-delay: var(--wg-drop-delay);
+    --wg-land-ease: cubic-bezier(.23, 1, .32, 1);
+    animation: warehouse-box-settle var(--wg-box-time) var(--wg-land-ease) backwards;
+
+    /* As the inventory mounts, start the drop and reveal controls on the same clock. */
+
+    &:has(.wg-pile > .wg-loot) { --wg-controls-delay: calc(var(--wg-drop-delay) + var(--wg-item-time)); }
+    &:has(> .wg-box-content:not([data-batch-entry]) .wg-loot:nth-child(2)) {
+      --wg-controls-delay: calc(var(--wg-drop-delay) + var(--wg-item-time) + var(--wg-item-step));
+    }
+    &:has(> .wg-box-content:not([data-batch-entry]) .wg-loot:nth-child(3)) {
+      --wg-controls-delay: calc(var(--wg-drop-delay) + var(--wg-item-time) + var(--wg-item-step) * 2);
+    }
+    &:has(> .wg-box-content:not([data-batch-entry]) .wg-loot:nth-child(4)) {
+      --wg-controls-delay: calc(var(--wg-drop-delay) + var(--wg-item-time) + var(--wg-item-step) * 3);
+    }
+    &:has(> .wg-box-content) > :is(.wg-box-title, .close-button),
+    .wg-pile > .window-empty-state,
+    .wg-drawer-toggle {
+      animation: warehouse-controls-reveal 130ms var(--wg-land-ease) var(--wg-controls-delay) backwards;
+    }
+    &:has(> .window-loading-state) > .wg-box-title { visibility: hidden; }
+    &:has(> .window-loading-state) > .close-button,
+    > .window-loading-state { animation: warehouse-loading-reveal 130ms ease-out var(--wg-box-time) backwards; }
+    .wg-box-content:not([data-batch-entry]) .wg-loot {
+      --wg-anchor: -50%;
+      --wg-flight-x: -18px;
+      --wg-flight-angle: -10deg;
+      --wg-wave: 0;
+      animation: warehouse-items-settle var(--wg-item-time) var(--wg-land-ease)
+        calc(var(--wg-drop-delay) + var(--wg-item-step) * var(--wg-wave)) backwards;
+      &:nth-child(4n + 2) { --wg-wave: 1; --wg-flight-x: 22px; --wg-flight-angle: 9deg; }
+      &:nth-child(4n + 3) { --wg-wave: 2; --wg-flight-x: -8px; --wg-flight-angle: 14deg; }
+      &:nth-child(4n) { --wg-wave: 3; --wg-flight-x: 12px; --wg-flight-angle: -13deg; }
+    }
+    .wg-box-content[data-batch-entry] > .wg-pile {
+      animation: warehouse-items-settle var(--wg-item-time) var(--wg-land-ease) var(--wg-drop-delay) backwards;
+    }
+  }
+}
+
+@keyframes warehouse-box-settle {
+  from { opacity: 0; translate: 0 -11dvh; rotate: -3.5deg; scale: 1.075; animation-timing-function: ease-in; }
+  18% { opacity: 1; }
+  65% { translate: 0 7px; rotate: .85deg; scale: 1.015 .985; }
+  83% { translate: 0 -3px; rotate: -.35deg; scale: 1.004; }
+  to { opacity: 1; translate: none; rotate: none; scale: none; }
+}
+
+@keyframes warehouse-items-settle {
+  from {
+    visibility: hidden;
+    opacity: 0;
+    translate: calc(var(--wg-anchor, 0%) + var(--wg-flight-x, 0px)) calc(var(--wg-anchor, 0%) - 64px);
+    scale: 1.18; rotate: calc(var(--wg-angle, 0deg) + var(--wg-flight-angle, 0deg));
+    animation-timing-function: ease-in;
+  }
+  24% { visibility: visible; opacity: 1; }
+  65% { translate: var(--wg-anchor, 0%) calc(var(--wg-anchor, 0%) + 5px); scale: .95; }
+  83% { translate: var(--wg-anchor, 0%) calc(var(--wg-anchor, 0%) - 2px); scale: 1.015; }
+  to { opacity: 1; }
+}
+
+@keyframes warehouse-controls-reveal {
+  from { visibility: hidden; opacity: 0; transform: translate3d(0, 5px, 0); }
+  to { opacity: 1; transform: none; }
+}
+
+@keyframes warehouse-loading-reveal {
+  from { visibility: hidden; opacity: 0; }
+  to { opacity: 1; }
+}
