@@ -144,10 +144,12 @@ describe("MailboxModal information center", () => {
     const readRow = screen.getByRole("button", { name: /已阅读通知.*已读/ });
     expect(readRow.classList.contains("state-done")).toBe(true);
     expect(readRow.querySelectorAll(".information-card-badge")).toHaveLength(1);
+    expect(readRow.querySelector(".mailbox-list-gift")).toBeNull();
     const claimableRow = screen.getByRole("button", { name: /仍待领取.*待领取/ });
     expect(claimableRow.classList.contains("state-done")).toBe(false);
     expect(claimableRow.classList.contains("state-open")).toBe(true);
-    expect([...claimableRow.querySelectorAll(".information-card-badge")].map((badge) => badge.dataset.state)).toEqual(["read", "claimable"]);
+    expect([...claimableRow.querySelectorAll(".information-card-badge")].map((badge) => badge.dataset.state)).toEqual(["read"]);
+    expect(claimableRow.querySelector(".mailbox-list-heading .mailbox-list-gift").dataset.state).toBe("claimable");
     expect(claimableRow.classList.contains("is-read")).toBe(true);
     expect(container.querySelector(".mailbox-unread-dot")).toBeNull();
     expect(container.querySelector(".mailbox-list-status")).toBeNull();
@@ -281,7 +283,7 @@ describe("MailboxModal information center", () => {
     expect(css).toContain(".mailbox-list-item.state-open");
     expect(css).not.toContain("var(--theme-accent-2) 24%");
     expect(css).not.toContain(".mailbox-list-state");
-    expect(readCssWithImports(pathToFileURL(resolve("src/styles/modals.css")))).toContain(".information-card-badges");
+    expect(readCssWithImports(pathToFileURL(resolve("src/styles/modals.css")))).toContain(".information-card-badge");
     expect(css).toContain("border: 2px solid color-mix(in srgb, var(--theme-border) 72%, transparent)");
     expect(informationCenterCss).toContain("border-bottom: 2px dashed");
     expect(informationCenterCss).toContain("padding-bottom: 18px");

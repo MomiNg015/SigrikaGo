@@ -22,7 +22,7 @@ export function useInformationListRows(items) {
       for (const item of list.children) {
         const button = item.firstElementChild;
         if (!button) continue;
-        const title = button.querySelector(".announcement-list-title, .mailbox-list-title");
+        const title = button.querySelector(".announcement-list-title, .mailbox-list-heading");
         const meta = button.querySelector(".announcement-list-meta, .mailbox-list-meta");
         const css = getComputedStyle(button);
         const number = (value) => parseFloat(value) || 0;

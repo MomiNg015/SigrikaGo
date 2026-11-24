@@ -8,7 +8,8 @@ import { api } from "../api/client.js";
 import { RECRUITMENT_ITEM_TYPES, recruitmentItemForType } from "../shared/recruitment.js";
 import MarkdownLiteContent from "../shared/MarkdownLiteContent.jsx";
 import InformationCenterLayout, { useNarrowInformationCenter } from "./InformationCenterLayout.jsx";
-import InformationCardBadges from "./InformationCardBadges.jsx";
+import InformationReadBadge from "./InformationReadBadge.jsx";
+import MailboxListGift from "./MailboxListGift.jsx";
 import { useInformationListRows } from "./useInformationListRows.js";
 import { ModalActionButton, ModalDialog } from "./modalComponents.jsx";
 
@@ -142,8 +143,11 @@ export default function MailboxModal({
                       aria-current={selected?.id === message.id ? "true" : undefined}
                       onClick={() => selectMessage(message)}
                     >
-                      <InformationCardBadges isRead={message.isRead} attachmentState={attachmentState} />
-                      <span className="mailbox-list-title">{message.title}</span>
+                      <InformationReadBadge isRead={message.isRead} />
+                      <span className="mailbox-list-heading">
+                        <span className="mailbox-list-title">{message.title}</span>
+                        {attachmentState && <MailboxListGift state={attachmentState} />}
+                      </span>
                       <span className="mailbox-list-meta">
                         <span className="mailbox-list-sender">{sender}</span>
                         <time className="mailbox-list-time" dateTime={message.createdAt}>{listTime}</time>

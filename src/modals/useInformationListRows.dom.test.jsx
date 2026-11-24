@@ -9,7 +9,8 @@ function Directory({ items, enabled = true }) {
   const ref = useInformationListRows(items);
   return items.length ? <ul ref={ref} data-testid="list" style={{ "--information-paper-fit": enabled ? "1" : "0", "--information-card-min-height": "72px", rowGap: "12px", padding: "11px 9px 10px 11px" }}>
     {items.map(id => <li key={id}><button style={{ padding: "8px 11px 7px 20px", rowGap: "4px", border: "2px solid" }}>
-      <span className="mailbox-list-title">{id}</span><span className="mailbox-list-meta">发件人</span>
+      <span className="mailbox-list-heading"><span className="mailbox-list-title">{id}</span></span>
+      <span className="mailbox-list-meta">发件人</span>
     </button></li>)}
   </ul> : null;
 }
@@ -46,7 +47,7 @@ it("accounts for wrapped content and leaves non-paper themes untouched", () => {
   const { getByTestId, rerender } = render(<Directory items={items}/>);
   const list = getByTestId("list");
   Object.defineProperty(list, "clientHeight", { value: 400 });
-  Object.defineProperty(list.querySelector(".mailbox-list-title"), "offsetHeight", { value: 60 });
+  Object.defineProperty(list.querySelector(".mailbox-list-heading"), "offsetHeight", { value: 60 });
   Object.defineProperty(list.querySelector(".mailbox-list-meta"), "offsetHeight", { value: 40 });
   resize();
   expect(parseFloat(list.style.getPropertyValue("--information-paper-row-height"))).toBe(183.5);

@@ -75,6 +75,15 @@ for (const kind of ["announcement", "mailbox"]) {
       await open(page, kind, fixture);
       if (fixture === "long") {
         await wholeRows(page, kind);
+        if (kind === "mailbox") {
+          const row = page.locator(".mailbox-list-item").first();
+          const heading = await row.locator(".mailbox-list-heading").boundingBox();
+          const title = await row.locator(".mailbox-list-title").boundingBox();
+          const gift = await row.locator(".mailbox-list-gift").boundingBox();
+          expect(title.x + title.width).toBeLessThan(gift.x);
+          expect(gift.x + gift.width).toBeCloseTo(heading.x + heading.width);
+          expect(Math.abs(gift.y - title.y)).toBeLessThanOrEqual(3);
+        }
         await page.locator(`.${kind}-list-item`).first().click();
         await settleWindow(page);
         const prose = page.locator(kind === "announcement" ? ".announcement-detail-body" : ".mailbox-body");
@@ -95,12 +104,21 @@ test("mail attachment preview, claim, gray completion, delete and close preserve
   const first = page.locator(".mailbox-list-item").first();
   const readBadge = first.locator('.information-card-badge[data-state="read"]');
   await expect(readBadge).toHaveCSS("width", "14px");
-  await expect(readBadge).toHaveCSS("background-image", "linear-gradient(145deg, rgb(215, 245, 223), rgb(168, 223, 183))");
-  await expect(readBadge.locator("svg path")).toHaveCSS("stroke", "rgb(61, 43, 37)");
-  const attachment = first.locator('.information-card-badge[data-state="claimable"]');
-  await expect(attachment).toHaveCSS("background-image", "linear-gradient(145deg, rgb(255, 242, 196), rgb(255, 220, 130))");
-  await expect(attachment).toHaveCSS("border-top", "1px solid rgb(0, 0, 0)");
-  await expect(attachment.locator("svg")).toBeVisible();
+  await expect(first.locator(".information-card-badge")).toHaveCount(1);
+  await expect(readBadge).toHaveCSS("background-image", "linear-gradient(145deg, rgb(244, 243, 241), rgb(221, 220, 218))");
+  await expect(readBadge.locator("svg path")).toHaveCSS("stroke", "rgb(70, 74, 81)");
+  const attachment = first.locator('.mailbox-list-heading .mailbox-list-gift[data-state="claimable"]');
+  await expect(attachment).toHaveCSS("width", "18px");
+  await expect(attachment).toHaveCSS("background-color", "rgba(0, 0, 0, 0)");
+  await expect(attachment).toHaveCSS("border-top-width", "0px");
+  await expect(attachment.locator(".mailbox-list-gift-box")).toHaveCSS("fill", "rgb(247, 211, 79)");
+  await expect(attachment).toHaveCSS("animation-name", "mailbox-list-gift-bounce");
+  await attachment.evaluate(el => {
+    const animation = el.getAnimations()[0];
+    animation.pause();
+    animation.currentTime = 240;
+  });
+  await expect(attachment).toHaveCSS("translate", "0px -2px");
   await page.getByRole("button", {name:/查看道具详情/}).click();
   await expect(page.getByRole("dialog",{name:/道具详情/})).toBeVisible();
   await page.keyboard.press("Escape");
@@ -108,7 +126,9 @@ test("mail attachment preview, claim, gray completion, delete and close preserve
   await page.getByRole("button",{name:"领取附件",exact:true}).click();
   await expect(page.getByRole("button",{name:"已领取",exact:true})).toBeDisabled();
   await expect(page.locator(".mailbox-list-item").first()).toHaveClass(/state-done/);
-  await expect(first.locator('.information-card-badge[data-state="claimed"]')).toHaveCSS("background-image", "linear-gradient(145deg, rgb(244, 243, 241), rgb(221, 220, 218))");
+  const claimedGift = first.locator('.mailbox-list-gift[data-state="claimed"]');
+  await expect(claimedGift.locator(".mailbox-list-gift-box")).toHaveCSS("fill", "rgb(211, 209, 206)");
+  await expect(claimedGift).toHaveCSS("animation-name", "none");
   await page.getByRole("button",{name:"删除邮件",exact:true}).click();
   await expect(page.locator(".mailbox-list-item")).toHaveCount(5);
   await page.getByRole("button",{name:"关闭邮箱",exact:true}).click();
@@ -142,6 +162,7 @@ test("original motion and reduced-motion behavior; other themes stay outside pap
   const motion=await page.locator(".mailbox-detail-header,.mailbox-body,.mailbox-attachment-shelf").evaluateAll(es=>es.map(e=>{const c=getComputedStyle(e);return [c.animationName,c.animationDuration,c.animationDelay];}));
   expect(motion).toEqual([["mailbox-detail-content-enter","0.42s","0s"],["mailbox-detail-content-enter","0.42s","0.1s"],["mailbox-detail-content-enter","0.42s","0.2s"]]);
   await page.emulateMedia({reducedMotion:"reduce"});
+  await expect(page.locator('.mailbox-list-gift[data-state="claimable"]').first()).toHaveCSS("animation-name", "none");
   expect(await page.locator(".mailbox-list-item").first().evaluate(e=>getComputedStyle(e).transitionDuration)).toBe("0s");
   await page.locator(".app-shell").evaluate(e=>e.classList.add("is-sigrika-corrupted"));
   await page.setViewportSize({width:900,height:900});

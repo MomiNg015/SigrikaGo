@@ -90,7 +90,43 @@
   background: color-mix(in srgb, var(--theme-text) 4%, transparent);
 }
 
+.mailbox-list-heading {
+  min-width: 0;
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.mailbox-list-gift {
+  --mailbox-gift-ink: #695218;
+  --mailbox-gift-fill: #f7d34f;
+  --mailbox-gift-ribbon: #ffec99;
+  flex: 0 0 auto;
+  width: 18px;
+  height: 18px;
+  margin-block-start: 1px;
+}
+
+.mailbox-list-gift[data-state="claimed"] {
+  --mailbox-gift-ink: #66625e;
+  --mailbox-gift-fill: #d3d1ce;
+  --mailbox-gift-ribbon: #eeedea;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .mailbox-list-gift[data-state="claimable"] {
+    animation: mailbox-list-gift-bounce 3s ease-in-out infinite;
+  }
+}
+
+@keyframes mailbox-list-gift-bounce {
+  8% { translate: 0 -2px; }
+  22% { translate: 0 -1px; }
+  0%, 16%, 30%, 100% { translate: none; }
+}
+
 .mailbox-list-title {
+  flex: 1;
   min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;

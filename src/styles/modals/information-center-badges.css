@@ -1,17 +1,9 @@
-.information-card-badges {
+.information-card-badge {
   position: absolute;
   top: -7px;
   left: -7px;
   z-index: 1;
-  display: grid;
-  grid-template-columns: 14px;
-  grid-auto-rows: 14px;
-  place-items: center;
-  gap: 5px;
-}
-
-.information-card-badge {
-  --information-card-icon-ink: #3d2b25;
+  --information-card-icon-ink: #464a51;
   --information-card-badge-light: #ef5d55;
   --information-card-badge-shade: #e34446;
   display: grid;
@@ -27,24 +19,15 @@
 }
 
 .information-card-badge[data-state="unread"] {
+  top: -5px;
+  left: -5px;
   width: 10px;
   height: 10px;
 }
 
 .information-card-badge[data-state="read"] {
-  --information-card-badge-light: #d7f5df;
-  --information-card-badge-shade: #a8dfb7;
-}
-
-.information-card-badge[data-state="claimable"] {
-  --information-card-badge-light: #fff2c4;
-  --information-card-badge-shade: #ffdc82;
-}
-
-.information-card-badge[data-state="claimed"] {
   --information-card-badge-light: #f4f3f1;
   --information-card-badge-shade: #dddcda;
-  --information-card-icon-ink: #464a51;
 }
 
 .information-center-modal .information-card-badge :is(svg, svg *) {

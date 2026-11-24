@@ -6,7 +6,7 @@ import { Pin, RefreshCw } from "lucide-react";
 import { api } from "../api/client.js";
 import MarkdownLiteContent from "../shared/MarkdownLiteContent.jsx";
 import InformationCenterLayout, { useNarrowInformationCenter } from "./InformationCenterLayout.jsx";
-import InformationCardBadges from "./InformationCardBadges.jsx";
+import InformationReadBadge from "./InformationReadBadge.jsx";
 import { useInformationListRows } from "./useInformationListRows.js";
 import { ModalActionButton } from "./modalComponents.jsx";
 
@@ -268,7 +268,7 @@ export default function AnnouncementModal({
                       aria-current={detail.item?.id === item.id ? "true" : undefined}
                       onClick={() => openDetail(item)}
                     >
-                      <InformationCardBadges isRead={!item.isUnread} />
+                      <InformationReadBadge isRead={!item.isUnread} />
                       <span className="announcement-list-title">{item.title}</span>
                       <span className="announcement-list-meta">
                         {item.pinned && (
