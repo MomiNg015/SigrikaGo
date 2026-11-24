@@ -16,8 +16,8 @@ async function expectCornerBadge(row) {
   await expect.poll(() => badge.evaluate(el => {
     const box = el.getBoundingClientRect();
     const card = el.closest("button").getBoundingClientRect();
-    const x = card.left - 2;
-    const y = card.top - 2;
+    const x = box.left + box.width / 2;
+    const y = card.top - 1;
     return box.left < card.left && box.top < card.top && box.right > card.left && box.bottom > card.top
       && Boolean(el.contains(document.elementFromPoint(x, y)));
   })).toBe(true);
@@ -94,10 +94,11 @@ test("mail attachment preview, claim, gray completion, delete and close preserve
   await open(page,"mailbox");
   const first = page.locator(".mailbox-list-item").first();
   const readBadge = first.locator('.information-card-badge[data-state="read"]');
-  await expect(readBadge).toHaveCSS("background-image", "linear-gradient(145deg, rgb(185, 242, 167), rgb(90, 205, 120))");
+  await expect(readBadge).toHaveCSS("width", "14px");
+  await expect(readBadge).toHaveCSS("background-image", "linear-gradient(145deg, rgb(215, 245, 223), rgb(168, 223, 183))");
   await expect(readBadge.locator("svg path")).toHaveCSS("stroke", "rgb(61, 43, 37)");
   const attachment = first.locator('.information-card-badge[data-state="claimable"]');
-  await expect(attachment).toHaveCSS("background-image", "linear-gradient(145deg, rgb(255, 242, 149), rgb(246, 186, 40))");
+  await expect(attachment).toHaveCSS("background-image", "linear-gradient(145deg, rgb(255, 242, 196), rgb(255, 220, 130))");
   await expect(attachment).toHaveCSS("border-top", "1px solid rgb(0, 0, 0)");
   await expect(attachment.locator("svg")).toBeVisible();
   await page.getByRole("button", {name:/查看道具详情/}).click();
@@ -107,7 +108,7 @@ test("mail attachment preview, claim, gray completion, delete and close preserve
   await page.getByRole("button",{name:"领取附件",exact:true}).click();
   await expect(page.getByRole("button",{name:"已领取",exact:true})).toBeDisabled();
   await expect(page.locator(".mailbox-list-item").first()).toHaveClass(/state-done/);
-  await expect(first.locator('.information-card-badge[data-state="claimed"]')).toHaveCSS("background-image", "linear-gradient(145deg, rgb(241, 242, 244), rgb(191, 196, 204))");
+  await expect(first.locator('.information-card-badge[data-state="claimed"]')).toHaveCSS("background-image", "linear-gradient(145deg, rgb(244, 243, 241), rgb(221, 220, 218))");
   await page.getByRole("button",{name:"删除邮件",exact:true}).click();
   await expect(page.locator(".mailbox-list-item")).toHaveCount(5);
   await page.getByRole("button",{name:"关闭邮箱",exact:true}).click();
@@ -117,7 +118,9 @@ test("mail attachment preview, claim, gray completion, delete and close preserve
 test("announcement categories, reads, hover and press keep paper selection", async ({page}) => {
   await open(page,"announcement");
   await expect(page.locator(".announcement-list-item").first()).not.toHaveClass(/is-unread/);
-  await expect(page.locator(".announcement-list-item").nth(1).locator('.information-card-badge[data-state="unread"]')).toHaveCSS("background-image", "linear-gradient(145deg, rgb(255, 119, 115), rgb(227, 36, 62))");
+  const unreadBadge = page.locator(".announcement-list-item").nth(1).locator('.information-card-badge[data-state="unread"]');
+  await expect(unreadBadge).toHaveCSS("width", "10px");
+  await expect(unreadBadge).toHaveCSS("background-image", "linear-gradient(145deg, rgb(239, 93, 85), rgb(227, 68, 70))");
   await page.getByRole("tab",{name:/日志/}).click();
   await expect(page.locator(".announcement-list-item")).toHaveCount(2);
   const row=page.locator(".announcement-list-item").last();
