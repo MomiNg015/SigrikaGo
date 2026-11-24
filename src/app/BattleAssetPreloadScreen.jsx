@@ -4,6 +4,7 @@ import { battlePreloadAssets, preloadLoginAssets } from "../shared/preloadAssets
 import { preloadPlayableReady } from "./playableReadyPreload.js";
 import { canonicalCharacterId } from "../shared/characterAliases.js";
 import AssetPreloadScreen from "./AssetPreloadScreen.jsx";
+import { BATTLE_LOADING_ILLUSTRATION } from "./battleLoadingArt.js";
 
 export const PRELOAD_READY_RETRY_DELAYS_MS = Object.freeze([1200, 2400, 5000, 5000]);
 
@@ -66,6 +67,7 @@ export default function BattleAssetPreloadScreen({
     <>
       <AssetPreloadScreen
         character={character}
+        illustration={BATTLE_LOADING_ILLUSTRATION}
         loadingLinesText={siteSettings?.characterLoadingLines}
         progress={progress}
         user={user}

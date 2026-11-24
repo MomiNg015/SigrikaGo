@@ -1,4 +1,4 @@
-import { lazy, memo, Suspense } from "react";
+import { lazy, memo, Suspense, useEffect } from "react";
 import AuthScreen from "../auth/AuthScreen.jsx";
 import HomeScreen from "../home/HomeScreen.jsx";
 import RoomScreen from "../room/RoomScreen.jsx";
@@ -14,13 +14,15 @@ import {
 } from "../audio/playback.jsx";
 import { findCharacter } from "../shared/characterDisplay.js";
 import AssetPreloadScreen from "./AssetPreloadScreen.jsx";
+import { BATTLE_LOADING_ILLUSTRATION } from "./battleLoadingArt.js";
 import LoginAssetPreloadScreen from "./LoginAssetPreloadScreen.jsx";
 import { rememberDismissedResultRoom } from "./resumeSession.js";
-import { planRoomBackNavigation } from "./roomNavigation.js";
+import { BATTLE_RETURN_VIEW, planRoomBackNavigation } from "./roomNavigation.js";
 
 const AdminConsole = lazy(() => import("../admin/AdminConsole.jsx"));
 const BattleAssetPreloadScreen = lazy(() => import("./BattleAssetPreloadScreen.jsx"));
 const TutorialBattleScreen = lazy(() => import("../tutorial/TutorialBattleScreen.jsx"));
+const BATTLE_RETURN_DURATION_MS = 900;
 const TUTORIAL_BATTLE_ENTRY_LOADING_TEXT = "正在激烈对局中...";
 
 export default function AppRoutes({
@@ -90,6 +92,14 @@ export default function AppRoutes({
   musicTracks,
   announcementUnread
 }) {
+  useEffect(() => {
+    if (view !== BATTLE_RETURN_VIEW) return undefined;
+    const timer = window.setTimeout(() => {
+      setView((current) => current === BATTLE_RETURN_VIEW ? "home" : current);
+    }, BATTLE_RETURN_DURATION_MS);
+    return () => window.clearTimeout(timer);
+  }, [setView, view]);
+
   const homeScreen = user && (
     <HomeRoute
       homeOnboardingActive={homeOnboardingActive}
@@ -132,6 +142,7 @@ export default function AppRoutes({
   const routeLoadingScreen = (
     <AssetPreloadScreen
       characters={characters}
+      illustration={view === "match-preloading" ? BATTLE_LOADING_ILLUSTRATION : undefined}
       loadingLinesText={siteSettings.characterLoadingLines}
       progress={assetProgress}
       user={user}
@@ -142,6 +153,7 @@ export default function AppRoutes({
   const tutorialBattleRouteLoadingScreen = (
     <AssetPreloadScreen
       character={tutorialBattleLoadingCharacter(tutorialBattleSession, characters)}
+      illustration={BATTLE_LOADING_ILLUSTRATION}
       characters={characters}
       label={TUTORIAL_BATTLE_ENTRY_LOADING_TEXT}
       progress={0}
@@ -162,8 +174,6 @@ export default function AppRoutes({
           user={user}
           tipsText={siteSettings.preloadTips}
         /> : <LoginAssetPreloadScreen
-          characters={characters}
-          loadingLinesText={siteSettings.characterLoadingLines}
           progress={assetProgress}
           tipsText={siteSettings.preloadTips}
         />
@@ -179,6 +189,15 @@ export default function AppRoutes({
             user={user}
           />
         </Suspense>
+      )}
+      {view === BATTLE_RETURN_VIEW && (
+        <AssetPreloadScreen
+          illustration={BATTLE_LOADING_ILLUSTRATION}
+          label="正在返回主界面..."
+          progress={1}
+          showTips={false}
+          user={user}
+        />
       )}
       {view === "home" && homeScreen}
       {view === "admin" && user?.role === "admin" && (
@@ -246,6 +265,7 @@ export default function AppRoutes({
           characters={characters}
           loadingLinesText={siteSettings.characterLoadingLines}
           progress={assetProgress}
+          illustration={BATTLE_LOADING_ILLUSTRATION}
           statusText="正在恢复对局..."
           tipsText={siteSettings.preloadTips}
           user={user}

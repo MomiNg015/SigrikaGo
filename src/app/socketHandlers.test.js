@@ -557,7 +557,7 @@ describe("socket handlers", () => {
 
     expect(deps.setDismissedResultRoom).toHaveBeenCalledWith("12345");
     expect(deps.showToast).not.toHaveBeenCalled();
-    expect(deps.setView).toHaveBeenCalledWith("home");
+    expect(deps.setView).toHaveBeenCalledWith("battle-return");
   });
 
   it("resets app state after account logout", () => {

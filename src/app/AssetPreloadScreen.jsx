@@ -87,16 +87,16 @@ export function randomPreloadCharacter(
 function randomPreloadDisplayState({
   tips,
   characters,
-  fixedCharacter = null,
+  rotateCharacter = true,
   currentTipIndex = -1,
   currentCharacter = null,
   readyPortraitSources = null
 }) {
   return {
     tipIndex: randomTipIndex(tips, currentTipIndex),
-    randomCharacter: fixedCharacter
-      ? null
-      : randomPreloadCharacter(characters, Math.random, currentCharacter, readyPortraitSources)
+    randomCharacter: rotateCharacter
+      ? randomPreloadCharacter(characters, Math.random, currentCharacter, readyPortraitSources)
+      : null
   };
 }
 
@@ -110,6 +110,7 @@ function characterFromCatalogById(characters, characterId) {
 export default function AssetPreloadScreen({
   character = null,
   characters = CHARACTERS,
+  illustration = null,
   label = "",
   progress,
   progressNote = "",
@@ -131,45 +132,47 @@ export default function AssetPreloadScreen({
   const tipsSignature = tips.join("\n");
   const fixedCharacter = isExcludedPreloadCharacter(character) ? null : character;
   const fixedCharacterId = canonicalCharacterId(fixedCharacter?.id) || "";
+  const rotateCharacter = !fixedCharacter && !illustration;
   const [displayState, setDisplayState] = useState(() => randomPreloadDisplayState({
     tips,
     characters,
-    fixedCharacter,
+    rotateCharacter,
     readyPortraitSources: authPortraitReadySources()
   }));
   const [isProgressIdle, setIsProgressIdle] = useState(true);
   const didMountRef = useRef(false);
   const previousPercentRef = useRef(percent);
   const progressIdleTimerRef = useRef(null);
-  const latestInputsRef = useRef({ character: fixedCharacter, characters, readyPortraitSources, tips });
+  const latestInputsRef = useRef({ rotateCharacter, characters, readyPortraitSources, tips });
   const { tipIndex, randomCharacter } = displayState;
-  const safeRandomCharacter = fixedCharacter
-    ? null
-    : randomCharacter ?? randomPreloadCharacter(characters, Math.random, null, readyPortraitSources);
+  const safeRandomCharacter = rotateCharacter
+    ? randomCharacter ?? randomPreloadCharacter(characters, Math.random, null, readyPortraitSources)
+    : null;
   const randomCharacterId = canonicalCharacterId(safeRandomCharacter?.id);
   const displayCharacter = fixedCharacter
     ? characterFromCatalogById(characters, fixedCharacter.id) ?? fixedCharacter
     : characterFromCatalogById(characters, randomCharacterId) ?? safeRandomCharacter;
-  const displayPortrait = resolveCharacterPortraitPresentation(displayCharacter, fixedCharacter ? {
+  const displayPortrait = displayCharacter && resolveCharacterPortraitPresentation(displayCharacter, fixedCharacter ? {
     itemEffects: user?.itemEffects,
     user,
-    costumeSnapshot: displayCharacter?.costumeSnapshot
+    costumeSnapshot: displayCharacter.costumeSnapshot
   } : {});
   const currentTip = tips[tipIndex] ?? tips[0] ?? "";
   const displayTip = preloadTipDisplayText(currentTip);
   const characterPresentationHidden = Boolean(user?.sigrikaCandyArc?.corrupted);
+  const showIllustration = Boolean(illustration && !characterPresentationHidden);
   const title = label;
   const portraitSource = characterPresentationHidden
     ? SIGRIKA_CORRUPTED_PLAYER_PORTRAIT_ASSET.url
-    : displayPortrait.src;
-  const portraitLabel = characterPresentationHidden ? "玩家" : (displayCharacter.name ?? "当前角色");
+    : displayPortrait?.src;
+  const portraitLabel = characterPresentationHidden ? "玩家" : (displayCharacter?.name ?? "当前角色");
 
   useEffect(() => {
-    latestInputsRef.current = { character: fixedCharacter, characters, readyPortraitSources, tips };
-  }, [fixedCharacter, characters, readyPortraitSources, tips]);
+    latestInputsRef.current = { rotateCharacter, characters, readyPortraitSources, tips };
+  }, [rotateCharacter, characters, readyPortraitSources, tips]);
 
   useEffect(() => {
-    if (fixedCharacter || readyPortraitSources.size === 0) return;
+    if (!rotateCharacter || readyPortraitSources.size === 0) return;
     setDisplayState((current) => {
       if (readyPortraitSources.has(resolveCharacterPortrait(current.randomCharacter))) return current;
       return {
@@ -182,7 +185,7 @@ export default function AssetPreloadScreen({
         )
       };
     });
-  }, [characters, fixedCharacter, readyPortraitSources]);
+  }, [characters, rotateCharacter, readyPortraitSources]);
 
   useEffect(() => {
     if (!didMountRef.current) {
@@ -191,32 +194,32 @@ export default function AssetPreloadScreen({
     }
     setDisplayState((current) => ({
       tipIndex: randomTipIndex(tips, current.tipIndex),
-      randomCharacter: fixedCharacter
-        ? null
-        : current.randomCharacter ?? randomPreloadCharacter(
+      randomCharacter: rotateCharacter
+        ? current.randomCharacter ?? randomPreloadCharacter(
           characters,
           Math.random,
           null,
           readyPortraitSources
         )
+        : null
     }));
-  }, [characters, fixedCharacterId, readyPortraitSources, tips, tipsSignature]);
+  }, [characters, fixedCharacterId, readyPortraitSources, rotateCharacter, tips, tipsSignature]);
 
   useEffect(() => {
-    if (fixedCharacter && tips.length <= 1) return undefined;
+    if (!rotateCharacter && tips.length <= 1) return undefined;
     const timer = setInterval(() => {
       const latestInputs = latestInputsRef.current;
       setDisplayState((current) => randomPreloadDisplayState({
         tips: latestInputs.tips,
         characters: latestInputs.characters,
-        fixedCharacter: latestInputs.character,
+        rotateCharacter: latestInputs.rotateCharacter,
         currentTipIndex: current.tipIndex,
         currentCharacter: current.randomCharacter,
         readyPortraitSources: latestInputs.readyPortraitSources
       }));
     }, TIP_ROTATION_MS);
     return () => clearInterval(timer);
-  }, [fixedCharacterId, tipsSignature]);
+  }, [fixedCharacterId, rotateCharacter, tipsSignature]);
 
   useEffect(() => {
     const previousPercent = previousPercentRef.current;
@@ -239,8 +242,10 @@ export default function AssetPreloadScreen({
   return (
     <main className={`asset-preload-screen${tipStyle === "brush" ? " login-loading-screen" : ""}`}>
       <section className="asset-preload-panel">
-        <div className="preload-portrait-slot">
-          {portraitSource ? (
+        <div className={`preload-portrait-slot${showIllustration ? " has-illustration" : ""}`}>
+          {showIllustration ? (
+            <img className="preload-illustration" {...illustration} alt="" />
+          ) : portraitSource ? (
             <span className="preload-character" aria-label={portraitLabel}>
               <img
                 src={portraitSource}

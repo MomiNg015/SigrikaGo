@@ -1,5 +1,6 @@
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import AssetPreloadScreen from "../app/AssetPreloadScreen.jsx";
+import { BATTLE_LOADING_ILLUSTRATION } from "../app/battleLoadingArt.js";
 import StoryPlayerModal from "../modals/StoryPlayerModal.jsx";
 import SkillBanner from "../modals/SkillBanner.jsx";
 import Board from "../room/Board.jsx";
@@ -177,6 +178,7 @@ export default function TutorialSessionModal({
         >
           <AssetPreloadScreen
             character={boardSetupLoadingCharacter(node, characters)}
+            illustration={BATTLE_LOADING_ILLUSTRATION}
             characters={characters}
             label={BOARD_SETUP_ENTRY_LOADING_TEXT}
             progress={0}

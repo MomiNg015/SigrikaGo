@@ -18,6 +18,7 @@ import {
 } from "../audio/playback.jsx";
 import { preloadPlayableReady } from "../app/playableReadyPreload.js";
 import AssetPreloadScreen from "../app/AssetPreloadScreen.jsx";
+import { BATTLE_LOADING_ILLUSTRATION } from "../app/battleLoadingArt.js";
 import { ConfirmModal } from "../modals/FeedbackModals.jsx";
 import SkillBanner from "../modals/SkillBanner.jsx";
 import { useRoomAudioEffects } from "../room/audio/useRoomAudioEffects.js";
@@ -901,6 +902,7 @@ export function TutorialBattleLoading({ loading, characters, players, user, prog
       <AssetPreloadScreen
         character={character}
         characters={characters}
+        illustration={BATTLE_LOADING_ILLUSTRATION}
         label={loading.text}
         progress={progressOverride ?? progress}
         statusText={error ? "资源加载失败，请重试" : undefined}

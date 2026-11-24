@@ -3,6 +3,7 @@ import { applyRoomPatch, roomPatchCanUpdate, roomPatchNeedsResume } from "./room
 import { GAME_MODE_IDS } from "../shared/gameModes.js";
 import { GAME_PHASES } from "../shared/game.js";
 import { markRoomActionsReady, markRoomActionsSyncing } from "./roomActionConnection.js";
+import { BATTLE_RETURN_VIEW } from "./roomNavigation.js";
 
 export const ROOM_PATCH_RESUME_DEBOUNCE_MS = 1000;
 export const ROOM_RESUME_REQUEST_COOLDOWN_MS = 1500;
@@ -235,8 +236,9 @@ export function createSocketHandlers({
       }
       clearLastRoomCode();
       clearRoomUiState();
-      setView("home");
-      if (isFinishedPlayerRoom && payload.reason === "finished-room-close") return;
+      const finishedRoomClose = isFinishedPlayerRoom && payload.reason === "finished-room-close";
+      setView(finishedRoomClose && !currentRoom.sigrikaCandyDuel ? BATTLE_RETURN_VIEW : "home");
+      if (finishedRoomClose) return;
       showToast(payload.message || "房间已关闭");
     },
     matchPreloadTimeout: (payload = {}) => {

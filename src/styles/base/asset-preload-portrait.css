@@ -5,5 +5,13 @@
   .preload-portrait-slot { width: clamp(124px, 42vw, 174px); }
 }
 
+.preload-portrait-slot.has-illustration { width: min(336px, 100%); aspect-ratio: auto; }
+
+@media (max-width: 640px) {
+  .preload-portrait-slot.has-illustration { width: min(280px, 72vw, 100%); }
+}
+
+.preload-illustration { display: block; align-self: end; width: 100%; height: auto; }
+
 .preload-character img,
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .preload-character > img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; background: transparent; box-shadow: none; filter: none; }

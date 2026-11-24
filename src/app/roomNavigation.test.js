@@ -30,7 +30,8 @@ describe("room back navigation plan", () => {
     })).toMatchObject({
       clearRoom: true,
       dismissResultRoomCode: "98765",
-      leaveRoomCode: "98765"
+      leaveRoomCode: "98765",
+      nextView: "battle-return"
     });
   });
 

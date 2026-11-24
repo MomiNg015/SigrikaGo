@@ -8,13 +8,15 @@ afterEach(() => { cleanup(); vi.useRealTimers(); vi.clearAllMocks(); });
 it("never renders the previous segment's completed progress on a new segment", () => {
   vi.useFakeTimers();
   const props = { characters: {}, players: [], user: {} };
-  const { rerender } = render(<TutorialBattleLoading {...props} loading={{ id: "entry", text: "进入" }} />);
+  const { rerender } = render(<TutorialBattleLoading {...props} loading={{ id: "entry", kind: "setup", text: "进入" }} />);
   expect(AssetPreloadScreen.mock.calls[0][0].progress).toBe(0);
+  expect(AssetPreloadScreen.mock.calls[0][0].illustration.src).toBe("/assets/preload/sigrika-go-thinking.webp");
   act(() => vi.advanceTimersByTime(3100));
   expect(AssetPreloadScreen.mock.lastCall[0].progress).toBe(1);
   const previousCalls = AssetPreloadScreen.mock.calls.length;
-  rerender(<TutorialBattleLoading {...props} loading={{ id: "exit", text: "返回" }} />);
+  rerender(<TutorialBattleLoading {...props} loading={{ id: "exit", kind: "story", text: "返回" }} />);
   expect(AssetPreloadScreen.mock.calls.slice(previousCalls).every(([props]) => props.progress === 0)).toBe(true);
+  expect(AssetPreloadScreen.mock.lastCall[0].illustration.src).toBe("/assets/preload/sigrika-go-thinking.webp");
   act(() => vi.advanceTimersByTime(1500));
   expect(AssetPreloadScreen.mock.lastCall[0].progress).toBeGreaterThan(0);
   expect(AssetPreloadScreen.mock.lastCall[0].progress).toBeLessThan(1);

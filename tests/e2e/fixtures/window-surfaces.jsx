@@ -7,6 +7,8 @@ import { CHARACTERS, characterListFromCatalog } from "../../../src/shared/charac
 import { DEFAULT_SITE_SETTINGS } from "../../../src/shared/siteSettings.js";
 import AuthScreen from "../../../src/auth/AuthScreen.jsx";
 import LoginAssetPreloadScreen from "../../../src/app/LoginAssetPreloadScreen.jsx";
+import BattleAssetPreloadScreen from "../../../src/app/BattleAssetPreloadScreen.jsx";
+import { TutorialBattleLoading } from "../../../src/tutorial/TutorialBattleScreen.jsx";
 import IrisDatabase from "../../../src/home/IrisDatabase.jsx";
 import MatchSuccessModal from "../../../src/modals/gameLifecycle/MatchSuccessModal.jsx";
 import AdminConsole from "../../../src/admin/AdminConsole.jsx";
@@ -30,6 +32,8 @@ createRoot(document.getElementById("root")).render(
     {surface === "Admin" ? <AdminConsole user={user} token="surface-fixture" tab="users" setTab={noop} musicTracks={[]} onNotice={noop} onBack={noop} />
       : surface === "Auth" ? <AuthScreen initialMode={query.get("mode") || "login"} onAuth={noop} />
       : surface === "Loading" ? <LoginAssetPreloadScreen progress={0.45} tipsText="落子前，先确认棋子的气。" />
+      : surface === "BattleLoading" ? <BattleAssetPreloadScreen user={user} siteSettings={DEFAULT_SITE_SETTINGS} />
+      : surface === "TutorialLoading" ? <TutorialBattleLoading characters={CHARACTERS} players={[]} user={user} loading={{ id: "fixture", kind: "setup", text: "正在激烈对局中..." }} progressOverride={0.45} />
       : surface === "MatchSuccess" ? <MatchSuccessModal startedAt={Date.now()} audioSettings={{ muted: true }} onComplete={noop} specialDuel={query.has("special")} />
       : surface === "Iris" ? <main className="home-screen home-terminal-screen"><IrisDatabase audioSettings={{ muted: true }} links={DEFAULT_SITE_SETTINGS.irisLinks} greeting={DEFAULT_SITE_SETTINGS.irisGreeting} /></main>
       : surface === "Profile" ? <div className="modal-backdrop profile-modal-backdrop"><UserProfileCard titleStickers user={user} characters={CHARACTERS} token="surface-fixture" onClose={noop} onAddFriend={noop} onAddBlacklist={noop} onOpenReplay={noop} /></div>

@@ -11,7 +11,7 @@ it.each(["player", "spectator"])("leaves a finished %s room and returns home", (
   act(() => result.current.leaveResultRoom());
   expect(props.socket.emit).toHaveBeenCalledWith("room:leave", { roomCode: "ABC" });
   expect(props.setRoom).toHaveBeenCalledWith(null);
-  expect(props.setView).toHaveBeenCalledWith("home");
+  expect(props.setView).toHaveBeenCalledWith("battle-return");
   expect(props.setReplayStep).toHaveBeenCalledWith(null);
   expect(props.setPendingSkill).toHaveBeenCalledWith(null);
   expect(localStorage.getItem(LAST_ROOM_CODE_KEY)).toBeNull();

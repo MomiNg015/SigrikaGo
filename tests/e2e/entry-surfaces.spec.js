@@ -156,17 +156,46 @@ for (const width of [1440, 390, 360, 320]) {
     await page.setViewportSize({ width, height: 900 });
     await page.goto("/tests/e2e/fixtures/window-surfaces.html?surface=Loading");
     await page.evaluate(() => document.fonts.ready);
-    const tip = page.locator(".login-loading-tip");
+    const tip = page.locator(".login-loading-tip[aria-live]");
     const note = page.getByText("（第一次加载需要2-3分钟，请耐心等待）");
+    const illustration = page.locator(".login-loading-screen .preload-illustration");
+    await expect(illustration).toHaveAttribute("src", "/assets/preload/sigrika-page-turn.webp");
+    await expect.poll(() => illustration.evaluate((img) => img.naturalWidth)).toBe(512);
+    await expect(illustration).toHaveCSS("animation-name", "none");
+    await expect(page.locator(".login-loading-screen .preload-character")).toHaveCount(0);
     const bar = await page.getByRole("progressbar").boundingBox();
+    const imageBounds = await illustration.boundingBox();
+    expect(imageBounds.width).toBeCloseTo(width > 640 ? 336 : Math.min(280, width * 0.72), 1);
+    expect(imageBounds.y + imageBounds.height).toBeLessThan(bar.y);
+    expect(Math.abs(imageBounds.x + imageBounds.width / 2 - width / 2)).toBeLessThan(1);
     await expect(tip).toHaveCSS("text-align", "center");
+    const paper = await page.locator(".preload-bar").boundingBox();
     const noteBounds = await note.boundingBox();
-    expect(noteBounds.y).toBeGreaterThanOrEqual(bar.y + bar.height);
+    expect(noteBounds.y).toBeGreaterThanOrEqual(paper.y + paper.height);
     for (const locator of [tip, note]) {
       const bounds = await locator.boundingBox();
       expect(Math.abs(bounds.x + bounds.width / 2 - width / 2)).toBeLessThan(1);
     }
     expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBe(width);
     await page.screenshot({ path: testInfo.outputPath(`loading-${width}.png`), fullPage: true });
+  });
+}
+
+for (const width of [1440, 390]) {
+  test(`battle and tutorial entry load the thinking animation at ${width}`, async ({ page }) => {
+    await page.setViewportSize({ width, height: 900 });
+    for (const surface of ["BattleLoading", "TutorialLoading"]) {
+      await page.goto(`/tests/e2e/fixtures/window-surfaces.html?surface=${surface}`);
+      const illustration = page.locator(".preload-illustration");
+      await expect(illustration).toHaveAttribute("src", "/assets/preload/sigrika-go-thinking.webp");
+      await expect.poll(() => illustration.evaluate((img) => img.naturalWidth)).toBe(512);
+      await expect(illustration).toBeVisible();
+      await expect(page.locator(".preload-character")).toHaveCount(0);
+      const art = await illustration.boundingBox();
+      expect(art.width).toBeCloseTo(width > 640 ? 336 : Math.min(280, width * 0.72), 1);
+      const bar = await page.getByRole("progressbar").boundingBox();
+      expect(art.y + art.height).toBeLessThan(bar.y);
+      expect(Math.abs(art.x + art.width / 2 - width / 2)).toBeLessThan(1);
+    }
   });
 }

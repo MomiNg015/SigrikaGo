@@ -150,7 +150,7 @@ describe("TutorialSessionModal", () => {
     expect(html).toContain('data-tutorial-node-type="board-setup"');
     expect(html).toContain("asset-preload-screen");
     expect(html).toContain("正在激烈对局中...");
-    expect(html).toContain('src="/assets/characters/denia.webp"');
+    expect(html).toContain('src="/assets/preload/sigrika-go-thinking.webp"');
     expect(html).not.toContain("Prepare beginner board.");
     expect(html).not.toContain("tutorial-battle-session");
   });

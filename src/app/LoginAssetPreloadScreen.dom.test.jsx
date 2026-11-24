@@ -5,14 +5,13 @@ import LoginAssetPreloadScreen from "./LoginAssetPreloadScreen.jsx";
 
 afterEach(() => { cleanup(); vi.useRealTimers(); });
 
-test("restores the character and progress bar with brush tips below it", () => {
-  const characters = { custom: { id: "custom", name: "测试角色", portrait: "/custom.png" } };
-  const props = { characters, loadingLinesText: "custom=测试角色正在加载", tipsText: "Tip：保留文字" };
+test("shows Sigrika reading above the progress bar and brush tip", () => {
+  const props = { tipsText: "Tip：保留文字" };
   const { container, rerender } = render(<LoginAssetPreloadScreen {...props} progress={0.65} />);
   const bar = screen.getByRole("progressbar");
   expect(bar.getAttribute("aria-valuenow")).toBe("65");
-  expect(screen.getByAltText("测试角色").getAttribute("src")).toBe("/custom.png");
-  expect(screen.queryByText("测试角色正在加载")).toBeNull();
+  expect(container.querySelector(".preload-illustration").getAttribute("src")).toBe("/assets/preload/sigrika-page-turn.webp");
+  expect(container.querySelector(".preload-character")).toBeNull();
   expect(container.querySelector(".preload-title")).toBeNull();
   expect(container.querySelector(".preload-progress-track")).not.toBeNull();
   const tip = container.querySelector(".login-loading-tip");
@@ -28,16 +27,12 @@ test("restores the character and progress bar with brush tips below it", () => {
   expect(bar.getAttribute("aria-valuenow")).toBe("0");
 });
 
-test("rotates both random characters and tips through the shared loader", () => {
+test("rotates tips without replacing the playing illustration", () => {
   vi.useFakeTimers();
-  const characters = {
-    first: { id: "first", name: "甲", portrait: "/first.png" },
-    second: { id: "second", name: "乙", portrait: "/second.png" }
-  };
-  const { container } = render(<LoginAssetPreloadScreen characters={characters} progress={0.5} tipsText={"第一条\n第二条"} />);
-  const firstPortrait = container.querySelector(".preload-character img").getAttribute("src");
+  const { container } = render(<LoginAssetPreloadScreen progress={0.5} tipsText={"第一条\n第二条"} />);
+  const illustration = container.querySelector(".preload-illustration");
   const firstTip = container.querySelector(".login-loading-tip-copy").textContent;
   act(() => vi.advanceTimersByTime(10000));
-  expect(container.querySelector(".preload-character img").getAttribute("src")).not.toBe(firstPortrait);
+  expect(container.querySelector(".preload-illustration")).toBe(illustration);
   expect(container.querySelector(".login-loading-tip-copy").textContent).not.toBe(firstTip);
 });

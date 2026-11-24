@@ -1,12 +1,12 @@
 // @vitest-environment jsdom
-import { cleanup, render, screen } from "@testing-library/react";
+import { act, cleanup, render, screen } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import AppRoutes from "./AppRoutes.jsx";
 
-it("uses the random character login preload and preserves the corrupted loader", () => {
+it("uses the page-turn login preload and preserves the corrupted loader", () => {
   const props = createBaseProps({ view: "preloading", assetProgress: 0.65 });
   const { container, rerender } = render(<AppRoutes {...props} />);
-  expect(container.querySelector(".login-loading-screen .preload-character")).not.toBeNull();
+  expect(container.querySelector(".login-loading-screen .preload-illustration")).not.toBeNull();
   expect(container.querySelector(".preload-progress-track")).not.toBeNull();
   expect(screen.getByRole("progressbar").getAttribute("aria-valuenow")).toBe("65");
   rerender(<AppRoutes {...props} user={{ ...props.user, sigrikaCandyArc: { corrupted: true } }} />);
@@ -72,11 +72,29 @@ describe("AppRoutes home render boundary", () => {
   afterEach(() => {
     cleanup();
     vi.clearAllMocks();
+    vi.useRealTimers();
   });
 
   it("starts a tutorial handoff at zero even after global assets are fully loaded", () => {
-    render(<AppRoutes {...createBaseProps({ view: "tutorial-battle", assetProgress: 1, tutorialBattleSession: { script: { nodes: [] } } })} />);
+    const { container } = render(<AppRoutes {...createBaseProps({ view: "tutorial-battle", assetProgress: 1, tutorialBattleSession: { script: { nodes: [] } } })} />);
+    expect(container.querySelector(".preload-illustration")?.getAttribute("src")).toBe("/assets/preload/sigrika-go-thinking.webp");
     expect(screen.getByRole("progressbar").getAttribute("aria-valuenow")).toBe("0");
+  });
+
+  it("shows the battle return artwork and then routes to home", () => {
+    vi.useFakeTimers();
+    const props = createBaseProps({ view: "battle-return" });
+    const { container, rerender } = render(<AppRoutes {...props} />);
+    expect(container.querySelector(".preload-illustration")?.getAttribute("src")).toBe("/assets/preload/sigrika-go-thinking.webp");
+    expect(screen.getByText("正在返回主界面...")).not.toBeNull();
+    act(() => vi.advanceTimersByTime(899));
+    expect(props.setView).not.toHaveBeenCalled();
+    act(() => vi.advanceTimersByTime(1));
+    const [finish] = props.setView.mock.lastCall;
+    expect(finish("battle-return")).toBe("home");
+    expect(finish("login")).toBe("login");
+    rerender(<AppRoutes {...props} view="home" />);
+    expect(screen.queryByText("正在返回主界面...")).toBeNull();
   });
 
   it("does not rerender the home tree for room-only route updates", () => {
