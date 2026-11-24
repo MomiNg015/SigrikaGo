@@ -6,7 +6,7 @@ The approved paper design applies only to ordinary Bright School under `.informa
 
 `src/styles/mobile-adaptive/information-center.css` is an import-only existing entry. Its five bounded children own paper surfaces, mail details, mobile alignment, paper feedback and navigation safety. `card-screenprints.css` owns reading-print paint. `InformationCardBadges` supplies read and attachment indicators across themes, with status text in the row's accessible name. The 18px read badge straddles the top-left card corner and uses a pale green fill with a dark check for read state. The optional attachment badge sits below it across the left edge. Preserve the 11px top and left list gutters through portrait overrides and scroll snapping. Keep metadata aligned to the bottom right and the title to the top left.
 
-`information-center-badges.css` owns paint for the shared badges. All four states use a 1px solid black outline, a diagonal fill and a small upper-left reflection. Read and attachment glyphs stay dark, with saturated red for unread, light green for read, gold-yellow for claimable and neutral gray for claimed.
+`information-center-badges.css` owns paint for the shared badges. All four states use a 1px solid black outline and a single 145deg linear gradient. Read and attachment glyphs stay dark, with saturated red for unread, light green for read, gold-yellow for claimable and neutral gray for claimed.
 
 ## Complete rows and scroll
 
