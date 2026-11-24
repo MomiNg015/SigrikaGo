@@ -6,6 +6,7 @@ import { Pin, RefreshCw } from "lucide-react";
 import { api } from "../api/client.js";
 import MarkdownLiteContent from "../shared/MarkdownLiteContent.jsx";
 import InformationCenterLayout, { useNarrowInformationCenter } from "./InformationCenterLayout.jsx";
+import InformationCardBadges from "./InformationCardBadges.jsx";
 import { useInformationListRows } from "./useInformationListRows.js";
 import { ModalActionButton } from "./modalComponents.jsx";
 
@@ -23,6 +24,7 @@ const TEXT = Object.freeze({
   loadingMore: "\u52a0\u8f7d\u4e2d...",
   retry: "\u91cd\u8bd5",
   pinned: "\u7f6e\u9876",
+  read: "\u5df2\u8bfb",
   unread: "\u672a\u8bfb",
   detailLoading: "\u6b63\u5728\u8bfb\u53d6\u8be6\u60c5...",
   lastEdited: "\u6700\u540e\u7f16\u8f91",
@@ -52,6 +54,7 @@ export default function AnnouncementModal({
   const isNarrow = useNarrowInformationCenter();
   const [activeKind, setActiveKind] = useState("announcement");
   const activeKindRef = useRef("announcement");
+  const detailRequestRef = useRef(0);
   const [lists, setLists] = useState(() => ({
     announcement: emptyListState(),
     changelog: emptyListState()
@@ -132,9 +135,11 @@ export default function AnnouncementModal({
 
   async function openDetail(item) {
     if (!item || !token) return;
+    const request = ++detailRequestRef.current;
     setDetail({ open: true, loading: true, item, entry: null, error: "", readError: "" });
     try {
       const data = await api(`/api/announcements/${item.id}`, { token, retryDevBackend: true });
+      if (request !== detailRequestRef.current) return;
       const entry = data.entry;
       setDetail((current) => ({ ...current, loading: false, entry, error: "" }));
       try {
@@ -142,10 +147,10 @@ export default function AnnouncementModal({
         markLocalRead(item.id);
         onSummaryChange?.(readData.summary);
       } catch (error) {
-        setDetail((current) => ({ ...current, readError: error.message }));
+        if (request === detailRequestRef.current) setDetail((current) => ({ ...current, readError: error.message }));
       }
     } catch (error) {
-      setDetail((current) => ({ ...current, loading: false, error: error.message }));
+      if (request === detailRequestRef.current) setDetail((current) => ({ ...current, loading: false, error: error.message }));
     }
   }
 
@@ -162,6 +167,7 @@ export default function AnnouncementModal({
   }
 
   function closeDetail() {
+    detailRequestRef.current += 1;
     setDetail({
       open: false,
       loading: false,
@@ -258,20 +264,18 @@ export default function AnnouncementModal({
                     <button
                       className={`announcement-list-item ${item.isUnread ? "is-unread" : ""} ${detail.item?.id === item.id ? "active" : ""}`}
                       type="button"
+                      aria-label={`${item.title}，${item.isUnread ? TEXT.unread : TEXT.read}${item.pinned ? `，${TEXT.pinned}` : ""}，${formatDateTime(item.firstPublishedAt)}`}
                       aria-current={detail.item?.id === item.id ? "true" : undefined}
                       onClick={() => openDetail(item)}
                     >
-                      <span className="announcement-list-title">
-                        {item.isUnread && <i className="announcement-unread-dot" aria-hidden="true" />}
-                        {item.title}
-                      </span>
+                      <InformationCardBadges isRead={!item.isUnread} />
+                      <span className="announcement-list-title">{item.title}</span>
                       <span className="announcement-list-meta">
                         {item.pinned && (
                           <b>
                             <Pin size={13} />{TEXT.pinned}
                           </b>
                         )}
-                        {item.isUnread && <b>{TEXT.unread}</b>}
                         <time>{formatDateTime(item.firstPublishedAt)}</time>
                       </span>
                     </button>

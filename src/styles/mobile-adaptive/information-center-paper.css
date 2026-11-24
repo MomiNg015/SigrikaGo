@@ -29,26 +29,26 @@
   display: flex !important;
   flex-direction: column;
   gap: 13px;
-  padding: 3px 9px 10px 3px !important;
-  scroll-padding: 3px 0 10px;
+  padding: 11px 9px 10px 11px !important;
+  scroll-padding: 11px 0 10px;
   scrollbar-width: thin;
   scroll-snap-type: y mandatory;
 }
 & :is(.announcement-list, .mailbox-list) > li { flex: 0 0 auto; border: 0 !important; scroll-snap-align: start; }
 & :is(.announcement-list-item, .mailbox-list-item) {
   position: relative;
-  min-height: var(--information-paper-row-height, 108px) !important;
+  min-height: var(--information-paper-row-height, 64px) !important;
   height: var(--information-paper-row-height, auto) !important;
   width: 100%;
   box-sizing: border-box;
-  padding: 15px 15px 13px !important;
+  padding: 8px 11px 7px 20px !important;
   border: 2px solid var(--information-paper-ink) !important;
   border-radius: 8px !important;
   background-color: var(--information-paper-white) !important;
   color: var(--bright-ink) !important;
   box-shadow: 3px 4px 0 var(--information-paper-ink) !important;
   transform: translate(0, 0) !important;
-  transition: transform 150ms cubic-bezier(.22, 1, .36, 1), box-shadow 150ms cubic-bezier(.22, 1, .36, 1), background-color 150ms ease !important;
+  transition: transform 150ms cubic-bezier(.22, 1, .36, 1), translate 150ms cubic-bezier(.22, 1, .36, 1), box-shadow 150ms cubic-bezier(.22, 1, .36, 1), background-color 150ms ease !important;
 }
 /* Match legacy state paint without raising the motion or sizing selectors. */
 & .announcement-list .announcement-list-item {
@@ -59,12 +59,11 @@
 & :is(.announcement-list-title, .mailbox-list-title) {
   font-size: 17px !important;
   font-weight: 700 !important;
-  line-height: 1.45 !important;
+  line-height: 1.25 !important;
 }
 & :is(.announcement-list-title, .mailbox-list-title) { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; white-space: normal !important; }
-& .announcement-list-title .announcement-unread-dot { display: inline-block; margin-right: 7px; }
 & .announcement-unread-dot { flex-shrink: 0; box-shadow: none !important; }
-& .announcement-list-meta { gap: 7px 12px; margin-top: 2px; }
+& .announcement-list-meta { gap: 3px 8px; }
 & .announcement-list-meta b {
   padding: 0 !important;
   min-height: 0 !important;

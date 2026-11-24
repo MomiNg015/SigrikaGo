@@ -30,6 +30,11 @@ let messages = empty ? [] : [
   { id: 'read', title: '社团教室开放时间调整', sender: '围棋部', createdAt: ago(8), isRead: true, claimable: false, deletable: true, body: '社团教室的开放时间已调整。\n\n欢迎大家课后来坐坐。', attachment: null },
 ];
 if (long) messages = messages.map(message => ({ ...message, title: message.title + ' —— 关于新学期活动安排与奖励发放的补充说明', body: message.body.repeat(8), attachment: message.attachment?.type === 'item' ? { ...message.attachment, quantity: 9999 } : message.attachment }));
+if (params.get('fixture') === 'scroll') {
+  const notices = announcements.filter(item => item.kind === 'announcement');
+  announcements.push(...notices.map(item => ({ ...item, id: `${item.id}-older`, firstPublishedAt: ago(14), updatedAt: ago(14) })));
+  messages.push(...messages.map(message => ({ ...message, id: `${message.id}-older`, createdAt: ago(14) })));
+}
 const nativeFetch = window.fetch.bind(window);
 window.__sampleRequests = [];
 window.fetch = async (input, options = {}) => {

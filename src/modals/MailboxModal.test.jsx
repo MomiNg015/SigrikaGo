@@ -117,7 +117,7 @@ describe("MailboxModal information center", () => {
     await waitFor(() => expect(screen.getAllByText("暂无邮件").length).toBeGreaterThan(0));
   });
 
-  it("keeps the list text-only and dims only messages that are fully handled", () => {
+  it("distinguishes reading from attachment state and dims fully handled mail", () => {
     const plainRead = {
       ...giftMessage,
       id: "plain-read",
@@ -141,11 +141,13 @@ describe("MailboxModal information center", () => {
 
     expect(mailboxMessageIsDone(plainRead)).toBe(true);
     expect(mailboxMessageIsDone(readClaimable)).toBe(false);
-    expect(screen.getByRole("button", { name: /已阅读通知.*已完成/ }).classList.contains("state-done")).toBe(true);
+    const readRow = screen.getByRole("button", { name: /已阅读通知.*已读/ });
+    expect(readRow.classList.contains("state-done")).toBe(true);
+    expect(readRow.querySelectorAll(".information-card-badge")).toHaveLength(1);
     const claimableRow = screen.getByRole("button", { name: /仍待领取.*待领取/ });
     expect(claimableRow.classList.contains("state-done")).toBe(false);
     expect(claimableRow.classList.contains("state-open")).toBe(true);
-    expect(claimableRow.textContent).toContain("已读 · 附件待领取");
+    expect([...claimableRow.querySelectorAll(".information-card-badge")].map((badge) => badge.dataset.state)).toEqual(["read", "claimable"]);
     expect(claimableRow.classList.contains("is-read")).toBe(true);
     expect(container.querySelector(".mailbox-unread-dot")).toBeNull();
     expect(container.querySelector(".mailbox-list-status")).toBeNull();
@@ -262,7 +264,7 @@ describe("MailboxModal information center", () => {
     expect(api).not.toHaveBeenCalled();
   });
 
-  it("keeps the quiet paper reader, text-only list, stable attachment stage, and mobile safety", () => {
+  it("keeps the quiet paper reader, compact list, stable attachment stage, and mobile safety", () => {
     const css = readCssWithImports(pathToFileURL(resolve("src/styles/modals/mailbox.css")));
     const informationCenterCss = readCssWithImports(pathToFileURL(resolve("src/styles/modals/information-center.css")));
     const themedCss = readCssWithImports(pathToFileURL(resolve("src/styles/themes.css")));
@@ -278,8 +280,8 @@ describe("MailboxModal information center", () => {
     expect(css).toContain(".mailbox-list-item.active");
     expect(css).toContain(".mailbox-list-item.state-open");
     expect(css).not.toContain("var(--theme-accent-2) 24%");
-    expect(css).toContain("inset 3px 0 0");
-    expect(css).toContain("var(--theme-accent) 72%");
+    expect(css).not.toContain(".mailbox-list-state");
+    expect(informationCenterCss).toContain(".information-card-badges");
     expect(css).toContain("border: 2px solid color-mix(in srgb, var(--theme-border) 72%, transparent)");
     expect(informationCenterCss).toContain("border-bottom: 2px dashed");
     expect(informationCenterCss).toContain("padding-bottom: 18px");

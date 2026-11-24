@@ -31,7 +31,7 @@ export const HOME_ONBOARDING_STEPS = [
   say("coupons", "什么是“星炬券”？啊，前面忘了跟你说了。星炬券是我们学院社团活动发放的通用奖励券。至于在我们围棋部嘛，只要你进行有效的围棋匹配对局，就可以得到一定的“星炬券”奖励。", { window: "shop", target: "shop-coupons" }),
   say("practice-no-coupons", "不过跟准时宝下棋是不会奖励星炬券的。不要想着动歪脑筋哦~", { window: "shop", target: "shop-coupons" }),
   action("resume", "再看看你的学生证吧。刚刚已经把你的信息登记进围棋部系统了。", "resume"),
-  say("resume-intro", "这是你的围棋部履历，可以看到你在我们围棋部中的各种胜负、段位数据，还可以查看你的历史对局记录。", { window: "resume", surface: ".resume-modal" }),
+  say("resume-intro", "这是你的围棋部履历，可以看到你在我们围棋部中的各种胜负、段位数据，还可以查看你的历史对局记录。", { window: "resume", surface: ".resume-modal", readyWithin: ".profile-tablet-interface:not([inert])" }),
   say("wrap-up", "嗯...我想应该介绍的差不多了。"),
   say("goodbye", "啊，差不多到上课的时间了，我得赶紧走了。那你就在部里随便逛逛吧。拜拜~")
 ].map((step) => applyAuthoredGuideExpression({ ...step, characterId: "sigrika" }, "home.onboarding"));

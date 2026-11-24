@@ -53,6 +53,8 @@
 </head>
 <body>
 <h1>SigrikaGo 系统设计</h1>
+<h2>2026-11-24 履历引导与公告邮件列表</h2>
+<p>主界面引导等履历平板开机并显示可用内容后再开始 NPC 介绍。公告、更新日志和邮件的圆形阅读角标跨在卡片左上边框，已读为浅绿色带深色勾。附件角标沿左边框排在下方。标题在左上，元信息靠右下，当前卡片保持下沉。具体规则见<a href="./system-design/02-frontend-architecture.md">前端架构</a>和<a href="./system-design/06-ui-theme-mobile.md">界面主题</a>。</p>
 <h2>2026-11-20 Toast 触发清单与跳跳糖反馈</h2>
 <p><a href="./toast-audit-2026-11-20.md">Toast 触发清单</a>按玩家页面、管理后台和对局提示区分入口。道具使用结果和招募加速成功不再发送 Toast；保留剧情、效果窗口、库存更新和加速倒计时。真正的请求失败仍提示，库存和扣除规则不变。</p>
 <h2>2026-11-20 手册入场、糖果状态与仓库动效</h2>
@@ -3420,6 +3422,9 @@
 <h2>Recent Home, Shop, And Board UI Adjustments</h2>
 <ul>
 <li>The former home/house entry is now split into a clickable player plaque that opens “履历” for profile stats/replays and a “部员手册” entry for character and decoration management.</li>
+</ul>
+<ul>
+<li>主界面引导的履历介绍以平板内容区解除 <code>inert</code> 为就绪信号。窗口外壳出现和开机进度阶段显示引导等待状态。</li>
 <ul>
 <li>The handbook retains its original window chrome and character-card presentation. The generated book/card artwork and dedicated handbook sizing owners have been removed. <code>WindowBookmarkTabs</code> keeps the left character/decoration rail, unique tab/panel IDs and keyboard navigation. Only the active content root is mounted directly under <code>HouseModal</code>, preserving original character-grid scrolling and direct-child decoration styling. Corrupted state keeps the original character archive without normal navigation. Detail overlays and sortie voice lifecycle are unchanged. The decoration panel has no redundant separator or heading/reset row. Its first option is always the default black/white stones, including an empty owned collection; selecting it uses the existing empty-ID reset action and shared selected/pending semantics.</li>
 </ul>
@@ -3659,7 +3664,7 @@
 <li><code>AnnouncementModal</code> 挂载在 <code>AppOverlays</code>，玩家只通过已登录会话访问 <code>/api/announcements*</code>。父弹窗固定默认打开“公告”tab，内部列表每次加载 20 条并用“加载更多”追加；切换 tab 不清除已读状态。</li>
 </ul>
 <ul>
-<li>公告和更新日志都使用新闻式语义列表：每个 <code>li</code> 内含可操作按钮，展示标题、首次发布时间、未读红点，公告额外显示置顶标签。<code>InformationCenterLayout</code> 在桌面保持左侧列表与右侧阅读区同时可见，并在加载或切换分类后打开该列表第一条；移动端通过 <code>mobileView</code>、<code>aria-hidden</code>/<code>inert</code> 和返回按钮从列表进入详情，不再挂载二级详情 dialog。桌面默认打开与移动端显式点击都复用 <code>POST /api/announcements/:id/read</code>，只有打开成功后才清除本条和全局未读摘要。</li>
+<li>公告和更新日志使用语义列表。每个 <code>li</code> 内的按钮展示标题、首次发布时间、阅读角标和可选置顶标签。<code>InformationCenterLayout</code> 在桌面同时展示列表和阅读区，加载或切换分类后打开第一条。移动端通过 <code>mobileView</code>、<code>aria-hidden</code>/<code>inert</code> 和返回按钮切换列表与详情。桌面默认打开与移动端显式点击都复用 <code>POST /api/announcements/:id/read</code>，成功后更新条目和全局未读摘要。切换条目时，已离开条目的异步详情响应不能覆盖当前阅读区。</li>
 </ul>
 <ul>
 <li><code>MarkdownLiteContent</code> 是公告正文的安全 Markdown-lite 渲染边界，只支持段落、保留换行、无序列表、加粗和 <code>http/https</code> 链接，不使用 raw HTML。</li>
@@ -5654,7 +5659,8 @@
 <p>入口流程由 <code>useSigrikaCorruptionTransition</code> 统一协调：同步暂停 BGM、关闭手册独立试听；在 <code>document.body</code> Portal 上以 <code>backdrop-filter: invert(1)</code> 即刻覆盖全窗口。根节点 <code>inert</code>、遮罩拦截指针与 Escape/Tab，保留 2000ms 后仅显示“......怎么回事？？”；请求慢时选项等待，成功且用户确认后才提交用户态、关闭原窗口、去掉负片并播放黑化 BGM。<code>negative-entry.css</code> 不添加淡入、切片或强制自动跳过；恢复结束保留旧淡出转场。失败解除遮挡及暂停锁并提示，卸载清理，重复点击只执行一次。<code>BackgroundMusic</code> 的 generation 在暂停时失效，阻止未完成解码在静音期间启动。</p>
 <p>开发测试入口仍在彩虹糖第 1–7 次正常剧情起点，依次调用已有 <code>debug/jump-to-eight</code>、<code>climax</code> 接口；自然第八次在高潮节点使用相同演出。生产无测试入口，服务端调试 404 保留，剧情正文与持久化模型无变更。界面契约覆盖 1440px 和 390/320px 布局；自动时钟验证 1999ms 不显示选项、2000ms 显示，确认前后静音和交互锁的释放。</p>
 <h2>公告与邮箱阴影纸卡（2026-10-23）</h2>
-<p>普通 Bright School 已接入确认样板：列表 2px 墨线、3×4px 硬阴影，详情外叠双层纸框；公告使用浅粉选中与题头，邮箱使用薄荷信头和附件托盘，完成邮件浅灰。标题粗体与常规正文分层，附件数量放在图块右下。原阅读丝印由 <code>card-screenprints.css</code> 统一绘制，增加邮箱列表和正文角色，不在表面样式中重复背景图。黑化及其它主题保持原表面，邮件状态文字也只在纸卡主题显示。</p>
+<p>普通 Bright School 使用 2px 墨线、3×4px 卡片硬阴影和详情双层纸框。公告使用浅粉选中与题头，邮箱使用薄荷信头和附件托盘，完成邮件浅灰。原阅读丝印由 <code>card-screenprints.css</code> 统一绘制。</p>
+<p>公告、更新日志和邮件共用跨在卡片左上边框的圆形阅读角标，未读为红色，已读为浅绿色带深色勾。有附件的邮件在阅读角标下方沿左边框显示箱子角标，待领取为黄色，已领取为灰色。列表在上方和左侧留出角标的外伸空间。按钮的无障碍名称包含状态。标题靠左上，时间、发件人和置顶等元信息靠右下。纸卡从 64px 起按内容和列表高度分配完整行，查看中的卡片右移 2px、下移 3px，硬阴影缩为 1×1px。</p>
 <p><code>mobile-adaptive/information-center.css</code> 保持原加载位置，改为纯导入入口：paper／mail／mobile／motion 分担已批准样式，navigation 保留原跨主题手机安全区与切换规则。<code>InformationCenterLayout</code> 增加纸卡标记，两个业务窗口通过 <code>useInformationListRows(items)</code> 将 ref 绑定实际列表。CSS 显式启用后，hook 在异步数据、容器尺寸及字体就绪时根据可用高度、文字、内边距和间隔分配整数行高；原生滚动以不发生悬停位移的 li 为吸附点，保留末行与阴影。卸载和主题退出清除内联值与监听，不引入全局 DOM 观察器。</p>
 <p>手机维持单列列表／详情与原 260ms 平移透明度切换。返回和关闭共用标题栏网格第一行、相同 36px 盒子并垂直居中，返回不可用时仅隐藏并保留占位，避免按钮高度或绝对定位错位。修正公告书签覆盖高度，保持短竖屏正文和附件空间；768px 内且高度不超过 650px 时极长详情标题最多三行。公告 200ms 详情进入、邮箱 420ms 的 0／100／200ms 分段进入保持原样；新增 150ms 悬停抬起／按下下沉遵守减少动态效果。</p>
 <p>真实公告分类、分页、重试、已读及邮件查看附件、领取、删除继续使用原 API。DOM 回归覆盖原流程与共享 hook，独立浏览器套件覆盖 19 组桌面／竖屏完整行、按钮对齐、焦点恢复、长内容／空状态和动效；<a href="../design-samples/information-paper-2026-10-22/index.html">比较页</a>默认显示不加载样板 CSS 的正式预览，假接口不进入应用。</p>

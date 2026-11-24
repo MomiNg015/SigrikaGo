@@ -8,6 +8,7 @@ import { api } from "../api/client.js";
 import { RECRUITMENT_ITEM_TYPES, recruitmentItemForType } from "../shared/recruitment.js";
 import MarkdownLiteContent from "../shared/MarkdownLiteContent.jsx";
 import InformationCenterLayout, { useNarrowInformationCenter } from "./InformationCenterLayout.jsx";
+import InformationCardBadges from "./InformationCardBadges.jsx";
 import { useInformationListRows } from "./useInformationListRows.js";
 import { ModalActionButton, ModalDialog } from "./modalComponents.jsx";
 
@@ -55,12 +56,12 @@ export default function MailboxModal({
   }
 
   useEffect(() => {
-    if (initialLoaded && !isNarrow) {
-      markRead(messages[0]);
-    } else if (!initialLoaded) {
-      refresh();
-    }
+    if (!initialLoaded) refresh();
   }, [token]);
+
+  useEffect(() => {
+    markRead(selected);
+  }, [selectedId, token]);
 
   async function runMessageAction(messageId, action) {
     setBusyId(messageId);
@@ -100,8 +101,8 @@ export default function MailboxModal({
 
   function selectMessage(message) {
     setDetailAttachment(null);
+    if (selectedId === message.id) markRead(message);
     setSelectedId(message.id);
-    markRead(message);
   }
 
   return (
@@ -129,23 +130,23 @@ export default function MailboxModal({
               {messages.map((message) => {
                 const sender = displayMailboxSender(message.sender);
                 const listTime = formatMailboxListTime(message.createdAt);
-                const status = mailboxMessageStatusLabel(message);
+                const attachmentState = hasAttachment(message.attachment) ? (message.claimable ? "claimable" : "claimed") : null;
+                const readLabel = message.isRead ? "已读" : "未读";
+                const attachmentLabel = attachmentState ? (message.claimable ? "，附件待领取" : "，附件已领取") : "";
                 return (
                   <li key={message.id}>
                     <button
                       className={`mailbox-list-item ${selected?.id === message.id ? "active" : ""} ${mailboxMessageStateClass(message)}`}
                       type="button"
-                      aria-label={`${message.title}，${sender}，${listTime}，${status}`}
+                      aria-label={`${message.title}，${sender}，${listTime}，${readLabel}${attachmentLabel}`}
                       aria-current={selected?.id === message.id ? "true" : undefined}
                       onClick={() => selectMessage(message)}
                     >
+                      <InformationCardBadges isRead={message.isRead} attachmentState={attachmentState} />
                       <span className="mailbox-list-title">{message.title}</span>
                       <span className="mailbox-list-meta">
                         <span className="mailbox-list-sender">{sender}</span>
                         <time className="mailbox-list-time" dateTime={message.createdAt}>{listTime}</time>
-                      </span>
-                      <span className="mailbox-list-state" aria-hidden="true">
-                        {message.claimable ? `${message.isRead ? "已读" : "未读"} · 附件待领取` : message.isRead ? "✓ 已完成" : "未读"}
                       </span>
                     </button>
                   </li>
@@ -223,11 +224,6 @@ export function mailboxMessageIsDone(message) {
 
 function mailboxMessageStateClass(message) {
   return `${mailboxMessageIsDone(message) ? "state-done" : "state-open"} ${message.isRead ? "is-read" : "is-unread"}`;
-}
-
-function mailboxMessageStatusLabel(message) {
-  if (!message?.isRead) return message?.claimable ? "未读，待领取" : "未读";
-  return message?.claimable ? "待领取" : "已完成";
 }
 
 function sortMailboxMessages(messages) {

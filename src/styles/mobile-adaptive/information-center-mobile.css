@@ -25,7 +25,7 @@
   & .information-center-back-button[aria-hidden='true'] { visibility: hidden; }
   & .information-center-master { padding: 0 0 0 0 !important; }
   & .information-center-reader { inset: 3px 7px 8px 1px !important; width: auto !important; height: auto !important; }
-  & :is(.announcement-list, .mailbox-list) { gap: 12px; padding-top: 3px !important; padding-left: 1px !important; }
+  & :is(.announcement-list, .mailbox-list) { gap: 12px; }
   & .announcement-detail-header { padding: 18px 17px 16px !important; }
   & :is(.announcement-detail-header h3, .mailbox-detail-header h3) { font-size: 23px !important; }
   & .announcement-detail-body { padding: 19px 17px 24px !important; }

@@ -10,6 +10,18 @@ async function wholeRows(page, kind) {
   })).toBe(true);
 }
 
+async function expectCornerBadge(row) {
+  const badge = row.locator(".information-card-badge").first();
+  await expect.poll(() => badge.evaluate(el => {
+    const box = el.getBoundingClientRect();
+    const card = el.closest("button").getBoundingClientRect();
+    const x = card.left - 2;
+    const y = card.top - 2;
+    return box.left < card.left && box.top < card.top && box.right > card.left && box.bottom > card.top
+      && Boolean(el.contains(document.elementFromPoint(x, y)));
+  })).toBe(true);
+}
+
 async function open(page, kind, fixture = "normal") {
   await page.goto(`${preview}?window=${kind}&fixture=${fixture}`);
   await page.locator(".information-center-modal").waitFor();
@@ -17,8 +29,9 @@ async function open(page, kind, fixture = "normal") {
   await settleWindow(page);
   await expect(page.locator("link[href*='/paper.css'], style[data-vite-dev-id$='/paper.css']")).toHaveCount(0);
   if (fixture !== "empty") {
-    const shadows = await page.locator(`.${kind}-list-item`).evaluateAll(items => items.map(item => getComputedStyle(item).boxShadow));
-    expect(shadows.every(shadow => shadow.includes("3px 4px 0px 0px"))).toBe(true);
+    await expect.poll(() => page.locator(`.${kind}-list-item`).evaluateAll(items => items.every(item =>
+      getComputedStyle(item).boxShadow.includes(item.matches('[aria-current="true"]') ? "1px 1px 0px 0px" : "3px 4px 0px 0px")
+    ))).toBe(true);
   }
 }
 
@@ -26,9 +39,10 @@ for (const [width, height] of [[1440,960], [800,900], [390,844], [360,800], [320
   for (const kind of ["announcement", "mailbox"]) {
     test(`${kind} geometry, scroll and aligned actions ${width}x${height}`, async ({page}) => {
       await page.setViewportSize({width,height});
-      await open(page, kind);
+      await open(page, kind, "scroll");
       expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBe(width);
       await wholeRows(page, kind);
+      await expectCornerBadge(page.locator(`.${kind}-list-item`).first());
       await page.locator(`.${kind}-list`).hover();
       await page.mouse.wheel(0, 150);
       await page.mouse.move(0,0);
@@ -77,6 +91,13 @@ for (const kind of ["announcement", "mailbox"]) {
 
 test("mail attachment preview, claim, gray completion, delete and close preserve flows", async ({page}) => {
   await open(page,"mailbox");
+  const first = page.locator(".mailbox-list-item").first();
+  const readBadge = first.locator('.information-card-badge[data-state="read"]');
+  await expect(readBadge).toHaveCSS("background-color", "rgb(196, 235, 201)");
+  await expect(readBadge.locator("svg path")).toHaveCSS("stroke", "rgb(61, 43, 37)");
+  const attachment = first.locator('.information-card-badge[data-state="claimable"]');
+  await expect(attachment.locator("svg")).toBeVisible();
+  const claimableColor = await attachment.evaluate((el) => getComputedStyle(el).backgroundColor);
   await page.getByRole("button", {name:/查看道具详情/}).click();
   await expect(page.getByRole("dialog",{name:/道具详情/})).toBeVisible();
   await page.keyboard.press("Escape");
@@ -84,6 +105,7 @@ test("mail attachment preview, claim, gray completion, delete and close preserve
   await page.getByRole("button",{name:"领取附件",exact:true}).click();
   await expect(page.getByRole("button",{name:"已领取",exact:true})).toBeDisabled();
   await expect(page.locator(".mailbox-list-item").first()).toHaveClass(/state-done/);
+  await expect(first.locator('.information-card-badge[data-state="claimed"]')).not.toHaveCSS("background-color", claimableColor);
   await page.getByRole("button",{name:"删除邮件",exact:true}).click();
   await expect(page.locator(".mailbox-list-item")).toHaveCount(5);
   await page.getByRole("button",{name:"关闭邮箱",exact:true}).click();
@@ -93,14 +115,21 @@ test("mail attachment preview, claim, gray completion, delete and close preserve
 test("announcement categories, reads, hover and press keep paper selection", async ({page}) => {
   await open(page,"announcement");
   await expect(page.locator(".announcement-list-item").first()).not.toHaveClass(/is-unread/);
+  await expect(page.locator(".announcement-list-item").nth(1).locator('.information-card-badge[data-state="unread"]')).toBeVisible();
   await page.getByRole("tab",{name:/日志/}).click();
   await expect(page.locator(".announcement-list-item")).toHaveCount(2);
   const row=page.locator(".announcement-list-item").last();
+  await expect(row.locator('.information-card-badge[data-state="read"]')).toBeVisible();
   await row.hover();
   await expect.poll(()=>row.evaluate(e=>getComputedStyle(e).transform)).toContain("-1, -2");
   await page.mouse.down();
-  await expect.poll(()=>row.evaluate(e=>getComputedStyle(e).transform)).toContain("2, 3");
+  await expect(row).toHaveCSS("translate", "2px 3px");
   await page.mouse.up();
+  await page.mouse.move(0, 0);
+  await expect(row).toHaveAttribute("aria-current", "true");
+  await expect(row).toHaveCSS("translate", "2px 3px");
+  await expect(row).toHaveCSS("box-shadow", /1px 1px 0px 0px/);
+  await expect(row.locator('.information-card-badge[data-state="read"] svg')).toBeVisible();
 });
 
 test("original motion and reduced-motion behavior; other themes stay outside paper sizing", async ({page}) => {

@@ -1,5 +1,5 @@
 // @vitest-environment jsdom
-import { cleanup, render, screen, waitFor, within } from "@testing-library/react";
+import { act, cleanup, render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { resolve } from "node:path";
 import { pathToFileURL } from "node:url";
@@ -95,6 +95,22 @@ describe("AnnouncementModal information center", () => {
       "/api/announcements/changelog-1/read",
       { method: "POST", token: "token" }
     );
+  });
+
+  it("keeps the selected category's detail when the previous request resolves late", async () => {
+    const defaultApi = api.getMockImplementation();
+    let finishPrevious;
+    api.mockImplementation((path, options) => path === "/api/announcements/announcement-1"
+      ? new Promise((resolve) => { finishPrevious = resolve; })
+      : defaultApi(path, options));
+    render(<AnnouncementModal token="token" onClose={() => {}} />);
+    await screen.findByRole("button", { name: /欢迎来到星炬学院/ });
+    await userEvent.setup().click(screen.getByRole("tab", { name: "日志" }));
+    expect(await screen.findByText("完整更新正文")).toBeTruthy();
+
+    await act(async () => finishPrevious({ entry: { ...announcementItem, body: "先前公告正文" } }));
+    expect(screen.queryByText("先前公告正文")).toBeNull();
+    expect(screen.getByText("完整更新正文")).toBeTruthy();
   });
 
   it("names the empty content without extra hints when switching kinds", async () => {

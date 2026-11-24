@@ -22,11 +22,10 @@
 .mailbox-list-item {
   position: relative;
   width: 100%;
-  min-height: 72px;
+  min-height: 64px;
   display: grid;
-  align-content: center;
-  gap: 9px;
-  padding: 13px 14px;
+  gap: 4px;
+  padding: 8px 10px 7px 20px;
   border: 1px solid transparent;
   border-radius: 8px;
   background: transparent;
@@ -73,11 +72,6 @@
   box-shadow: none !important;
 }
 
-.mailbox-list-item.state-open,
-.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .mailbox-modal .mailbox-list .mailbox-list-item.state-open {
-  box-shadow: inset 3px 0 0 color-mix(in srgb, var(--theme-accent) 72%, transparent) !important;
-}
-
 .mailbox-list-item.state-open:hover,
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .mailbox-modal .mailbox-list .mailbox-list-item.state-open:hover {
   background: color-mix(in srgb, var(--theme-accent) 8%, transparent) !important;
@@ -111,14 +105,10 @@
   font-weight: 700;
 }
 
-.mailbox-list-state {
-  display: none;
-}
-
 .mailbox-list-meta {
   min-width: 0;
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-columns: minmax(0, max-content) auto;
   align-items: center;
   gap: 12px;
   color: var(--theme-muted);

@@ -8,11 +8,12 @@ import { preloadImageAssets } from "../../shared/preloadAssets.js";
 import GuideFocusMarker from "../../tutorial/GuideFocusMarker.jsx";
 import HomeGuideHighlight from "./HomeGuideHighlight.jsx";
 
-export function visibleGuideTarget(selector) {
+export function visibleGuideTarget(selector, readyWithin) {
   return [...document.querySelectorAll(selector)].find((element) => {
     const rect = element.getBoundingClientRect();
     return rect.width > 0 && rect.height > 0 && !element.closest('[aria-hidden="true"], [inert]')
-      && getComputedStyle(element).visibility !== "hidden";
+      && getComputedStyle(element).visibility !== "hidden"
+      && (!readyWithin || element.querySelector(readyWithin));
   });
 }
 
@@ -48,6 +49,7 @@ export default function HomeOnboarding({ character, overlaySetters, saving, erro
   const selector = step.target ? `[data-home-guide="${step.target}"]` : step.surface;
   const rect = geometry && geometry.selector === selector ? geometry.rect : null;
   const ready = !selector || Boolean(rect);
+  const dialogueReady = !step.readyWithin || ready;
   const panelHeight = panelMeasure.height;
   const panelReady = ready && panelMeasure.stepId === step.id;
 
@@ -63,10 +65,10 @@ export default function HomeOnboarding({ character, overlaySetters, saving, erro
   };
 
   useEffect(() => {
-    if (!step.text || prefersReducedMotion()) return;
+    if (!step.text || !dialogueReady || prefersReducedMotion()) return;
     const timer = window.setTimeout(() => setRevealState({ stepId: step.id, value: true }), 80 + step.text.length * 28);
     return () => window.clearTimeout(timer);
-  }, [step]);
+  }, [step, dialogueReady]);
 
   useLayoutEffect(() => {
     for (const [name, setter] of Object.entries(HOME_ONBOARDING_WINDOWS)) {
@@ -94,7 +96,7 @@ export default function HomeOnboarding({ character, overlaySetters, saving, erro
     let frame;
     let scrolledElement;
     const measure = () => {
-      const target = selector ? visibleGuideTarget(selector) : null;
+      const target = selector ? visibleGuideTarget(selector, step.readyWithin) : null;
       targetRef.current = target;
       if (target && target !== scrolledElement && step.target) {
         revealGuideTarget(target);
@@ -116,7 +118,7 @@ export default function HomeOnboarding({ character, overlaySetters, saving, erro
     };
     measure();
     return () => cancelAnimationFrame(frame);
-  }, [selector, step.target]);
+  }, [selector, step.readyWithin, step.target]);
 
   useEffect(() => {
     const previousFocus = document.activeElement;
@@ -202,7 +204,7 @@ export default function HomeOnboarding({ character, overlaySetters, saving, erro
     panelLeft = Math.max(14, Math.min(width - panelWidth - 14, (rect.left + rect.right - panelWidth) / 2));
   }
   const panelStyle = { top: panelTop, left: panelLeft, width: panelWidth, visibility: panelReady ? "visible" : "hidden" };
-  const npcBubble = { id: step.id, text, portrait: portrait.src, standardPortrait: portrait.standard, fallbackPortrait: portrait.fallbackSrc, appearanceId: portrait.appearanceId, expressionId: portrait.expressionId, palette: character.palette || character.color, speakerName: "西格莉卡" };
+  const npcBubble = { id: step.id, text: dialogueReady ? text : "", portrait: portrait.src, standardPortrait: portrait.standard, fallbackPortrait: portrait.fallbackSrc, appearanceId: portrait.appearanceId, expressionId: portrait.expressionId, palette: character.palette || character.color, speakerName: "西格莉卡" };
 
   return (
     <div ref={rootRef} className="home-onboarding" role="dialog" aria-modal="true" aria-label="主界面引导" data-step={step.id} data-placement-ready={panelReady} tabIndex={-1}

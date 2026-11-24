@@ -26,6 +26,11 @@ for (const viewport of [{ width: 1440, height: 1000 }, { width: 390, height: 844
         await page.getByRole("button", { name: step.choice, exact: true }).click();
         continue;
       }
+      if (step.id === "resume-intro") {
+        await expect(page.locator('.resume-modal .profile-tablet-glass[data-phase="loading"]')).toBeVisible();
+        await expect(page.locator(".home-guide-panel")).toBeHidden();
+        await expect(page.locator('.resume-modal .profile-tablet-interface:not([inert])')).toBeVisible();
+      }
       if (step.text) await expect(page.locator(".home-guide-panel p")).toHaveText(step.text);
       if (step.target || step.surface) await expect(page.locator(".home-guide-spotlight")).toBeVisible();
       await expect(page.getByText("正在准备介绍的窗口…", { exact: true })).toHaveCount(0);

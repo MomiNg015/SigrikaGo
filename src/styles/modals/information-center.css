@@ -4,6 +4,58 @@
   padding: clamp(18px, 4vw, 40px);
 }
 
+.information-center-modal :is(.announcement-list, .mailbox-list) {
+  padding-block-start: 11px;
+  padding-inline-start: 11px;
+}
+
+.information-center-modal :is(.announcement-list-item, .mailbox-list-item) {
+  grid-template-rows: auto 1fr;
+}
+
+.information-center-modal :is(.announcement-list-item, .mailbox-list-item).active {
+  translate: 2px 3px;
+}
+
+.information-center-modal :is(.announcement-list-title, .mailbox-list-title) {
+  align-self: start;
+}
+
+.information-center-modal :is(.announcement-list-meta, .mailbox-list-meta) {
+  align-self: end;
+  justify-content: end;
+  text-align: right;
+}
+
+.information-card-badges {
+  position: absolute;
+  top: -8px;
+  left: -8px;
+  z-index: 1;
+  display: grid;
+  gap: 3px;
+}
+
+.information-card-badge {
+  --information-card-icon-ink: #3d2b25;
+  display: grid;
+  place-items: center;
+  width: 18px;
+  height: 18px;
+  border: 1px solid #fff;
+  border-radius: 50%;
+  background: #ff4d72;
+}
+
+.information-card-badge[data-state="read"] { background: #c4ebc9; }
+.information-card-badge[data-state="claimable"] { background: #f5c44c; }
+.information-card-badge[data-state="claimed"] { background: #d3d5d8; --information-card-icon-ink: #464a51; }
+
+.information-center-modal .information-card-badge :is(svg, svg *) {
+  /* Keep the small glyph legible under the player button icon color rules. */
+  stroke: var(--information-card-icon-ink) !important;
+}
+
 .information-center-modal {
   position: relative;
   isolation: isolate;

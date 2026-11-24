@@ -8,7 +8,7 @@ afterEach(() => { cleanup(); vi.restoreAllMocks(); vi.unstubAllGlobals(); });
 function Directory({ items, enabled = true }) {
   const ref = useInformationListRows(items);
   return items.length ? <ul ref={ref} data-testid="list" style={{ "--information-paper-fit": enabled ? "1" : "0", rowGap: "12px", padding: "3px 9px 10px 3px" }}>
-    {items.map(id => <li key={id}><button style={{ padding: "15px 15px 35px", rowGap: "9px", border: "2px solid" }}>
+    {items.map(id => <li key={id}><button style={{ padding: "8px 11px 7px 33px", rowGap: "4px", border: "2px solid" }}>
       <span className="mailbox-list-title">{id}</span><span className="mailbox-list-meta">发件人</span>
     </button></li>)}
   </ul> : null;
@@ -26,11 +26,11 @@ it("attaches after async data, fits complete rows on resize and disconnects when
   expect(list.style.getPropertyValue("--information-paper-row-height")).toBe("");
   Object.defineProperty(list, "clientHeight", { value: 400, configurable: true });
   resize();
-  // 387px content fits exactly three rows plus two gaps.
-  expect(parseFloat(list.style.getPropertyValue("--information-paper-row-height"))).toBe(121);
+  // 387px content fits exactly five rows plus four gaps.
+  expect(parseFloat(list.style.getPropertyValue("--information-paper-row-height"))).toBeCloseTo(67.8);
   Object.defineProperty(list, "clientHeight", { value: 270, configurable: true });
   resize();
-  expect(parseFloat(list.style.getPropertyValue("--information-paper-row-height"))).toBe(122.5);
+  expect(parseFloat(list.style.getPropertyValue("--information-paper-row-height"))).toBeCloseTo(77.67);
   rerender(<Directory items={[]}/>);
   expect(disconnect).toHaveBeenCalledOnce();
   expect(list.style.getPropertyValue("--information-paper-row-height")).toBe("");

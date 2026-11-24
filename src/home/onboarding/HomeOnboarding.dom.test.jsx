@@ -28,7 +28,9 @@ it("shows each instruction with its actionable target immediately, without an em
   const open = vi.fn();
   const { container } = render(<>
     {targets.map(target => <button key={target} data-home-guide={target} aria-label={target} onClick={() => open(target)}>{target}</button>)}
-    {surfaces.map(surface => <section key={surface} className={surface.slice(1)} />)}
+    {surfaces.map(surface => <section key={surface} className={surface.slice(1)}>
+      {surface === ".resume-modal" && <div className="profile-tablet-interface" />}
+    </section>)}
     <HomeOnboarding character={character} overlaySetters={{}} onFinish={vi.fn()} />
   </>);
   expect(HOME_ONBOARDING_STEPS.filter(step => !step.choice).every(step => Boolean(step.text))).toBe(true);
@@ -138,7 +140,9 @@ it("retains the spotlight across dialogue on the same target and replaces it onl
   const finish = vi.fn();
   const { container } = render(<>
     {targets.map(target => <div key={target} data-home-guide={target}><button onClick={target === "team-characters" ? openTeam : undefined}>{target}</button></div>)}
-    {surfaces.map(surface => <section key={surface} className={surface.slice(1)} />)}
+    {surfaces.map(surface => <section key={surface} className={surface.slice(1)}>
+      {surface === ".resume-modal" && <div className="profile-tablet-interface" />}
+    </section>)}
     <HomeOnboarding character={character} overlaySetters={{}} onFinish={finish} />
   </>);
   let previousSelector;

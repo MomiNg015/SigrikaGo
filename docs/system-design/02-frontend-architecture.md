@@ -204,6 +204,7 @@ This update reduces the highest-payoff frontend coupling without changing user-f
 ## Recent Home, Shop, And Board UI Adjustments
 
 - The former home/house entry is now split into a clickable player plaque that opens “履历” for profile stats/replays and a “部员手册” entry for character and decoration management.
+- 主界面引导的履历介绍以平板内容区解除 `inert` 为就绪信号。窗口外壳出现和开机进度阶段显示引导等待状态。
   - The handbook retains its original window chrome and character-card presentation. The generated book/card artwork and dedicated handbook sizing owners have been removed. `WindowBookmarkTabs` keeps the left character/decoration rail, unique tab/panel IDs and keyboard navigation. Only the active content root is mounted directly under `HouseModal`, preserving original character-grid scrolling and direct-child decoration styling. Corrupted state keeps the original character archive without normal navigation. Detail overlays and sortie voice lifecycle are unchanged. The decoration panel has no redundant separator or heading/reset row. Its first option is always the default black/white stones, including an empty owned collection; selecting it uses the existing empty-ID reset action and shared selected/pending semantics.
 - The home match description is “13路，数子规则，黑贴2又3/4子，用时5分钟30秒3次”.
 - The home player plaque uses a light rank/rating tag with dark text. Admin management uses the same circular icon-plus-title layout and sizing pattern as the home utility buttons.
@@ -299,7 +300,7 @@ This update reduces the highest-payoff frontend coupling without changing user-f
 ## Announcement Center UI
 
 - `AnnouncementModal` 挂载在 `AppOverlays`，玩家只通过已登录会话访问 `/api/announcements*`。父弹窗固定默认打开“公告”tab，内部列表每次加载 20 条并用“加载更多”追加；切换 tab 不清除已读状态。
-- 公告和更新日志都使用新闻式语义列表：每个 `li` 内含可操作按钮，展示标题、首次发布时间、未读红点，公告额外显示置顶标签。`InformationCenterLayout` 在桌面保持左侧列表与右侧阅读区同时可见，并在加载或切换分类后打开该列表第一条；移动端通过 `mobileView`、`aria-hidden`/`inert` 和返回按钮从列表进入详情，不再挂载二级详情 dialog。桌面默认打开与移动端显式点击都复用 `POST /api/announcements/:id/read`，只有打开成功后才清除本条和全局未读摘要。
+- 公告和更新日志使用语义列表。每个 `li` 内的按钮展示标题、首次发布时间、阅读角标和可选置顶标签。`InformationCenterLayout` 在桌面同时展示列表和阅读区，加载或切换分类后打开第一条。移动端通过 `mobileView`、`aria-hidden`/`inert` 和返回按钮切换列表与详情。桌面默认打开与移动端显式点击都复用 `POST /api/announcements/:id/read`，成功后更新条目和全局未读摘要。切换条目时，已离开条目的异步详情响应不能覆盖当前阅读区。
 - `MarkdownLiteContent` 是公告正文的安全 Markdown-lite 渲染边界，只支持段落、保留换行、无序列表、加粗和 `http/https` 链接，不使用 raw HTML。
 - 后台“公告管理”由 `AdminAnnouncements` 提供一个顶级 admin tab，内部再分“公告 / 更新日志”子 tab 和 `全部 / 已发布 / 草稿` 状态筛选。编辑区桌面显示编辑+预览双栏，移动端通过“编辑 / 预览”切换同一内容；发布、保存草稿、保存修改、取消发布和软删除都是显式按钮。
 # Shared Dialog Accessibility Boundary

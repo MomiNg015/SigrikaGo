@@ -17,7 +17,7 @@ export function useInformationListRows(items) {
       const height = list.clientHeight - parseFloat(style.paddingTop) - parseFloat(style.paddingBottom);
       const gap = parseFloat(style.rowGap);
       if (!(height > 0) || !Number.isFinite(gap)) return;
-      let minimum = 108;
+      let minimum = 64;
       for (const item of list.children) {
         const button = item.firstElementChild;
         if (!button) continue;
