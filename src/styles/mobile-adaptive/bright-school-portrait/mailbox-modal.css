@@ -20,7 +20,7 @@
     height: 100% !important;
     min-height: 0 !important;
     align-content: start !important;
-    grid-auto-rows: minmax(64px, auto) !important;
+    grid-auto-rows: minmax(var(--information-card-min-height), auto) !important;
     overflow-x: hidden !important;
     overflow-y: auto !important;
   }

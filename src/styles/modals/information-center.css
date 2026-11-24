@@ -5,16 +5,16 @@
 }
 
 .information-center-modal :is(.announcement-list, .mailbox-list) {
-  padding-block-start: 11px;
-  padding-inline-start: 11px;
+  padding: 11px 6px 8px 11px;
 }
 
 .information-center-modal :is(.announcement-list-item, .mailbox-list-item) {
   grid-template-rows: auto 1fr;
+  min-height: var(--information-card-min-height);
 }
 
-.information-center-modal :is(.announcement-list-item, .mailbox-list-item).active {
-  translate: 2px 3px;
+.information-center-modal :is(.announcement-list-item, .mailbox-list-item):is(.active, :active) {
+  translate: 4px 5px;
 }
 
 .information-center-modal :is(.announcement-list-title, .mailbox-list-title) {
@@ -53,11 +53,12 @@
 .information-card-badge[data-state="claimed"] { background: #d3d5d8; --information-card-icon-ink: #464a51; }
 
 .information-center-modal .information-card-badge :is(svg, svg *) {
-  /* Keep the small glyph legible under the player button icon color rules. */
+  /* Preserve glyph contrast under theme resets. */
   stroke: var(--information-card-icon-ink) !important;
 }
 
 .information-center-modal {
+  --information-card-min-height: 72px;
   position: relative;
   isolation: isolate;
   width: min(1020px, calc(100vw - 48px));

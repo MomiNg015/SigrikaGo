@@ -7,8 +7,8 @@ afterEach(() => { cleanup(); vi.restoreAllMocks(); vi.unstubAllGlobals(); });
 
 function Directory({ items, enabled = true }) {
   const ref = useInformationListRows(items);
-  return items.length ? <ul ref={ref} data-testid="list" style={{ "--information-paper-fit": enabled ? "1" : "0", rowGap: "12px", padding: "3px 9px 10px 3px" }}>
-    {items.map(id => <li key={id}><button style={{ padding: "8px 11px 7px 33px", rowGap: "4px", border: "2px solid" }}>
+  return items.length ? <ul ref={ref} data-testid="list" style={{ "--information-paper-fit": enabled ? "1" : "0", "--information-card-min-height": "72px", rowGap: "12px", padding: "11px 9px 10px 11px" }}>
+    {items.map(id => <li key={id}><button style={{ padding: "8px 11px 7px 20px", rowGap: "4px", border: "2px solid" }}>
       <span className="mailbox-list-title">{id}</span><span className="mailbox-list-meta">发件人</span>
     </button></li>)}
   </ul> : null;
@@ -26,11 +26,14 @@ it("attaches after async data, fits complete rows on resize and disconnects when
   expect(list.style.getPropertyValue("--information-paper-row-height")).toBe("");
   Object.defineProperty(list, "clientHeight", { value: 400, configurable: true });
   resize();
-  // 387px content fits exactly five rows plus four gaps.
-  expect(parseFloat(list.style.getPropertyValue("--information-paper-row-height"))).toBeCloseTo(67.8);
+  // 379px content fits exactly four rows plus three gaps.
+  expect(parseFloat(list.style.getPropertyValue("--information-paper-row-height"))).toBe(85.75);
   Object.defineProperty(list, "clientHeight", { value: 270, configurable: true });
   resize();
-  expect(parseFloat(list.style.getPropertyValue("--information-paper-row-height"))).toBeCloseTo(77.67);
+  expect(parseFloat(list.style.getPropertyValue("--information-paper-row-height"))).toBe(75);
+  Object.defineProperty(list, "clientHeight", { value: 80, configurable: true });
+  resize();
+  expect(parseFloat(list.style.getPropertyValue("--information-paper-row-height"))).toBe(72);
   rerender(<Directory items={[]}/>);
   expect(disconnect).toHaveBeenCalledOnce();
   expect(list.style.getPropertyValue("--information-paper-row-height")).toBe("");
@@ -46,7 +49,7 @@ it("accounts for wrapped content and leaves non-paper themes untouched", () => {
   Object.defineProperty(list.querySelector(".mailbox-list-title"), "offsetHeight", { value: 60 });
   Object.defineProperty(list.querySelector(".mailbox-list-meta"), "offsetHeight", { value: 40 });
   resize();
-  expect(parseFloat(list.style.getPropertyValue("--information-paper-row-height"))).toBe(187.5);
+  expect(parseFloat(list.style.getPropertyValue("--information-paper-row-height"))).toBe(183.5);
   rerender(<Directory items={items} enabled={false}/>);
   resize();
   expect(list.style.getPropertyValue("--information-paper-row-height")).toBe("");

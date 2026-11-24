@@ -6,7 +6,7 @@ async function wholeRows(page, kind) {
   await expect.poll(() => page.locator(`.${kind}-list`).evaluate(list => {
     const bounds = list.getBoundingClientRect();
     const visible = [...list.children].map(item => item.getBoundingClientRect()).filter(box => box.bottom > bounds.top + 1 && box.top < bounds.bottom - 1);
-    return visible.length > 0 && visible.every(box => box.top >= bounds.top && box.bottom + 4 <= bounds.bottom + 1);
+    return visible.length > 0 && visible.every(box => box.height >= 72 && box.top >= bounds.top && box.bottom + 6 <= bounds.bottom + 1);
   })).toBe(true);
 }
 
@@ -31,7 +31,7 @@ async function open(page, kind, fixture = "normal") {
   await expect(page.locator("link[href*='/paper.css'], style[data-vite-dev-id$='/paper.css']")).toHaveCount(0);
   if (fixture !== "empty") {
     await expect.poll(() => page.locator(`.${kind}-list-item`).evaluateAll(items => items.every(item =>
-      getComputedStyle(item).boxShadow.includes(item.matches('[aria-current="true"]') ? "1px 1px 0px 0px" : "3px 4px 0px 0px")
+      getComputedStyle(item).boxShadow.includes(item.matches('[aria-current="true"]') ? "1px 1px 0px 0px" : "5px 6px 0px 0px")
     ))).toBe(true);
   }
 }
@@ -126,11 +126,11 @@ test("announcement categories, reads, hover and press keep paper selection", asy
   await row.hover();
   await expect.poll(()=>row.evaluate(e=>getComputedStyle(e).transform)).toContain("-1, -2");
   await page.mouse.down();
-  await expect(row).toHaveCSS("translate", "2px 3px");
+  await expect(row).toHaveCSS("translate", "4px 5px");
   await page.mouse.up();
   await page.mouse.move(0, 0);
   await expect(row).toHaveAttribute("aria-current", "true");
-  await expect(row).toHaveCSS("translate", "2px 3px");
+  await expect(row).toHaveCSS("translate", "4px 5px");
   await expect(row).toHaveCSS("box-shadow", /1px 1px 0px 0px/);
   await expect(row.locator('.information-card-badge[data-state="read"] svg')).toBeVisible();
 });

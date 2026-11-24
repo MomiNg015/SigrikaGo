@@ -37,7 +37,7 @@
 & :is(.announcement-list, .mailbox-list) > li { flex: 0 0 auto; border: 0 !important; scroll-snap-align: start; }
 & :is(.announcement-list-item, .mailbox-list-item) {
   position: relative;
-  min-height: var(--information-paper-row-height, 64px) !important;
+  min-height: var(--information-paper-row-height, var(--information-card-min-height)) !important;
   height: var(--information-paper-row-height, auto) !important;
   width: 100%;
   box-sizing: border-box;
@@ -46,14 +46,14 @@
   border-radius: 8px !important;
   background-color: var(--information-paper-white) !important;
   color: var(--bright-ink) !important;
-  box-shadow: 3px 4px 0 var(--information-paper-ink) !important;
+  box-shadow: 5px 6px 0 var(--information-paper-ink) !important;
   transform: translate(0, 0) !important;
   transition: transform 150ms cubic-bezier(.22, 1, .36, 1), translate 150ms cubic-bezier(.22, 1, .36, 1), box-shadow 150ms cubic-bezier(.22, 1, .36, 1), background-color 150ms ease !important;
 }
 /* Match legacy state paint without raising the motion or sizing selectors. */
 & .announcement-list .announcement-list-item {
   border-color: var(--information-paper-ink) !important;
-  box-shadow: 3px 4px 0 var(--information-paper-ink) !important;
+  box-shadow: 5px 6px 0 var(--information-paper-ink) !important;
 }
 & .announcement-list-item.active { background-color: var(--information-paper-pink) !important; }
 & :is(.announcement-list-title, .mailbox-list-title) {

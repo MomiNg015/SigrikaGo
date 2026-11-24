@@ -10,7 +10,7 @@ Use a 1px solid black outline on all four badge states. The unread, read and cla
 
 ## Complete rows and scroll
 
-`useInformationListRows(items)` returns the ref attached directly to the domain `<ul>`. CSS opts into sizing with `--information-paper-fit: 1`. After data mounts or changes, container resize and font readiness, measure content height, gaps, clamped title and metadata, padding and borders. Fit an integer number of rows (minimum 64px before content measurement) and write only `--information-paper-row-height`. Use stable `<li>` snap anchors while buttons translate on hover and press. Reserve bottom/right space for ink shadows. The active row keeps the pressed offset and 1px shadow even while hovered.
+`useInformationListRows(items)` returns the ref attached directly to the domain `<ul>`. CSS opts into sizing with `--information-paper-fit: 1`. After data mounts or changes, container resize and font readiness, measure content height, gaps, clamped title and metadata, padding and borders. Fit an integer number of rows with the 72px `--information-card-min-height` floor and write only `--information-paper-row-height`. Use stable `<li>` snap anchors while buttons translate on hover and press. Reserve bottom/right space for the resting 5×6px shadow. The active item moves 4px right and 5px down, leaving a 1×1px shadow at the same far edge even while hovered.
 
 Do not use a global MutationObserver or copy the prototype adapter into production. Ignore zero geometry; remove the inline height when the theme opts out or the effect unmounts, disconnect ResizeObserver and the resize listener, and ignore late font-ready callbacks after disposal. Empty-to-loaded and category/message updates must reattach to the actual list.
 

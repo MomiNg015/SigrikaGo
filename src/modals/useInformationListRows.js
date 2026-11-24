@@ -17,7 +17,8 @@ export function useInformationListRows(items) {
       const height = list.clientHeight - parseFloat(style.paddingTop) - parseFloat(style.paddingBottom);
       const gap = parseFloat(style.rowGap);
       if (!(height > 0) || !Number.isFinite(gap)) return;
-      let minimum = 64;
+      let minimum = parseFloat(style.getPropertyValue("--information-card-min-height"));
+      if (!Number.isFinite(minimum)) return;
       for (const item of list.children) {
         const button = item.firstElementChild;
         if (!button) continue;
@@ -30,7 +31,8 @@ export function useInformationListRows(items) {
           + number(css.borderTopWidth) + number(css.borderBottomWidth));
       }
       const count = Math.max(1, Math.floor((height + gap) / (minimum + gap)));
-      list.style.setProperty("--information-paper-row-height", `${(height - gap * (count - 1)) / count}px`);
+      const rowHeight = Math.max(minimum, (height - gap * (count - 1)) / count);
+      list.style.setProperty("--information-paper-row-height", `${rowHeight}px`);
     };
     fit();
     const observer = typeof ResizeObserver === "undefined" ? null : new ResizeObserver(fit);
