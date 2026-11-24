@@ -12,6 +12,7 @@ async function wholeRows(page, kind) {
 
 async function expectCornerBadge(row) {
   const badge = row.locator(".information-card-badge").first();
+  await expect(badge).toHaveCSS("border-top", "1px solid rgb(0, 0, 0)");
   await expect.poll(() => badge.evaluate(el => {
     const box = el.getBoundingClientRect();
     const card = el.closest("button").getBoundingClientRect();
@@ -93,9 +94,11 @@ test("mail attachment preview, claim, gray completion, delete and close preserve
   await open(page,"mailbox");
   const first = page.locator(".mailbox-list-item").first();
   const readBadge = first.locator('.information-card-badge[data-state="read"]');
-  await expect(readBadge).toHaveCSS("background-color", "rgb(196, 235, 201)");
+  await expect(readBadge).toHaveCSS("background-color", "rgb(173, 221, 192)");
   await expect(readBadge.locator("svg path")).toHaveCSS("stroke", "rgb(61, 43, 37)");
   const attachment = first.locator('.information-card-badge[data-state="claimable"]');
+  await expect(attachment).toHaveCSS("background-color", "rgb(251, 229, 119)");
+  await expect(attachment).toHaveCSS("border-top", "1px solid rgb(0, 0, 0)");
   await expect(attachment.locator("svg")).toBeVisible();
   const claimableColor = await attachment.evaluate((el) => getComputedStyle(el).backgroundColor);
   await page.getByRole("button", {name:/查看道具详情/}).click();
@@ -115,7 +118,7 @@ test("mail attachment preview, claim, gray completion, delete and close preserve
 test("announcement categories, reads, hover and press keep paper selection", async ({page}) => {
   await open(page,"announcement");
   await expect(page.locator(".announcement-list-item").first()).not.toHaveClass(/is-unread/);
-  await expect(page.locator(".announcement-list-item").nth(1).locator('.information-card-badge[data-state="unread"]')).toBeVisible();
+  await expect(page.locator(".announcement-list-item").nth(1).locator('.information-card-badge[data-state="unread"]')).toHaveCSS("background-color", "rgb(229, 72, 77)");
   await page.getByRole("tab",{name:/日志/}).click();
   await expect(page.locator(".announcement-list-item")).toHaveCount(2);
   const row=page.locator(".announcement-list-item").last();

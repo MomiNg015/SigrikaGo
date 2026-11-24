@@ -42,13 +42,14 @@
   place-items: center;
   width: 18px;
   height: 18px;
-  border: 1px solid #fff;
+  border: 1px solid #000;
   border-radius: 50%;
-  background: #ff4d72;
+  background: #e5484d;
 }
 
-.information-card-badge[data-state="read"] { background: #c4ebc9; }
-.information-card-badge[data-state="claimable"] { background: #f5c44c; }
+/* Radix Red 9, Green 6 and Amber 5 pair the alert dot with softer icon fills. */
+.information-card-badge[data-state="read"] { background: #adddc0; }
+.information-card-badge[data-state="claimable"] { background: #fbe577; }
 .information-card-badge[data-state="claimed"] { background: #d3d5d8; --information-card-icon-ink: #464a51; }
 
 .information-center-modal .information-card-badge :is(svg, svg *) {
