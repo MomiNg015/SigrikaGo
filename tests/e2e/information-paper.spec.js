@@ -75,14 +75,22 @@ for (const kind of ["announcement", "mailbox"]) {
       await open(page, kind, fixture);
       if (fixture === "long") {
         await wholeRows(page, kind);
+        const row = page.locator(`.${kind}-list-item`).first();
+        const titleText = row.locator(`.${kind}-list-title`);
+        await expect(titleText).toHaveCSS("white-space", "nowrap");
+        await expect(titleText).toHaveCSS("text-overflow", "ellipsis");
+        expect(await titleText.evaluate(el => el.scrollWidth > el.clientWidth)).toBe(true);
+        const card = await row.boundingBox();
+        const title = await titleText.boundingBox();
+        expect(title.x - card.x).toBeCloseTo(13);
+        expect(title.y - card.y).toBeCloseTo(10);
         if (kind === "mailbox") {
-          const row = page.locator(".mailbox-list-item").first();
+          await page.emulateMedia({ reducedMotion: "reduce" });
           const heading = await row.locator(".mailbox-list-heading").boundingBox();
-          const title = await row.locator(".mailbox-list-title").boundingBox();
           const gift = await row.locator(".mailbox-list-gift").boundingBox();
           expect(title.x + title.width).toBeLessThan(gift.x);
-          expect(gift.x + gift.width).toBeCloseTo(heading.x + heading.width);
-          expect(Math.abs(gift.y - title.y)).toBeLessThanOrEqual(3);
+          expect(gift.x + gift.width / 2).toBeCloseTo(heading.x + heading.width - 9, 0);
+          expect(gift.y + gift.height / 2 - title.y).toBeCloseTo(10, 0);
         }
         await page.locator(`.${kind}-list-item`).first().click();
         await settleWindow(page);
@@ -121,7 +129,8 @@ test("mail attachment preview, claim, gray completion, delete and close preserve
     animation.pause();
     animation.currentTime = 240;
   });
-  await expect(attachment).toHaveCSS("translate", "0px -2px");
+  await expect(attachment).toHaveCSS("translate", "0px -5px");
+  await expect(attachment).toHaveCSS("rotate", "-15deg");
   await page.getByRole("button", {name:/查看道具详情/}).click();
   await expect(page.getByRole("dialog",{name:/道具详情/})).toBeVisible();
   await page.keyboard.press("Escape");
@@ -131,6 +140,7 @@ test("mail attachment preview, claim, gray completion, delete and close preserve
   await expect(page.locator(".mailbox-list-item").first()).toHaveClass(/state-done/);
   const claimedGift = first.locator('.mailbox-list-gift[data-state="claimed"]');
   await expect(claimedGift).toHaveCSS("filter", "grayscale(1)");
+  await expect(claimedGift).toHaveCSS("rotate", "-15deg");
   await expect(claimedGift).toHaveCSS("animation-name", "none");
   await page.getByRole("button",{name:"删除邮件",exact:true}).click();
   await expect(page.locator(".mailbox-list-item")).toHaveCount(5);

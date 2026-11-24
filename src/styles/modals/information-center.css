@@ -19,6 +19,10 @@
 
 .information-center-modal :is(.announcement-list-title, .mailbox-list-title) {
   align-self: start;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .information-center-modal :is(.announcement-list-meta, .mailbox-list-meta) {

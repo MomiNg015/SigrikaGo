@@ -24,7 +24,7 @@
   width: 100%;
   display: grid;
   gap: 4px;
-  padding: 8px 10px 7px 20px;
+  padding: 8px 10px 7px;
   border: 1px solid transparent;
   border-radius: 8px;
   background: transparent;
@@ -102,6 +102,7 @@
   width: 18px;
   height: 18px;
   margin-block-start: 1px;
+  rotate: -15deg;
 }
 
 .mailbox-list-gift[data-state="claimed"] {
@@ -115,17 +116,13 @@
 }
 
 @keyframes mailbox-list-gift-bounce {
-  8% { translate: 0 -2px; }
-  22% { translate: 0 -1px; }
+  8% { translate: 0 -5px; }
+  22% { translate: 0 -2px; }
   0%, 16%, 30%, 100% { translate: none; }
 }
 
 .mailbox-list-title {
   flex: 1;
-  min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
   font-size: 15px;
   font-weight: 900;
   line-height: 1.35;

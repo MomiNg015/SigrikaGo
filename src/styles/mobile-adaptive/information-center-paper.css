@@ -41,7 +41,7 @@
   height: var(--information-paper-row-height, auto) !important;
   width: 100%;
   box-sizing: border-box;
-  padding: 8px 11px 7px 20px !important;
+  padding: 8px 11px 7px !important;
   border: 2px solid var(--information-paper-ink) !important;
   border-radius: 8px !important;
   background-color: var(--information-paper-white) !important;
@@ -61,7 +61,6 @@
   font-weight: 700 !important;
   line-height: 1.25 !important;
 }
-& :is(.announcement-list-title, .mailbox-list-title) { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; white-space: normal !important; }
 & .announcement-unread-dot { flex-shrink: 0; box-shadow: none !important; }
 & .announcement-list-meta { gap: 3px 8px; }
 & .announcement-list-meta b {

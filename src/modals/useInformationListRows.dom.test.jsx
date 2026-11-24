@@ -8,7 +8,7 @@ afterEach(() => { cleanup(); vi.restoreAllMocks(); vi.unstubAllGlobals(); });
 function Directory({ items, enabled = true }) {
   const ref = useInformationListRows(items);
   return items.length ? <ul ref={ref} data-testid="list" style={{ "--information-paper-fit": enabled ? "1" : "0", "--information-card-min-height": "72px", rowGap: "12px", padding: "11px 9px 10px 11px" }}>
-    {items.map(id => <li key={id}><button style={{ padding: "8px 11px 7px 20px", rowGap: "4px", border: "2px solid" }}>
+    {items.map(id => <li key={id}><button style={{ padding: "8px 11px 7px", rowGap: "4px", border: "2px solid" }}>
       <span className="mailbox-list-heading"><span className="mailbox-list-title">{id}</span></span>
       <span className="mailbox-list-meta">发件人</span>
     </button></li>)}
