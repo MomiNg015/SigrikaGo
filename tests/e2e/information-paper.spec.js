@@ -103,15 +103,18 @@ test("mail attachment preview, claim, gray completion, delete and close preserve
   await open(page,"mailbox");
   const first = page.locator(".mailbox-list-item").first();
   const readBadge = first.locator('.information-card-badge[data-state="read"]');
-  await expect(readBadge).toHaveCSS("width", "14px");
+  await expect(readBadge).toHaveCSS("width", "10px");
+  await expect(readBadge).toHaveCSS("height", "10px");
   await expect(first.locator(".information-card-badge")).toHaveCount(1);
   await expect(readBadge).toHaveCSS("background-image", "linear-gradient(145deg, rgb(244, 243, 241), rgb(221, 220, 218))");
-  await expect(readBadge.locator("svg path")).toHaveCSS("stroke", "rgb(70, 74, 81)");
+  await expect(readBadge).toBeEmpty();
   const attachment = first.locator('.mailbox-list-heading .mailbox-list-gift[data-state="claimable"]');
   await expect(attachment).toHaveCSS("width", "18px");
   await expect(attachment).toHaveCSS("background-color", "rgba(0, 0, 0, 0)");
   await expect(attachment).toHaveCSS("border-top-width", "0px");
-  await expect(attachment.locator(".mailbox-list-gift-box")).toHaveCSS("fill", "rgb(247, 211, 79)");
+  await expect(attachment).toHaveAttribute("src", "/assets/mailbox/mail-gift-sketch.webp");
+  await expect.poll(() => attachment.evaluate(image => image.naturalWidth)).toBe(96);
+  await expect(attachment).toHaveCSS("filter", "none");
   await expect(attachment).toHaveCSS("animation-name", "mailbox-list-gift-bounce");
   await attachment.evaluate(el => {
     const animation = el.getAnimations()[0];
@@ -127,7 +130,7 @@ test("mail attachment preview, claim, gray completion, delete and close preserve
   await expect(page.getByRole("button",{name:"已领取",exact:true})).toBeDisabled();
   await expect(page.locator(".mailbox-list-item").first()).toHaveClass(/state-done/);
   const claimedGift = first.locator('.mailbox-list-gift[data-state="claimed"]');
-  await expect(claimedGift.locator(".mailbox-list-gift-box")).toHaveCSS("fill", "rgb(211, 209, 206)");
+  await expect(claimedGift).toHaveCSS("filter", "grayscale(1)");
   await expect(claimedGift).toHaveCSS("animation-name", "none");
   await page.getByRole("button",{name:"删除邮件",exact:true}).click();
   await expect(page.locator(".mailbox-list-item")).toHaveCount(5);
@@ -154,7 +157,7 @@ test("announcement categories, reads, hover and press keep paper selection", asy
   await expect(row).toHaveAttribute("aria-current", "true");
   await expect(row).toHaveCSS("translate", "4px 5px");
   await expect(row).toHaveCSS("box-shadow", /1px 1px 0px 0px/);
-  await expect(row.locator('.information-card-badge[data-state="read"] svg')).toBeVisible();
+  await expect(row.locator('.information-card-badge[data-state="read"]')).toBeEmpty();
 });
 
 test("original motion and reduced-motion behavior; other themes stay outside paper sizing", async ({page}) => {

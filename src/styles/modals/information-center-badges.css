@@ -1,15 +1,12 @@
 .information-card-badge {
   position: absolute;
-  top: -7px;
-  left: -7px;
+  top: -5px;
+  left: -5px;
   z-index: 1;
-  --information-card-icon-ink: #464a51;
   --information-card-badge-light: #ef5d55;
   --information-card-badge-shade: #e34446;
-  display: grid;
-  place-items: center;
-  width: 14px;
-  height: 14px;
+  width: 10px;
+  height: 10px;
   border: 1px solid #000;
   border-radius: 50%;
   box-shadow: 0 0 0 1px var(--bright-sheet-clean, #fff);
@@ -18,19 +15,7 @@
     var(--information-card-badge-shade);
 }
 
-.information-card-badge[data-state="unread"] {
-  top: -5px;
-  left: -5px;
-  width: 10px;
-  height: 10px;
-}
-
 .information-card-badge[data-state="read"] {
   --information-card-badge-light: #f4f3f1;
   --information-card-badge-shade: #dddcda;
-}
-
-.information-center-modal .information-card-badge :is(svg, svg *) {
-  /* Preserve glyph contrast under theme resets. */
-  stroke: var(--information-card-icon-ink) !important;
 }

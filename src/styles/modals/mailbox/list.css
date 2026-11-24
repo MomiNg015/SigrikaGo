@@ -98,9 +98,6 @@
 }
 
 .mailbox-list-gift {
-  --mailbox-gift-ink: #695218;
-  --mailbox-gift-fill: #f7d34f;
-  --mailbox-gift-ribbon: #ffec99;
   flex: 0 0 auto;
   width: 18px;
   height: 18px;
@@ -108,9 +105,7 @@
 }
 
 .mailbox-list-gift[data-state="claimed"] {
-  --mailbox-gift-ink: #66625e;
-  --mailbox-gift-fill: #d3d1ce;
-  --mailbox-gift-ribbon: #eeedea;
+  filter: grayscale(1);
 }
 
 @media (prefers-reduced-motion: no-preference) {

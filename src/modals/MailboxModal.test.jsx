@@ -153,7 +153,7 @@ describe("MailboxModal information center", () => {
     expect(claimableRow.classList.contains("is-read")).toBe(true);
     expect(container.querySelector(".mailbox-unread-dot")).toBeNull();
     expect(container.querySelector(".mailbox-list-status")).toBeNull();
-    expect(container.querySelector(".mailbox-list-item img")).toBeNull();
+    expect(claimableRow.querySelector("img.mailbox-list-gift").getAttribute("src")).toBe("/assets/mailbox/mail-gift-sketch.webp");
   });
 
   it("formats recent list dates relatively and older mail as a compact local date", () => {
