@@ -1733,6 +1733,7 @@ describe("root CSS entry contract", () => {
       "./modals/character-music-player.css",
       "./modals/phone.css",
       "./modals/terminal-system.css",
+      "./modals/information-center-badges.css",
       "./modals/information-center.css",
       "./modals/mailbox.css",
       "./modals/announcement.css",

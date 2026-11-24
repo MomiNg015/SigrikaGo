@@ -27,36 +27,6 @@
   text-align: right;
 }
 
-.information-card-badges {
-  position: absolute;
-  top: -8px;
-  left: -8px;
-  z-index: 1;
-  display: grid;
-  gap: 3px;
-}
-
-.information-card-badge {
-  --information-card-icon-ink: #3d2b25;
-  display: grid;
-  place-items: center;
-  width: 18px;
-  height: 18px;
-  border: 1px solid #000;
-  border-radius: 50%;
-  background: #e5484d;
-}
-
-/* Radix Red 9, Green 6 and Amber 5 pair the alert dot with softer icon fills. */
-.information-card-badge[data-state="read"] { background: #adddc0; }
-.information-card-badge[data-state="claimable"] { background: #fbe577; }
-.information-card-badge[data-state="claimed"] { background: #d3d5d8; --information-card-icon-ink: #464a51; }
-
-.information-center-modal .information-card-badge :is(svg, svg *) {
-  /* Preserve glyph contrast under theme resets. */
-  stroke: var(--information-card-icon-ink) !important;
-}
-
 .information-center-modal {
   --information-card-min-height: 72px;
   position: relative;

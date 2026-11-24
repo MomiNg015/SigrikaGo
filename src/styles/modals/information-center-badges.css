@@ -1,0 +1,45 @@
+.information-card-badges {
+  position: absolute;
+  top: -8px;
+  left: -8px;
+  z-index: 1;
+  display: grid;
+  gap: 3px;
+}
+
+.information-card-badge {
+  --information-card-icon-ink: #3d2b25;
+  --information-card-badge-light: #ff7773;
+  --information-card-badge-shade: #e3243e;
+  display: grid;
+  place-items: center;
+  width: 18px;
+  height: 18px;
+  border: 1px solid #000;
+  border-radius: 50%;
+  background:
+    radial-gradient(ellipse at 28% 20%, #fffe, #fff4 22%, transparent 49%),
+    linear-gradient(145deg, var(--information-card-badge-light), var(--information-card-badge-shade))
+    var(--information-card-badge-shade);
+}
+
+.information-card-badge[data-state="read"] {
+  --information-card-badge-light: #b9f2a7;
+  --information-card-badge-shade: #5acd78;
+}
+
+.information-card-badge[data-state="claimable"] {
+  --information-card-badge-light: #fff295;
+  --information-card-badge-shade: #f6ba28;
+}
+
+.information-card-badge[data-state="claimed"] {
+  --information-card-badge-light: #f1f2f4;
+  --information-card-badge-shade: #bfc4cc;
+  --information-card-icon-ink: #464a51;
+}
+
+.information-center-modal .information-card-badge :is(svg, svg *) {
+  /* Preserve glyph contrast under theme resets. */
+  stroke: var(--information-card-icon-ink) !important;
+}

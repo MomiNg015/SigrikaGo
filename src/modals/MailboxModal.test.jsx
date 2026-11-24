@@ -281,7 +281,7 @@ describe("MailboxModal information center", () => {
     expect(css).toContain(".mailbox-list-item.state-open");
     expect(css).not.toContain("var(--theme-accent-2) 24%");
     expect(css).not.toContain(".mailbox-list-state");
-    expect(informationCenterCss).toContain(".information-card-badges");
+    expect(readCssWithImports(pathToFileURL(resolve("src/styles/modals.css")))).toContain(".information-card-badges");
     expect(css).toContain("border: 2px solid color-mix(in srgb, var(--theme-border) 72%, transparent)");
     expect(informationCenterCss).toContain("border-bottom: 2px dashed");
     expect(informationCenterCss).toContain("padding-bottom: 18px");
