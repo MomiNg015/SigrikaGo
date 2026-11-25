@@ -3,7 +3,7 @@
   --folder-cut: polygon(0 0, 32% 0, calc(32% + 12px) 11px, 98% 11px, 100% 17px, 100% 100%, 0 100%);
 
   & .mailbox-list .mailbox-list-item {
-    --folder-offset: 0px;
+    --folder-offset: 0px, 0px;
     --folder-paper: linear-gradient(to bottom, var(--folder-tab) 0 12px, #d4c7ab 12px 13px, #fff8e9 13px);
     --card-print-image: none;
     isolation: isolate;
@@ -26,13 +26,13 @@
     clip-path: var(--folder-cut);
     pointer-events: none;
   }
-  & .mailbox-list-item::before { background: #786f5d; transform: translateY(5px); }
+  & .mailbox-list-item::before { background: #786f5d; transform: translate(5px, 6px); }
   & .mailbox-list-item::after { background: var(--folder-paper); }
   & .mailbox-list-item::after,
   & .mailbox-list-item :is(.mailbox-list-heading, .mailbox-list-meta) {
-    transform: translateY(var(--folder-offset));
+    transform: translate(var(--folder-offset));
   }
-  & .mailbox-list .mailbox-list-item:is([aria-current="true"], :active) { --folder-offset: 5px; }
+  & .mailbox-list .mailbox-list-item:is([aria-current="true"], :active) { --folder-offset: 4px, 5px; }
   & .mailbox-list .mailbox-list-item[aria-current="true"] {
     --folder-paper: linear-gradient(90deg, #40695f 0 4px, transparent 4px), linear-gradient(to bottom, #6e968a 0 12px, #a4baab 12px 16px, #dce8dc 16px);
   }
@@ -47,18 +47,6 @@
   }
   & .mailbox-list-item:has(.information-card-badge[data-state="unread"]) .mailbox-list-heading::before {
     background-image: url("/assets/mailbox/unread-envelope.svg");
-  }
-  & .mailbox-list-item[aria-current="true"] .mailbox-list-meta {
-    grid-template-columns: auto minmax(0, 1fr) auto;
-    justify-self: stretch;
-    gap: 7px;
-  }
-  & .mailbox-list-item[aria-current="true"] .mailbox-list-meta::before {
-    content: "正在查看";
-    color: #365c50;
-    font-size: 12px;
-    text-align: left;
-    white-space: nowrap;
   }
   & .mailbox-detail-header::before {
     content: "";
