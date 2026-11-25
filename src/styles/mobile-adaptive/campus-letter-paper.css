@@ -1,0 +1,66 @@
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school:not(.is-sigrika-corrupted) :is(.onboarding-story-modal:not(.story-narration), .mailbox-modal.information-center-paper) {
+  --font-reading-leading: 30px;
+  --letter-sheet: #fffcf0;
+  --letter-rule: repeating-linear-gradient(to bottom, transparent 0 27px, #97b5c3 27px 28px, transparent 28px 30px);
+  --letter-plaid: repeating-linear-gradient(90deg, #558f9624 0 8px, transparent 8px 16px), repeating-linear-gradient(0deg, #558f9624 0 8px, transparent 8px 16px);
+  --letter-holes: radial-gradient(circle at 12px 14px, #736c62 0 3px, #c8bb9f 4px, #fff8dc 5px, transparent 6px) 0 0 / 25px 42px repeat-y;
+
+  &.standard-story-sprite .onboarding-story-dialogue {
+    background: var(--letter-holes), linear-gradient(90deg, transparent 47%, #bc7773 47% 47.2%, #fbead8 47.2% 47.5%, #c3867c 47.5% 47.6%, var(--letter-sheet) 47.6%), var(--letter-plaid), #c7dfdb !important;
+  }
+
+  & .onboarding-story-speaker {
+    padding-bottom: 4px;
+    border-bottom: 1px solid #b36166;
+  }
+
+  & .onboarding-story-text-button {
+    background: var(--letter-rule) local !important;
+  }
+
+  & .onboarding-story-text-button span,
+  & .mailbox-body,
+  & .mailbox-body p {
+    line-height: 30px !important;
+  }
+
+  & .mailbox-detail-header {
+    position: relative;
+    background: linear-gradient(90deg, #e6efdf 57%, transparent 82%), var(--letter-plaid), #d5e6dc;
+  }
+
+  & .mailbox-body {
+    --card-print-image: var(--letter-rule);
+    --card-print-size: calc(100% - 44px) 100%;
+    --card-print-position: center top;
+    padding: 30px 22px !important;
+    border-left: 4px double #c38583;
+    background-color: var(--letter-sheet);
+    background-attachment: local;
+  }
+
+  & .mailbox-body p { margin: 0; }
+  & .mailbox-body p + p { margin-top: 30px; }
+
+  &.standard-story-sprite .onboarding-story-dialogue::after,
+  & .mailbox-detail-header::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 18px;
+    width: 65px;
+    height: 14px;
+    background: repeating-linear-gradient(130deg, #e0ad54aa 0 5px, #fae1a8cc 5px 10px);
+    transform: rotate(-7deg);
+    clip-path: polygon(0 9%, 98% 0, 96% 25%, 100% 45%, 96% 72%, 99% 98%, 1% 96%, 4% 71%, 0 45%, 3% 27%);
+    pointer-events: none;
+  }
+
+  @media (max-width: 760px) {
+    &.standard-story-sprite .onboarding-story-dialogue {
+      background: var(--letter-holes), var(--letter-sheet) !important;
+      padding-inline: 28px 18px;
+    }
+    &.standard-story-sprite .onboarding-story-dialogue::after { width: 46px; }
+  }
+}

@@ -93,6 +93,8 @@
 @import "./mobile-adaptive/readable-type-battle.css";
 @import "./mobile-adaptive/readable-type-admin.css";
 @import "./mobile-adaptive/card-screenprints.css";
+@import "./mobile-adaptive/campus-letter-paper.css";
+@import "./mobile-adaptive/mailbox-folder.css";
 @import "./themes/bright-school/commerce/shop/material-header.css";
 @import "./themes/bright-school/commerce/shop/material-cards.css";
 @import "./themes/bright-school/commerce/shop/material-dialogue.css";

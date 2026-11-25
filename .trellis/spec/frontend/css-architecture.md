@@ -358,3 +358,7 @@ Shop product cards retain their pre-remediation layout, dimensions, scaling and 
 Loading portrait/spinner states share a square slot. Render tip sizing copies in the same CSS grid cell, hidden visually and from accessibility, with the exact same typography as the active live tip; do not reserve an arbitrary line count or recenter on each rotation. Keep progress helper copy clear of the mascot.
 
 Ordinary Bright School desktop arcade boards use proportional inner padding and equal coordinate tracks on both axes. Keep the same five-key layout in playing and dead-stone marking so the `:has(.battle-arcade-controls)` sizing owner stays active. Validate square grids, equal before/after bounds and full action accessibility at desktop and portrait widths. Result cards use the existing 3px border and solid 6px shadow tokens, with mobile shadow gutters intact. Unreleased theme choices opt into shared button-role disabled styling via `aria-disabled`; their explanation is dispatched through `UI_UNAVAILABLE_EVENT`, never by allowing the blocked business click through.
+
+### Player mailbox folder cards
+
+In ordinary Bright School, mailbox-folder.css owns the folder silhouette and title-side envelope. Read state comes from the badge data-state, independent of attachment state. Use the button’s aria-current for persistent selection and keep the button hit area stable while translating its face and contents. Check both opening an unread row and returning from mobile detail.

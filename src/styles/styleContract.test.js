@@ -701,6 +701,8 @@ describe("root CSS entry contract", () => {
       "./mobile-adaptive/readable-type-battle.css",
       "./mobile-adaptive/readable-type-admin.css",
       "./mobile-adaptive/card-screenprints.css",
+      "./mobile-adaptive/campus-letter-paper.css",
+      "./mobile-adaptive/mailbox-folder.css",
       "./themes/bright-school/commerce/shop/material-header.css",
       "./themes/bright-school/commerce/shop/material-cards.css",
       "./themes/bright-school/commerce/shop/material-dialogue.css",
