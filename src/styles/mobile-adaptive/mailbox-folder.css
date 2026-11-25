@@ -23,14 +23,25 @@
     position: absolute;
     inset: 0;
     z-index: -1;
-    clip-path: var(--folder-cut);
+    clip-path: var(--folder-cut) !important;
     pointer-events: none;
   }
   & .mailbox-list-item::before { background: #786f5d; transform: translate(5px, 6px); }
-  & .mailbox-list-item::after { background: var(--folder-paper); }
+  & .mailbox-list-item::after { background: var(--bright-border); }
+  & .mailbox-folder-face {
+    display: block;
+    position: absolute;
+    inset: 1.5px;
+    z-index: -1;
+    clip-path: var(--folder-cut) !important;
+    background: var(--folder-paper);
+    pointer-events: none;
+  }
+  & .mailbox-list-item::after { z-index: -2; }
+  & .mailbox-list-item::before { z-index: -3; }
   & .mailbox-list-item::after,
-  & .mailbox-list-item :is(.mailbox-list-heading, .mailbox-list-meta) {
-    transform: translate(var(--folder-offset));
+  & .mailbox-list-item :is(.mailbox-folder-face, .mailbox-list-heading, .mailbox-list-meta) {
+    transform: translate(var(--folder-offset)) !important;
   }
   & .mailbox-list .mailbox-list-item:is([aria-current="true"], :active) { --folder-offset: 4px, 5px; }
   & .mailbox-list .mailbox-list-item[aria-current="true"] {
@@ -60,7 +71,7 @@
   & .mailbox-detail-header::after { left: auto; right: 55px; width: 45px; }
   @media (prefers-reduced-motion: no-preference) {
     & .mailbox-list-item::after,
-    & .mailbox-list-item :is(.mailbox-list-heading, .mailbox-list-meta) { transition: transform 100ms ease-out; }
+    & .mailbox-list-item :is(.mailbox-folder-face, .mailbox-list-heading, .mailbox-list-meta) { transition: transform 100ms ease-out; }
     & .mailbox-detail .mailbox-body { animation: mailbox-folder-open 200ms ease-out both; }
   }
 }

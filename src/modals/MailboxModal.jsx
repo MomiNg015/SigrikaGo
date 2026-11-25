@@ -143,6 +143,7 @@ export default function MailboxModal({
                       aria-current={selected?.id === message.id ? "true" : undefined}
                       onClick={() => selectMessage(message)}
                     >
+                      <span className="mailbox-folder-face" hidden aria-hidden="true" />
                       <InformationReadBadge isRead={message.isRead} />
                       <span className="mailbox-list-heading">
                         <span className="mailbox-list-title">{message.title}</span>
