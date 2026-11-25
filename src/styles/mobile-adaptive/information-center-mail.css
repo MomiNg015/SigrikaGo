@@ -2,7 +2,6 @@
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school:not(.is-sigrika-corrupted) .information-center-modal.information-center-paper {
 & .mailbox-list-item.active { background-color: var(--information-paper-mint) !important; }
 & .mailbox-list-item.state-done:not(.active) { background-color: color-mix(in srgb, var(--theme-muted) 10%, var(--information-paper-white)) !important; }
-& .mailbox-list-item.state-done .mailbox-list-title { color: var(--theme-muted); font-weight: 400 !important; }
 & .mailbox-detail {
   padding: 0 !important;
 }

@@ -47,6 +47,22 @@
   & .mailbox-list .mailbox-list-item[aria-current="true"] {
     --folder-paper: linear-gradient(90deg, #40695f 0 4px, transparent 4px), linear-gradient(to bottom, #6e968a 0 12px, #a4baab 12px 16px, #dce8dc 16px);
   }
+  & .mailbox-list .mailbox-list-item.is-read {
+    --folder-paper: linear-gradient(to bottom, #a1a1a1 0 12px, #bcbcbc 12px 13px, #e7e7e7 13px);
+  }
+  & .mailbox-list .mailbox-list-item.is-read[aria-current="true"] {
+    --folder-paper: linear-gradient(90deg, #595959 0 4px, transparent 4px), linear-gradient(to bottom, #929292 0 12px, #ababab 12px 16px, #dadada 16px);
+  }
+  & .mailbox-list-item.is-read::before,
+  & .mailbox-list-item.is-read::after,
+  & .mailbox-list-item.is-read .mailbox-list-heading::before {
+    filter: grayscale(1);
+  }
+  & .mailbox-list .mailbox-list-item.is-read .mailbox-list-title { color: #414141; }
+  & .mailbox-list .mailbox-list-item.is-read :is(.mailbox-list-sender, .mailbox-list-time) { color: #555; }
+  & .mailbox-list .mailbox-list-item :is(.mailbox-list-title, .mailbox-list-sender, .mailbox-list-time) {
+    font-weight: 700 !important;
+  }
   & .mailbox-list-item:focus-visible { outline: 2px solid #40695f; outline-offset: 2px; }
   & .mailbox-list-item .information-card-badge { display: none; }
   & .mailbox-list-heading::before {
