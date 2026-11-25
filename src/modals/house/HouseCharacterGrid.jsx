@@ -1,3 +1,4 @@
+import { observeCardList } from "../../ui/observeCardList.js";
 import { useEffect, useRef, useState } from "react";
 import { canonicalCharacterId } from "../../shared/characterAliases.js";
 import { characterThemeStyle } from "../../shared/characterDisplay.js";
@@ -62,7 +63,7 @@ export default function HouseCharacterGrid(props) {
     clearPointerPreview();
   };
   return (
-    <div className="handbook-puzzle-panel" id={panelId} role={panelId ? "tabpanel" : undefined}
+    <div ref={observeCardList} className="handbook-puzzle-panel" id={panelId} role={panelId ? "tabpanel" : undefined}
       aria-labelledby={labelledBy} tabIndex={panelId ? 0 : undefined} onScroll={clearPointerPreview}>
       <div className="handbook-puzzle-board" ref={boardRef}
         style={{ "--handbook-desktop-slant": `${HANDBOOK_STRIP_LAYOUT.slant}px`,

@@ -1,3 +1,4 @@
+import { observeCardList } from "../ui/observeCardList.js";
 import { useEffect, useId, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { BGM_START_DELAY_SECONDS } from "../shared/audioScheduling.js";
@@ -395,7 +396,7 @@ export function CharacterMusicPreview({
               : undefined}
             aria-label={normalizedSlots.length === 1 ? activeSlot?.label : undefined}
           >
-            <div className="character-music-options" role="listbox" aria-label={`${activeSlot?.label ?? "角色技能"}曲目`}>
+            <div ref={observeCardList} className="character-music-options" role="listbox" aria-label={`${activeSlot?.label ?? "角色技能"}曲目`}>
               {(activeSlot?.options ?? []).map((option) => (
                 <TrackOptionButton
                   key={option.id}

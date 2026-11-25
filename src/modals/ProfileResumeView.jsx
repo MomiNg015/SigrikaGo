@@ -1,3 +1,4 @@
+import { observeCardList } from "../ui/observeCardList.js";
 import RankProgress from "../shared/RankProgress.jsx";
 import WindowEmptyState from "./WindowEmptyState.jsx";
 import { useRef, useState } from "react";
@@ -160,7 +161,7 @@ export default function ProfileResumeView({
             </div>
             {/* Keyboard users need a focus stop for the independently scrolling records. */}
             {/* eslint-disable-next-line jsx-a11y/no-noninteractive-tabindex */}
-            <div className="profile-character-table-scroll" role="region" tabIndex={0} aria-label="角色战绩列表">
+            <div ref={observeCardList} className="profile-character-table-scroll" role="region" tabIndex={0} aria-label="角色战绩列表">
               <table className="profile-character-table">
                 <colgroup>
                   <col className="profile-character-col-identity" />

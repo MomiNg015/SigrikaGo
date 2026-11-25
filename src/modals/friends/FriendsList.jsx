@@ -1,3 +1,4 @@
+import { observeCardList } from "../../ui/observeCardList.js";
 import WindowLoadingState from "../WindowLoadingState.jsx";
 import WindowEmptyState from "../WindowEmptyState.jsx";
 import { Fragment } from "react";
@@ -27,7 +28,7 @@ export default function FriendsList({
   if (loading) return <WindowLoadingState>加载中...</WindowLoadingState>;
 
   return (
-    <div className="friends-list">
+    <div ref={observeCardList} className="friends-list">
       {rows.map((row) => {
         const character = findCharacter(characters, row.characterId) ?? CHARACTERS.sigrika;
         return (

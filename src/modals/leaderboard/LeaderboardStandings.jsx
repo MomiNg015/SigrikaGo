@@ -1,3 +1,4 @@
+import { observeCardList } from "../../ui/observeCardList.js";
 import { Star } from "lucide-react";
 import { useLayoutEffect, useRef, useState } from "react";
 import RankProgress from "../../shared/RankProgress.jsx";
@@ -91,7 +92,7 @@ export default function LeaderboardStandings({ players, characters, capture, isC
   const rest = entries.slice(3);
   const current = entries.find(entry => isCurrentUser(entry.player));
   return <div className={`lp-standings${capture ? " lp-capture" : ""}`}>
-    <div className="lp-scroll" role="region" aria-label="排行榜名单">
+    <div ref={observeCardList} className="lp-scroll" role="region" aria-label="排行榜名单">
       {winners.length > 0 && <Podium entries={winners} characters={characters} capture={capture} isCurrentUser={isCurrentUser}/>}
       {rest.length > 0 && <div className="lp-columns" aria-hidden="true"><span>排名</span><span>{capture ? "纪录角色 / 用户名" : "常用角色 / 用户名"}</span><span>段位</span>{capture ? <span>提子数</span> : <><span>总局 / 胜 / 负 / 和</span><span>胜率</span></>}</div>}
       {rest.map(entry => <StandingRow key={entry.player.id} entry={entry} characters={characters} capture={capture} current={isCurrentUser(entry.player)}/>)}

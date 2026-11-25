@@ -1,3 +1,4 @@
+import { observeCardList } from "../../ui/observeCardList.js";
 import { ChevronRight, Swords } from "lucide-react";
 import WindowLoadingState from "../WindowLoadingState.jsx";
 import WindowEmptyState from "../WindowEmptyState.jsx";
@@ -26,7 +27,7 @@ export default function FriendsCompanionView({ activeTab, characters, loading, r
   if (!rows.length) return <div className="fc-empty"><WindowEmptyState>{activeTab === "friends" ? "暂无好友" : "暂无黑名单"}</WindowEmptyState></div>;
 
   return <div className="fc-layout">
-    <div className="fc-roster" role="group" aria-label={activeTab === "friends" ? "好友名单" : "黑名单名单"}>
+    <div ref={observeCardList} className="fc-roster" role="group" aria-label={activeTab === "friends" ? "好友名单" : "黑名单名单"}>
       {rows.map((row) => <button
         type="button"
         className="fc-person"

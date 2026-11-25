@@ -1,3 +1,4 @@
+import { observeCardList } from "../ui/observeCardList.js";
 import { useEffect, useMemo, useState } from "react";
 import { Check, Eye, Palette, ShieldCheck, Trophy, X } from "lucide-react";
 import { api } from "../api/client.js";
@@ -111,7 +112,7 @@ export default function PersonalizationModal({ token, user, onClose, onNotice, o
           <WindowTitleSticker titleKey="personalization" id="personalization-modal-title" />
           <button className="close-button" type="button" onClick={onClose} aria-label="关闭个性化窗口"><X size={20} /></button>
         </header>
-        <div className="personalization-sticker-scroll">
+        <div ref={observeCardList} className="personalization-sticker-scroll">
         <div className="personalization-preview" aria-label="个性化试穿预览">
           <UserIdentity user={previewUser} />
         </div>
@@ -156,7 +157,7 @@ export default function PersonalizationModal({ token, user, onClose, onNotice, o
                   <X size={18} />
                 </button>
               </header>
-              <div className="personalization-picker-list">
+              <div ref={observeCardList} className="personalization-picker-list">
                 <button
                   type="button"
                   className={optionClass(pickerSection, "")}

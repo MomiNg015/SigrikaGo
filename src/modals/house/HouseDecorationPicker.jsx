@@ -1,3 +1,4 @@
+import { observeCardList } from "../../ui/observeCardList.js";
 import { getStoneDecoration } from "../../shared/stoneDecorations.js";
 import StoneDecorationPreview from "../StoneDecorationPreview.jsx";
 
@@ -14,7 +15,7 @@ export default function HouseDecorationPicker({
     <section className="owned-decoration-section decoration-applied-box decorations-section" id={panelId}
       role={panelId ? "tabpanel" : undefined} aria-labelledby={labelledBy}
       tabIndex={panelId ? 0 : undefined}>
-      <div className="owned-decoration-list">
+      <div ref={observeCardList} className="owned-decoration-list">
         <button
           className={`owned-decoration-chip ${!selectedStoneDecoration ? "selected" : ""}`}
           disabled={!selectedStoneDecoration || applyingDecoration === "default"}

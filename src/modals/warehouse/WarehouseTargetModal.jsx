@@ -1,3 +1,4 @@
+import { observeCardList } from "../../ui/observeCardList.js";
 import WindowTitleSticker from "../WindowTitleSticker.jsx";
 import { UserRound, X } from "lucide-react";
 import { createPortal } from "react-dom";
@@ -38,7 +39,7 @@ export default function WarehouseTargetModal({
         ) : (
           <>
             <WindowTitleSticker titleKey="select-character" id="warehouse-target-title" />
-            <div className="team-character-options">
+            <div ref={observeCardList} className="team-character-options">
               {ownedCharacters.map((character) => {
                 const targetAvailability = warehouseCharacterTargetAvailability({
                   character,

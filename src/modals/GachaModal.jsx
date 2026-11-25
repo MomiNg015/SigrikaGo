@@ -1,3 +1,4 @@
+import { observeCardList } from "../ui/observeCardList.js";
 import WindowLoadingState from "./WindowLoadingState.jsx";
 import { Gem, History, List, Sparkles, X } from "lucide-react";
 import StartorchCouponIcon from "../shared/StartorchCouponIcon.jsx";
@@ -136,7 +137,7 @@ function GachaPrizePanel({ pool, onClose }) {
       <section className="nested-modal gacha-list-dialog" onClick={(event) => event.stopPropagation()}>
         <button className="close-button" type="button" onClick={onClose}><X size={18} /></button>
         <h2>奖项列表</h2>
-        <div className="gacha-prize-list">
+        <div ref={observeCardList} className="gacha-prize-list">
           {(pool?.prizes ?? []).map((prize) => (
             <article className="gacha-prize-row" key={prize.id}>
               <img src={prize.imageUrl || "/assets/items/rainbow-bean-candy.webp"} alt="" decoding="async" />
@@ -157,7 +158,7 @@ function GachaHistoryPanel({ records, onClose }) {
       <section className="nested-modal gacha-list-dialog" onClick={(event) => event.stopPropagation()}>
         <button className="close-button" type="button" onClick={onClose}><X size={18} /></button>
         <h2>抽奖记录</h2>
-        <div className="gacha-history-list">
+        <div ref={observeCardList} className="gacha-history-list">
           {records.map((record) => (
             <article key={record.id}>
               <strong>{record.poolName}</strong>
@@ -180,7 +181,7 @@ export function GachaResultDialog({ result, onClose }) {
       <section className="nested-modal gacha-result-dialog" onClick={(event) => event.stopPropagation()}>
         <button className="close-button" type="button" onClick={onClose}><X size={18} /></button>
         <h2>本次获得</h2>
-        <div className={`gacha-result-grid ${isTenPull ? "ten-pull" : ""}`}>
+        <div ref={observeCardList} className={`gacha-result-grid ${isTenPull ? "ten-pull" : ""}`}>
           {rewards.map((reward, index) => {
             const display = buildGachaRewardDisplay(reward);
             return (

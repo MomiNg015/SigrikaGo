@@ -1,3 +1,4 @@
+import { observeCardList } from "../ui/observeCardList.js";
 import { useState } from "react";
 import { X } from "lucide-react";
 import { ModalDialog, ModalActionButton } from "../modals/modalComponents.jsx";
@@ -56,7 +57,7 @@ export default function TeamLineupPicker({ user, characters, audioSettings, onCl
         })}
       </div>
       <div className="team-lineup-content">
-      <div className="team-character-options">
+      <div ref={observeCardList} className="team-character-options">
         {[...available, ...candyBlockedCharacters(user, characters, available)].map((character) => <MatchCharacterOption
           key={character.id} character={character} user={user} selected={lineup.includes(character.id)}
           disabled={!availableIds.has(character.id) || (lineup.every(Boolean) && !lineup.includes(character.id))}

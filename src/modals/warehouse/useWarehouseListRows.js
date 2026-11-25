@@ -1,3 +1,4 @@
+import { observeCardList } from "../../ui/observeCardList.js";
 import { useLayoutEffect, useRef } from "react";
 
 // Fit both edges to whole rows; snapping alone only aligns the leading card.
@@ -6,6 +7,7 @@ export function useWarehouseListRows(enabled = true) {
   useLayoutEffect(() => {
     const list = ref.current;
     if (!enabled || !list) return undefined;
+    const stopHint = observeCardList(list);
     const fit = () => {
       const style = getComputedStyle(list);
       const gap = parseFloat(style.rowGap);
@@ -20,6 +22,7 @@ export function useWarehouseListRows(enabled = true) {
     observer?.observe(list);
     window.addEventListener("resize", fit);
     return () => {
+      stopHint?.();
       observer?.disconnect();
       window.removeEventListener("resize", fit);
     };

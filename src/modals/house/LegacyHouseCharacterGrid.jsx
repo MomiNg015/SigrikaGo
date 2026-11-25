@@ -1,3 +1,4 @@
+import { observeCardList } from "../../ui/observeCardList.js";
 import { Flag } from "lucide-react";
 import { canonicalCharacterId } from "../../shared/characterAliases.js";
 import CharacterChainBadge from "../../shared/CharacterChainBadge.jsx";
@@ -27,7 +28,7 @@ export default function LegacyHouseCharacterGrid({
   const emptySlots = Array.from({ length: Math.max(0, 10 - characters.length) }, (_, index) => index);
 
   return (
-    <div className="character-list character-grid-container" id={panelId}
+    <div ref={observeCardList} className="character-list character-grid-container" id={panelId}
       role={panelId ? "tabpanel" : undefined} aria-labelledby={labelledBy}
       tabIndex={panelId ? 0 : undefined}>
       {characters.map((character) => {

@@ -1,3 +1,4 @@
+import { observeCardList } from "../../ui/observeCardList.js";
 import { Shirt, X } from "lucide-react";
 import { createPortal } from "react-dom";
 import { CharacterMusicPreview } from "../../audio/CharacterMusicPreview.jsx";
@@ -165,7 +166,7 @@ export function HouseReplayDialog({ characterListView, currentUser, onClose, onO
       >
         <button className="close-button" type="button" aria-label="关闭对局回放" onClick={onClose}><X size={18} /></button>
         <WindowTitleSticker titleKey="replays" as="h3" id="resume-replay-title" enabled={titleStickers} />
-        <div className="replay-dialog-list-scroll" onScroll={pagination.onScroll}>
+        <div ref={observeCardList} className="replay-dialog-list-scroll" onScroll={pagination.onScroll}>
           <PaginatedReplayList
             pagination={pagination}
             characters={characterListView}

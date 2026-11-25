@@ -1,0 +1,25 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>邮箱收件登记条</title>
+<style>
+.mail-count-slip{order:-1;display:grid;grid-template-columns:1fr 1.17fr .9fr;flex:none;margin:4px 9px 4px 10px;padding:6px 3px;background:#f6edd5;border:1px solid #bcae91;border-left:4px solid #799f93;border-radius:2px;box-shadow:1px 2px #d3c7b2;color:#463b30}
+.mail-count-slip>div{min-width:0;display:grid;grid-template-columns:auto auto;align-items:center;justify-content:center;column-gap:7px}
+.mail-count-slip>div+div{border-left:1px dashed #b8aa8e}
+.mail-count-slip dt{font-size:13px;line-height:1.3;grid-column:1 / -1;text-align:center}
+.mail-count-slip dd{display:flex;align-items:center;justify-content:center;gap:7px;grid-column:1 / -1;margin:2px 0 0;font-weight:700;font-variant-numeric:tabular-nums;font-size:22px;line-height:1.15}
+.mail-count-slip img,.mail-count-slip svg{width:18px;height:18px}
+</style></head><body><div id="root"></div><script type="module">
+const url=new URL(location.href);
+url.searchParams.set('window','mailbox');url.searchParams.set('view','production');history.replaceState(null,'',url);
+await import('./sample.jsx');
+const slip=document.createElement('dl');slip.className='mail-count-slip';slip.setAttribute('aria-label','收件统计');
+const icons=['<img alt="" src="/assets/mailbox/unread-envelope.svg">','<img alt="" src="/assets/mailbox/mail-gift-sketch.webp">','<svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="#56685e" stroke-width="1.8" stroke-linejoin="round"><path fill="#c8dacc" d="M2 6h8l2 3h10v11H2z"/><path d="M3 11h18"/></svg>'];
+slip.innerHTML=['未读','待领附件','全部邮件'].map((label,i)=>`<div><dt>${label}</dt><dd>${icons[i]}<span>0</span></dd></div>`).join('');
+const digits=slip.querySelectorAll('dd span');
+function refresh(){
+ const region=document.querySelector('.mailbox-list-region');if(!region)return;
+ if(slip.parentElement!==region)region.prepend(slip);
+ const cards=[...region.querySelectorAll('.mailbox-list-item')];
+ const totals=[cards.filter(c=>c.classList.contains('is-unread')).length,cards.filter(c=>c.querySelector('.mailbox-list-gift[data-state="claimable"]')).length,cards.length];
+ totals.forEach((v,i)=>{if(digits[i].textContent!==String(v))digits[i].textContent=v});
+}
+new MutationObserver(refresh).observe(document.querySelector('#root'),{childList:true,subtree:true,attributes:true,attributeFilter:['class','data-state']});refresh();
+</script></body></html>

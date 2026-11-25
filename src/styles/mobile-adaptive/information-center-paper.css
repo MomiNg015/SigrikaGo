@@ -28,9 +28,9 @@
 & :is(.announcement-list, .mailbox-list) {
   display: flex !important;
   flex-direction: column;
-  gap: 13px;
-  padding: 11px 9px 10px 11px !important;
-  scroll-padding: 11px 0 10px;
+  gap: 22px;
+  padding: 11px 9px 22px 11px !important;
+  scroll-padding: 11px 0 22px;
   scrollbar-width: thin;
   scroll-snap-type: y mandatory;
 }

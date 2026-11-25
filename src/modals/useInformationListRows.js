@@ -1,3 +1,4 @@
+import { observeCardList } from "../ui/observeCardList.js";
 import { useLayoutEffect, useRef } from "react";
 
 // Match both viewport edges to complete paper cards; native snap owns scrolling.
@@ -6,6 +7,7 @@ export function useInformationListRows(items) {
   useLayoutEffect(() => {
     const list = ref.current;
     if (!list) return undefined;
+    const stopHint = observeCardList(list);
     let disposed = false;
     const fit = () => {
       if (disposed) return;
@@ -40,6 +42,7 @@ export function useInformationListRows(items) {
     window.addEventListener("resize", fit);
     document.fonts?.ready.then(fit);
     return () => {
+      stopHint?.();
       disposed = true;
       observer?.disconnect();
       window.removeEventListener("resize", fit);

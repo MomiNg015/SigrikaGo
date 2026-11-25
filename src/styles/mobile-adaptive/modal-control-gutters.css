@@ -26,3 +26,23 @@
     scroll-padding: 6px 12px 14px 6px !important;
   }
 }
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .modal-backdrop
+:is(.wg-list, .wl-scroll) {
+  padding-bottom: 22px !important;
+}
+
+/* The hint stays at the visible lower edge without adding a scrollable row. */
+[data-card-list-anchor] { position: relative; }
+[data-card-list-more]::after {
+  content: "";
+  position: absolute;
+  z-index: 2;
+  inset: var(--card-list-hint-top) auto auto 50%;
+  width: 26px;
+  height: 13px;
+  transform: translateX(-50%);
+  pointer-events: none;
+  border-radius: 8px;
+  background: var(--bright-sheet, #fffbf2) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 10'%3E%3Cpath d='m2 2 6 5 6-5' fill='none' stroke='%235a5048' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center / 14px 9px no-repeat;
+}

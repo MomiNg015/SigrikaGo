@@ -1,3 +1,4 @@
+import { observeCardList } from "../../ui/observeCardList.js";
 import { useLayoutEffect, useRef } from "react";
 
 // Fit whole cards at both viewport edges, including wrapped player identities.
@@ -6,6 +7,7 @@ export function useWatchListRows() {
   useLayoutEffect(() => {
     const list = ref.current;
     if (!list) return undefined;
+    const stopHint = observeCardList(list);
     let frame;
     let disposed = false;
     function fit() {
@@ -43,6 +45,7 @@ export function useWatchListRows() {
     window.addEventListener("resize", schedule);
     schedule();
     return () => {
+      stopHint?.();
       disposed = true;
       cancelAnimationFrame(frame);
       resize?.disconnect();

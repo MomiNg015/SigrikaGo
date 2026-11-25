@@ -1,3 +1,4 @@
+import { observeCardList } from "../ui/observeCardList.js";
 import WindowLoadingState from "./WindowLoadingState.jsx";
 import WindowEmptyState from "./WindowEmptyState.jsx";
 import WindowBookmarkTabs from "./WindowBookmarkTabs.jsx";
@@ -136,7 +137,7 @@ export default function AchievementModal({ token, onClose, onNotice }) {
             </button>
           ))}
         </WindowBookmarkTabs>
-        <div className="achievement-list" aria-busy={loading}>
+        <div ref={observeCardList} className="achievement-list" aria-busy={loading}>
           <div className="achievement-row achievement-heading" aria-hidden="true">
             <span>成就名</span>
             <span>成就内容</span>
