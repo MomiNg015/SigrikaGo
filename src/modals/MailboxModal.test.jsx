@@ -65,6 +65,7 @@ describe("MailboxModal information center", () => {
     expect(screen.getAllByText("学生会")).toHaveLength(2);
     expect(screen.getByText("请领取本周活动奖励。")).toBeTruthy();
     expect(screen.queryByText("纯文本邮件")).toBeNull();
+    await waitFor(() => expect(screen.getByLabelText("收件统计").textContent).toBe("未读0待领附件1全部邮件1"));
     await waitFor(() => expect(api).toHaveBeenCalledWith(
       "/api/mailbox/mail-1/read",
       { method: "POST", token: "token" }
@@ -111,10 +112,14 @@ describe("MailboxModal information center", () => {
     });
     render(<MailboxModal token="token" initialLoaded initialMessages={[{ ...giftMessage, isRead: true }]} onClose={() => {}} />);
 
+    const counts = screen.getByLabelText("收件统计");
+    expect(counts.textContent).toBe("未读0待领附件1全部邮件1");
     await user.click(screen.getByRole("button", { name: "领取附件" }));
     await waitFor(() => expect(screen.getByRole("button", { name: "删除邮件" }).disabled).toBe(false));
+    expect(counts.textContent).toBe("未读0待领附件0全部邮件1");
     await user.click(screen.getByRole("button", { name: "删除邮件" }));
     await waitFor(() => expect(screen.getAllByText("暂无邮件").length).toBeGreaterThan(0));
+    expect(counts.textContent).toBe("未读0待领附件0全部邮件0");
   });
 
   it("distinguishes reading from attachment state and dims fully handled mail", () => {

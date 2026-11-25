@@ -125,6 +125,7 @@ export default function MailboxModal({
       detailLabelledBy={selected ? "mailbox-detail-title" : undefined}
       list={(
         <div className="mailbox-list-region">
+          {(messages.length > 0 || (loaded && !error)) && <MailboxCounts messages={messages} />}
           {error && <p className="form-error mailbox-error" role="alert">{error}</p>}
           {messages.length > 0 && (
             <ul ref={listRef} className="mailbox-list">
@@ -233,6 +234,30 @@ function mailboxMessageStateClass(message) {
 
 function sortMailboxMessages(messages) {
   return [...messages].sort((a, b) => new Date(b.createdAt ?? 0).getTime() - new Date(a.createdAt ?? 0).getTime());
+}
+
+function MailboxCounts({ messages }) {
+  return (
+    <dl className="mail-count-slip" aria-label="收件统计">
+      <div>
+        <dt>未读</dt>
+        <dd><img alt="" src="/assets/mailbox/unread-envelope.svg" /><span>{messages.filter(message => !message.isRead).length}</span></dd>
+      </div>
+      <div>
+        <dt>待领附件</dt>
+        <dd><img alt="" src="/assets/mailbox/mail-gift-sketch.webp" /><span>{messages.filter(message => message.claimable).length}</span></dd>
+      </div>
+      <div>
+        <dt>全部邮件</dt>
+        <dd>
+          <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="#56685e" strokeWidth="1.8" strokeLinejoin="round">
+            <path fill="#c8dacc" d="M2 6h8l2 3h10v11H2z" /><path d="M3 11h18" />
+          </svg>
+          <span>{messages.length}</span>
+        </dd>
+      </div>
+    </dl>
+  );
 }
 
 function AttachmentTile({ attachment, claimable, onOpenDetail }) {
