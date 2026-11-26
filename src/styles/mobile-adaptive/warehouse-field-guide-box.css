@@ -44,13 +44,6 @@
       filter: drop-shadow(0 0 2px var(--wg-paper)) drop-shadow(0 4px 4px var(--wg-ink));
     }
   }
-  .wg-drawer {
-    position: absolute; z-index: 1; inset: calc(16% + 49px) auto 13% 8%;
-    width: min(355px, 84%); display: grid; grid-template-rows: auto minmax(0, 1fr); gap: 5px; padding: 8px;
-    border: 2px solid var(--wg-ink); border-radius: 8px; background: var(--wg-paper);
-    transition: opacity 160ms ease-out, translate 160ms ease-out, visibility 160ms;
-  }
-  .wg-drawer-summary { margin: 0 3px; color: var(--wg-ink); font: 400 14px/1.5 var(--font-ui-default); }
   .wg-drawer[inert] { translate: -12px 0; opacity: 0; visibility: hidden; }
   .wg-detail-backdrop {
     position: absolute; z-index: 5; inset: 7.2% 5.2% 10% 4.2%;

@@ -676,6 +676,7 @@ describe("root CSS entry contract", () => {
       "./mobile-adaptive/room-header-scoreboard.css",
       "./mobile-adaptive/warehouse-field-guide.css",
       "./mobile-adaptive/warehouse-field-guide-box.css",
+      "./mobile-adaptive/warehouse-field-guide-tags.css",
       "./mobile-adaptive/warehouse-box-entry.css",
       "./mobile-adaptive/warehouse-field-guide-detail.css",
       "./mobile-adaptive/warehouse-field-guide-mobile.css",

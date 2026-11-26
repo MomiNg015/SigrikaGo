@@ -1,0 +1,63 @@
+:is(.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school, .app-shell) .warehouse-modal.warehouse-modal.warehouse-field-guide.warehouse-box {
+  .wg-drawer {
+    --drawer-tag-panel: #eadcc7;
+    --drawer-tag-line: #a98a67;
+    --drawer-tag-ink: #7a4830;
+    --drawer-tag-paper: #fff4dc;
+    --drawer-tag-active: #ffe8bd;
+    --drawer-tag-shadow: color-mix(in srgb, var(--drawer-tag-line) 55%, transparent);
+    position: absolute; z-index: 1; inset: calc(16% + 49px) auto 13% 8%;
+    width: min(355px, 84%); display: grid; grid-template-rows: auto minmax(0, 1fr); gap: 7px; padding: 9px;
+    border: 1px solid var(--drawer-tag-line); border-radius: 8px; background: var(--drawer-tag-panel);
+    box-shadow: 2px 4px 0 var(--drawer-tag-shadow);
+    transition: opacity 160ms ease-out, translate 160ms ease-out, visibility 160ms;
+  }
+  .wg-drawer:not(:has(.wg-entry:nth-child(3))) { bottom: auto; max-height: calc(71% - 49px); }
+  .wg-drawer-summary {
+    margin: 0; padding: 5px 7px 9px; border-bottom: 1px dashed var(--drawer-tag-line);
+    color: var(--wg-ink); font: 400 14px/1.5 var(--font-ui-default);
+  }
+  .wg-drawer .wg-list {
+    --warehouse-row-min: 0;
+    grid-auto-rows: auto !important;
+    gap: 9px !important;
+    padding: 2px 3px 22px !important;
+    scroll-snap-type: none;
+  }
+  .wg-drawer button.wg-entry {
+    grid-template-columns: 44px minmax(0, 1fr) auto !important;
+    gap: 8px !important;
+    min-height: 68px !important;
+    height: auto !important;
+    padding: 7px 0 7px 9px !important;
+    border: 1px solid var(--drawer-tag-line) !important;
+    border-radius: 4px !important;
+    background: var(--drawer-tag-paper) !important;
+    --card-print-image: none;
+    box-shadow: 1px 2px 0 var(--drawer-tag-shadow) !important;
+    translate: none !important;
+  }
+  .wg-drawer button.wg-entry:is(:hover, [aria-pressed="true"]) {
+    background-color: var(--drawer-tag-active) !important;
+    box-shadow: 0 1px 0 var(--drawer-tag-shadow) !important;
+  }
+  .wg-drawer button.wg-entry > .wg-thumbnail { height: 43px; }
+  .wg-drawer .wg-thumbnail :is(img, svg) { width: 44px !important; height: 43px !important; }
+  .wg-drawer .wg-thumbnail::before {
+    content: ""; position: absolute; top: 6px; left: 6px;
+    width: 5px; height: 5px; border: 1px solid var(--drawer-tag-line); border-radius: 50%;
+    background: var(--drawer-tag-panel); pointer-events: none;
+  }
+  .wg-drawer .wg-name { font-size: 15px !important; }
+  .wg-drawer .wg-entry .wg-quantity {
+    flex-direction: row !important; align-self: stretch; align-items: center; justify-content: center;
+    gap: 3px; min-width: 0; padding: 3px 7px;
+    border-left: 1px dashed var(--drawer-tag-line);
+    background: color-mix(in srgb, var(--drawer-tag-line) 18%, transparent);
+    color: var(--drawer-tag-ink) !important;
+  }
+  .wg-drawer .wg-quantity > span { display: none; }
+  .wg-drawer .wg-quantity::before { content: "×"; font-size: 12px; }
+  .wg-drawer .wg-quantity strong { font-size: 18px !important; }
+  .wg-drawer .wg-entry:focus-visible { outline-offset: -3px; }
+}

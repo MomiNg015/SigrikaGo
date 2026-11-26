@@ -1,5 +1,9 @@
 # CSS Architecture
 
+## Warehouse drawer tags
+
+`warehouse-field-guide-tags.css` owns the physical box's inventory drawer. Tags grow to fit wrapped names and keep the full quantity on a single line. The list scrolls continuously and retains the existing down chevron when more inventory is below the viewport. Check short drawers and the last reachable item at 320px portrait width.
+
 ## Campus front page
 
 `mobile-adaptive/announcement-frontpage.css` owns the ordinary Bright School announcement and changelog layout. Keep the announcement reader on the left and the briefs on the right at desktop widths. In portrait detail, hide the bookmark rail and reclaim its gutter, then restore both on return. The item-level New mark is derived from `isUnread` and remains until the read request succeeds. Keep its static halo under reduced motion. Check the real theme cascade at desktop and 320px portrait widths, including return and post-read marker removal.
