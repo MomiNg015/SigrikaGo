@@ -2,11 +2,10 @@ import WindowLoadingState from "./WindowLoadingState.jsx";
 import WindowEmptyState from "./WindowEmptyState.jsx";
 import WindowBookmarkTabs from "./WindowBookmarkTabs.jsx";
 import { useEffect, useRef, useState } from "react";
-import { Pin, RefreshCw } from "lucide-react";
+import { Pin, RefreshCw, Sparkles } from "lucide-react";
 import { api } from "../api/client.js";
 import MarkdownLiteContent from "../shared/MarkdownLiteContent.jsx";
 import InformationCenterLayout, { useNarrowInformationCenter } from "./InformationCenterLayout.jsx";
-import InformationReadBadge from "./InformationReadBadge.jsx";
 import { useInformationListRows } from "./useInformationListRows.js";
 import { ModalActionButton } from "./modalComponents.jsx";
 
@@ -234,7 +233,7 @@ export default function AnnouncementModal({
                 onKeyDown={(event) => handleTabKeyDown(event, index)}
               >
                 <span>{kind.tabLabel ?? kind.label}</span>
-                {unreadByKind[kind.id] && <i className="announcement-unread-dot" aria-hidden="true" />}
+                {Boolean(unreadByKind[kind.id]) && <i className="announcement-unread-dot" aria-hidden="true" />}
               </button>
             ))}
           </WindowBookmarkTabs>
@@ -268,7 +267,11 @@ export default function AnnouncementModal({
                       aria-current={detail.item?.id === item.id ? "true" : undefined}
                       onClick={() => openDetail(item)}
                     >
-                      <InformationReadBadge isRead={!item.isUnread} />
+                      {item.isUnread && (
+                        <span className="announcement-new-mark" aria-hidden="true">
+                          <Sparkles size={11} />New
+                        </span>
+                      )}
                       <span className="announcement-list-title">{item.title}</span>
                       <span className="announcement-list-meta">
                         {item.pinned && (
@@ -303,6 +306,7 @@ export default function AnnouncementModal({
       detail={detail.open ? (
         <article className="announcement-detail">
           <header className="announcement-detail-header">
+            <div className="announcement-masthead" hidden aria-hidden="true">星炬校报</div>
             <span className="announcement-detail-kind">
               {KINDS.find((kind) => kind.id === (detail.entry?.kind ?? detail.item?.kind))?.label ?? ""}
             </span>

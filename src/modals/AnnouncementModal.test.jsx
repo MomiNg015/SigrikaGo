@@ -140,9 +140,15 @@ describe("AnnouncementModal information center", () => {
     })));
     render(<AnnouncementModal token="token" onClose={() => {}} />);
 
-    expect(await screen.findByRole("button", { name: /欢迎来到星炬学院/ })).toBeTruthy();
+    const row = await screen.findByRole("button", { name: /欢迎来到星炬学院.*未读/ });
+    expect(within(row).getByText("New")).toBeTruthy();
     expect(screen.queryByText("完整公告正文")).toBeNull();
     expect(api.mock.calls.some(([path]) => path.endsWith("/read"))).toBe(false);
+    const user = userEvent.setup();
+    await user.click(row);
+    await waitFor(() => expect(within(row).queryByText("New")).toBeNull());
+    await user.click(screen.getByRole("button", { name: "返回公告列表" }));
+    expect(screen.getByRole("button", { name: /欢迎来到星炬学院.*已读/ })).toBe(row);
   });
 
   it("uses shared master-detail CSS instead of a nested detail modal contract", () => {

@@ -1,0 +1,88 @@
+/* Campus front page: the lead story reads first, with briefs alongside. */
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school:not(.is-sigrika-corrupted) .information-center-modal.information-center-paper.announcement-modal {
+  --information-paper-fit: 0;
+  --frontpage-rule: #a18365;
+  --frontpage-ink: #8c382b;
+  --frontpage-selection: #f7e5d1;
+  & .information-center-reader {
+    border: 1px solid var(--frontpage-rule) !important;
+    border-radius: 0 !important;
+    box-shadow: 3px 4px 0 var(--frontpage-rule) !important;
+  }
+  & .announcement-list-region {
+    border-block: 3px double var(--frontpage-ink);
+    background: color-mix(in srgb, var(--frontpage-selection) 55%, var(--bright-sheet));
+  }
+  & .announcement-list {
+    gap: 0;
+    padding: 0 10px 22px !important;
+    scroll-snap-type: none;
+  }
+  & .announcement-list .announcement-list-item {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    align-content: center;
+    gap: 4px;
+    min-height: 69px !important;
+    height: auto !important;
+    padding: 10px 14px !important;
+    border: 0 !important;
+    border-bottom: 1px solid var(--frontpage-rule) !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    translate: none !important;
+    transform: none !important;
+    text-shadow: none !important;
+    text-align: left;
+  }
+  & .announcement-list .announcement-list-item:is(.active, :hover) {
+    background: var(--frontpage-selection) !important;
+    box-shadow: inset 4px 0 var(--frontpage-ink) !important;
+  }
+  & .announcement-list .announcement-list-title {
+    grid-column: 1;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    white-space: normal !important;
+    overflow-wrap: anywhere;
+  }
+  & .announcement-list-meta { grid-column: 1; justify-content: start; }
+  & .announcement-list-meta b,
+  & .announcement-detail-kind { color: var(--frontpage-ink) !important; }
+  & .announcement-detail-header {
+    background: var(--bright-sheet) !important;
+    border-bottom: 3px double var(--frontpage-ink) !important;
+  }
+  & .announcement-masthead {
+    display: block;
+    margin-bottom: 14px;
+    padding-bottom: 8px;
+    border-bottom: 3px double var(--frontpage-rule);
+    color: var(--frontpage-ink);
+    font: 700 22px/1.15 var(--font-window-title), var(--font-ui-default);
+    letter-spacing: .1em;
+  }
+  & .announcement-detail-body { width: 100%; max-width: 68ch; margin-inline: auto; }
+  & > .window-bookmark-rail .window-bookmark-tab { --bookmark-paper: var(--bright-sheet) !important; }
+  & > .window-bookmark-rail .window-bookmark-tab[aria-selected="true"] { --bookmark-paper: var(--frontpage-selection) !important; }
+
+  @media (min-width: 769px) {
+    & .information-center-layout {
+      grid-template-columns: minmax(0, 1.7fr) minmax(245px, .8fr);
+    }
+    & .information-center-reader { grid-area: 1 / 1; }
+    & .information-center-master { grid-area: 1 / 2; }
+    & .announcement-detail-header h3 { font-size: clamp(26px, 3vw, 36px) !important; }
+  }
+  @media (max-width: 768px) {
+    &[data-mobile-view="detail"] > .window-bookmark-rail { display: none !important; }
+  }
+}
+
+@media (max-width: 768px) {
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school:not(.is-sigrika-corrupted) .announcement-backdrop:has(> .announcement-modal[data-mobile-view="detail"] > .window-bookmark-rail) {
+    padding-left: calc(12px + env(safe-area-inset-left)) !important;
+  }
+}

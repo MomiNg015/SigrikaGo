@@ -1,5 +1,9 @@
 # CSS Architecture
 
+## Campus front page
+
+`mobile-adaptive/announcement-frontpage.css` owns the ordinary Bright School announcement and changelog layout. Keep the announcement reader on the left and the briefs on the right at desktop widths. In portrait detail, hide the bookmark rail and reclaim its gutter, then restore both on return. The item-level New mark is derived from `isUnread` and remains until the read request succeeds. Keep its static halo under reduced motion. Check the real theme cascade at desktop and 320px portrait widths, including return and post-read marker removal.
+
 ## Player UI selection
 
 `base/foundation.css` disables native selection on `.app-shell.player-theme-enabled` and native image dragging within that shell. Restore text selection for input, textarea and non-false contenteditable elements. Admin uses its separate shell and retains selection. Do not replace this with transparent `::selection` paint or document-level mouse/selection blockers; preserve keyboard focus, touch scrolling and business pointer handlers. Check real drag sweeps and editable text selection under the full theme cascade.
