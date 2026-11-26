@@ -55,15 +55,6 @@
     background: var(--bright-sheet) !important;
     border-bottom: 3px double var(--frontpage-ink) !important;
   }
-  & .announcement-masthead {
-    display: block;
-    margin-bottom: 14px;
-    padding-bottom: 8px;
-    border-bottom: 3px double var(--frontpage-rule);
-    color: var(--frontpage-ink);
-    font: 700 22px/1.15 var(--font-window-title), var(--font-ui-default);
-    letter-spacing: .1em;
-  }
   & .announcement-detail-body { width: 100%; max-width: 68ch; margin-inline: auto; }
   & > .window-bookmark-rail .window-bookmark-tab { --bookmark-paper: var(--bright-sheet) !important; }
   & > .window-bookmark-rail .window-bookmark-tab[aria-selected="true"] { --bookmark-paper: var(--frontpage-selection) !important; }

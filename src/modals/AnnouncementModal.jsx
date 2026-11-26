@@ -306,7 +306,6 @@ export default function AnnouncementModal({
       detail={detail.open ? (
         <article className="announcement-detail">
           <header className="announcement-detail-header">
-            <div className="announcement-masthead" hidden aria-hidden="true">星炬校报</div>
             <span className="announcement-detail-kind">
               {KINDS.find((kind) => kind.id === (detail.entry?.kind ?? detail.item?.kind))?.label ?? ""}
             </span>
