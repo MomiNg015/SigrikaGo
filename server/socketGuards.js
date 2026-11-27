@@ -76,7 +76,7 @@ function acknowledgeDraining(packet, eventName) {
     code: "server_draining",
     error: SOCKET_DRAINING_MESSAGE,
     ...(eventName === "game:action"
-      ? { actionId: String(payload.actionId ?? ""), roomCode: String(payload.roomCode ?? "") }
+      ? { actionId: typeof payload.actionId === "string" ? payload.actionId : "", roomCode: typeof payload.roomCode === "string" ? payload.roomCode : "" }
       : {})
   });
 }

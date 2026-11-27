@@ -1,3 +1,4 @@
+import { onClientEvent } from "./socketClientEvent.js";
 const ROOM_NOT_AVAILABLE_MESSAGE = "\u623f\u95f4\u4e0d\u5b58\u5728\u6216\u5df2\u7ecf\u5173\u95ed";
 
 export function registerRoomSocketEvents(socket, {
@@ -17,7 +18,7 @@ export function registerRoomSocketEvents(socket, {
   runtimeServiceState = null,
   metrics = null
 }) {
-  socket.on("room:join", ({ roomCode } = {}) => {
+  onClientEvent(socket, "room:join", ({ roomCode } = {}) => {
     const validatedRoomCode = validateRoomCode(roomCode);
     if (!validatedRoomCode.ok) {
       socket.emit("error:toast", validatedRoomCode.error);
@@ -45,7 +46,7 @@ export function registerRoomSocketEvents(socket, {
     broadcastRoomPresencePatch(io, room);
   });
 
-  socket.on("room:leave", ({ roomCode } = {}) => {
+  onClientEvent(socket, "room:leave", ({ roomCode } = {}) => {
     const room = leaveRoom(roomCode, socket.user.id, socket.id);
     if (!room) return;
     socket.leave(room.code);
@@ -53,7 +54,7 @@ export function registerRoomSocketEvents(socket, {
     broadcastRoomPresencePatch(io, room);
   });
 
-  socket.on("room:resume", async ({ roomCode, resumeReason } = {}) => {
+  onClientEvent(socket, "room:resume", async ({ roomCode, resumeReason } = {}) => {
     metrics?.increment?.("roomResumeAttempts");
     if (resumeReason === "patch-gap") metrics?.increment?.("roomResumePatchGapRequests");
     if (resumeReason === "socket-connect") metrics?.increment?.("roomResumeSocketConnectRequests");
@@ -78,7 +79,7 @@ export function registerRoomSocketEvents(socket, {
     socket.emit("room:resume", payload);
   });
 
-  socket.on("room:preload-ready", ({ roomCode } = {}, ack) => {
+  onClientEvent(socket, "room:preload-ready", ({ roomCode } = {}, ack) => {
     const validatedRoomCode = validateRoomCode(roomCode);
     if (!validatedRoomCode.ok) {
       socket.emit("error:toast", validatedRoomCode.error);

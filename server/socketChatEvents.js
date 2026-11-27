@@ -1,10 +1,11 @@
+import { onClientEvent } from "./socketClientEvent.js";
 export function registerChatSocketEvents(socket, {
   io,
   addChat,
   broadcastRoom,
   broadcastRoomPatch
 }) {
-  socket.on("chat:send", (payload) => {
+  onClientEvent(socket, "chat:send", (payload) => {
     const { roomCode, text } = payload ?? {};
     const mutation = addChat(roomCode, socket.user, text, socket.id);
     if (!mutation) return;

@@ -49,3 +49,7 @@ Questions to answer:
 <!-- Error handling mistakes your team has made -->
 
 (To be filled by the team)
+
+## Player socket events
+
+Register client-originated game events with `onClientEvent(socket, event, handler)`. The handler receives an optional object payload and an optional acknowledgement. Payload-free events and acknowledgement-only events are supported. An invalid argument list returns `invalid_payload`; an exception or rejected handler promise returns `socket_event_failed`. Both go to the sending socket through its acknowledgement or error toast. Register server lifecycle listeners such as disconnect directly.

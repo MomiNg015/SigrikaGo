@@ -1,3 +1,4 @@
+import { onClientEvent } from "./socketClientEvent.js";
 import {
   findRoomActionReceipt,
   normalizeActionId,
@@ -25,7 +26,7 @@ export function registerGameSocketEvents(socket, {
   metrics = null,
   now = Date.now
 }) {
-  socket.on("game:action", (payload = {}, acknowledge) => {
+  onClientEvent(socket, "game:action", (payload = {}, acknowledge) => {
     const startedAt = now();
     metrics?.increment?.("gameActionAttempts");
     const actionId = normalizeActionId(payload.actionId);
@@ -74,31 +75,31 @@ export function registerGameSocketEvents(socket, {
     metrics?.observe?.("gameActionAckLatencyMs", now() - startedAt);
   });
 
-  socket.on("counting:request", ({ roomCode } = {}) => {
+  onClientEvent(socket, "counting:request", ({ roomCode } = {}) => {
     const result = requestCounting(roomCode, socket.user.id, io);
     emitResultError(socket, result);
     broadcastOkRoom(io, result, broadcastRoom);
   });
 
-  socket.on("counting:respond", ({ roomCode, accepted } = {}) => {
+  onClientEvent(socket, "counting:respond", ({ roomCode, accepted } = {}) => {
     const result = respondCounting(roomCode, socket.user.id, accepted);
     emitResultError(socket, result);
     broadcastOkRoom(io, result, broadcastRoom);
   });
 
-  socket.on("draw:request", ({ roomCode } = {}) => {
+  onClientEvent(socket, "draw:request", ({ roomCode } = {}) => {
     const result = requestDraw(roomCode, socket.user.id, io);
     emitResultError(socket, result);
     broadcastOkRoom(io, result, broadcastRoom);
   });
 
-  socket.on("draw:respond", ({ roomCode, accepted } = {}) => {
+  onClientEvent(socket, "draw:respond", ({ roomCode, accepted } = {}) => {
     const result = respondDraw(roomCode, socket.user.id, accepted, io);
     emitResultError(socket, result);
     broadcastOkRoom(io, result, broadcastRoom);
   });
 
-  socket.on("scoring:action", (payload = {}) => {
+  onClientEvent(socket, "scoring:action", (payload = {}) => {
     const result = handleScoringAction(payload.roomCode, socket.user.id, payload.action, io);
     emitResultError(socket, result);
     broadcastOkRoom(io, result, broadcastRoom);

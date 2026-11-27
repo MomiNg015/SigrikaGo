@@ -1,3 +1,4 @@
+import { onClientEvent } from "./socketClientEvent.js";
 import { GAME_PHASES } from "../src/shared/game.js";
 import { SIGRIKA_CANDY_CORRUPTION_ENABLED } from "../src/shared/sigrikaCandyAvailability.js";
 import {
@@ -25,7 +26,7 @@ export function registerSigrikaCandySocketEvents(socket, {
   runtimeServiceState = null,
   metrics = null
 }) {
-  socket.on("sigrika-candy:duel-status", async (_payload = {}, acknowledge) => {
+  onClientEvent(socket, "sigrika-candy:duel-status", async (_payload = {}, acknowledge) => {
     if (rejectDisabledCorruption(acknowledge)) return;
     try {
       await refreshSocketUser(socket);
@@ -42,7 +43,7 @@ export function registerSigrikaCandySocketEvents(socket, {
     }
   });
 
-  socket.on("sigrika-candy:duel-watch", async (_payload = {}, acknowledge) => {
+  onClientEvent(socket, "sigrika-candy:duel-watch", async (_payload = {}, acknowledge) => {
     if (rejectDisabledCorruption(acknowledge)) return;
     try {
       await refreshSocketUser(socket);
@@ -93,7 +94,7 @@ export function registerSigrikaCandySocketEvents(socket, {
     }
   });
 
-  socket.on("sigrika-candy:duel-start", async (_payload = {}, acknowledge) => {
+  onClientEvent(socket, "sigrika-candy:duel-start", async (_payload = {}, acknowledge) => {
     if (rejectDisabledCorruption(acknowledge)) return;
     try {
       await refreshSocketUser(socket);

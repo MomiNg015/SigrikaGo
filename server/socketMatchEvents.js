@@ -1,3 +1,4 @@
+import { onClientEvent } from "./socketClientEvent.js";
 const SOCKET_AUTH_EXPIRED_MESSAGE = "\u767b\u5f55\u72b6\u6001\u5df2\u5931\u6548\uff0c\u8bf7\u91cd\u65b0\u767b\u5f55";
 
 import { createCharacterSelectionData } from "./playerRoutes.js";
@@ -201,9 +202,9 @@ export function registerMatchSocketEvents(socket, {
       ack({ ok: false, error: message, ...(error.code ? { code: error.code } : {}) });
     }
   }
-  socket.on("match:join", (payload, ack) => join(payload, ack));
+  onClientEvent(socket, "match:join", (payload, ack) => join(payload, ack));
 
-  socket.on("match:leave", () => {
+  onClientEvent(socket, "match:leave", () => {
     matchAttempt += 1;
     clearExpansionTimer();
     leaveMatchmaking(socket.user.id);

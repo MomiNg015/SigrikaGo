@@ -1,3 +1,4 @@
+import { onClientEvent } from "./socketClientEvent.js";
 import { createCharacterSelectionData } from "./playerRoutes.js";
 import { resolveMatchCharacter } from "./matchCharacterSelection.js";
 import { isPracticePlayerColor, requestedPracticeDifficulty } from "../src/shared/practiceMode.js";
@@ -20,13 +21,13 @@ export function registerPracticeSocketEvents(socket, {
   runtimeServiceState = null,
   metrics = null
 }) {
-  socket.on("practice:compute", (payload, acknowledge) => {
+  onClientEvent(socket, "practice:compute", (payload, acknowledge) => {
     acknowledge?.(localPracticeEngine?.request(socket, payload) ?? { ok: false, code: "local_practice_unavailable" });
   });
-  socket.on("practice:computed", (payload, acknowledge) => {
+  onClientEvent(socket, "practice:computed", (payload, acknowledge) => {
     acknowledge?.(localPracticeEngine?.submit(socket, payload, io) ?? { ok: false, code: "local_practice_unavailable" });
   });
-  socket.on("practice:start", async (payload = {}, acknowledge) => {
+  onClientEvent(socket, "practice:start", async (payload = {}, acknowledge) => {
     payload ??= {};
     const difficulty = requestedPracticeDifficulty(payload.difficulty);
     if (!difficulty || !isPracticePlayerColor(payload.playerColor)
