@@ -9,6 +9,9 @@
     --shop-material-dialogue-ink: #f3edef;
     --shop-material-dialogue-fill: #381820;
     --shop-material-dialogue-edge: #a69ba0;
+    --shop-material-dialogue-trim: #612b38;
+    --shop-material-dialogue-keyline: #85505b;
+    --shop-material-dialogue-shadow: #19171d;
   }
   &:has(.shop-header[data-store="costume"]) {
     border-color: #252128 !important;
@@ -47,8 +50,4 @@
     box-shadow: 3px 4px 0 #19171d, inset 0 0 0 1px #a69ba0 !important;
   }
   .costume-store-page .costume-shop-price :is(strong, b, small, span) { color: #f3edef !important; }
-  .costume-store-page .costume-shop-bubble::before {
-    border-radius: 4px !important;
-    box-shadow: 4px 5px 0 #19171d, inset 0 0 0 4px #612b38, inset 0 0 0 5px #85505b !important;
-  }
 }

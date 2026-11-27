@@ -14,8 +14,10 @@
     inset: 12px 2px 30px;
     background: var(--shop-material-dialogue-fill) !important;
     border: 2px solid var(--shop-material-dialogue-edge) !important;
-    border-radius: 12px !important;
-    box-shadow: 3px 4px 0 rgb(44 27 46 / 26%), inset 0 0 0 4px rgb(255 250 235 / 22%) !important;
+    border-radius: 4px !important;
+    box-shadow: 4px 5px 0 var(--shop-material-dialogue-shadow),
+      inset 0 0 0 4px var(--shop-material-dialogue-trim),
+      inset 0 0 0 5px var(--shop-material-dialogue-keyline) !important;
     pointer-events: none;
   }
   :is(.shop-mascot-bubble, .costume-shop-bubble)::after {

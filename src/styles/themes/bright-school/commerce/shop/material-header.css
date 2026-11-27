@@ -6,9 +6,12 @@
   --shop-material-paper: #f4e8cd;
   --shop-material-tag: #e9dcc0;
   --shop-material-title: #fff2d5;
-  --shop-material-dialogue-ink: #49364f;
-  --shop-material-dialogue-fill: #f4e8cd;
-  --shop-material-dialogue-edge: #b59665;
+  --shop-material-dialogue-ink: #fff2d5;
+  --shop-material-dialogue-fill: #203b39;
+  --shop-material-dialogue-edge: #dbc18b;
+  --shop-material-dialogue-trim: #41635c;
+  --shop-material-dialogue-keyline: #769288;
+  --shop-material-dialogue-shadow: #152826;
   .shop-header {
     background: var(--shop-material-fill) !important;
     border-bottom-color: var(--shop-material-edge) !important;

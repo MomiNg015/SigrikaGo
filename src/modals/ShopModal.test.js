@@ -633,7 +633,7 @@ describe("Zahira shop window", () => {
     expect(sidebarWalletSource).not.toContain("--shop-dialogue-tail-tip");
     expect(sidebarWalletSource).not.toContain("clip-path: polygon");
     expect(costumeThemeSource).toMatch(
-      /\.costume-shop-bubble\s*\{[^}]*--shop-dialogue-frame-image:\s*url\(\"\/assets\/shop\/nivora-dialogue-frame-v2\.webp\"\);[^}]*--shop-dialogue-frame-aspect:\s*1060 \/ 470;/s
+      /\.costume-shop-bubble\s*\{[^}]*--shop-dialogue-frame-image:\s*url\(\"\/assets\/shop\/nivora-dialogue-frame-v2\.webp\"\);[^}]*--shop-dialogue-frame-aspect:\s*auto;/s
     );
     expect(costumeThemeSource).toContain(COSTUME_SHOP_DIALOGUE_FRAME_IMAGE);
     expect(shopWindowSource).toMatch(
@@ -644,7 +644,7 @@ describe("Zahira shop window", () => {
       /\.shop-mascot-bubble,\s*\.app-shell\.player-theme-enabled\.theme-bright-school\.theme-bright-school \.shop-mascot-bubble\s*\{[^}]*width:\s*62% !important;[^}]*padding:\s*13px 22px 27px !important;/s
     );
     expect(costumeMobileSource).toMatch(
-      /\.costume-shop-bubble,\s*\.app-shell\.player-theme-enabled\.theme-bright-school\.theme-bright-school \.costume-shop-bubble\s*\{[^}]*top:\s*35% !important;[^}]*right:\s*3% !important;[^}]*left:\s*auto !important;[^}]*width:\s*54% !important;[^}]*padding:\s*13px 22px 27px !important;/s
+      /\.costume-shop-bubble,\s*\.app-shell\.player-theme-enabled\.theme-bright-school\.theme-bright-school \.costume-shop-bubble\s*\{[^}]*top:\s*16% !important;[^}]*right:\s*3% !important;[^}]*left:\s*auto !important;[^}]*width:\s*54% !important;[^}]*padding:\s*15px 15px 34px !important;/s
     );
     expect(shopMobileSource).not.toContain("--shop-dialogue-tail-right");
     expect(costumeMobileSource).not.toContain("--shop-dialogue-tail-left");
