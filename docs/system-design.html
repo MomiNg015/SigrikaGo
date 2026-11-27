@@ -5758,7 +5758,7 @@
 <li>衣柜服装详情保留共享 <code>.shop-detail-art</code> 图像框，但由 <code>.character-costume-detail-art</code> 在基础层和 Bright School 最终主题层共同清除立绘的 <code>drop-shadow</code>；该覆盖不作用于商店商品详情立绘，也不移除图像框或弹窗阴影。</li>
 </ul>
 <ul>
-<li>Bright School 商店已接入确认的无纹理 A：扎希拉使用紫金店招、纯暖纸卡片和暖纸底、紫金边框的对白，两店共用方角双层描边与硬阴影，残星会独立使用赤黑银店招、价格签、钱包与方角对白。<code>themes/bright-school/commerce/shop/material-{header,cards,dialogue,fractsidus}.css</code> 通过 <code>mobile-adaptive.css</code> 末尾加载，仅匹配 <code>.shop-window</code>。商品卡不再使用纹理或装饰渐变；棋子预览底色及边框透明，盒模型保持。对白伪元素位于原气泡边界内，文字的内边距、比例和竖屏位置沿用原 owner；旧 WebP 框图保留为兼容资源。按钮通过 <code>--campus-control-*</code> 状态变量保留悬停、按下、冷却和减少动态效果。实装前基线对比覆盖桌面及 390／320px 的双店几何和动效。</li>
+<li>Bright School 商店已接入确认的无纹理 A：扎希拉使用紫金店招、纯暖纸卡片和暖纸底的曲角对白框，细紫线勾出连贯的框身与尾尖，四角点金，顶边中央嵌菱形纹，残星会独立使用赤黑银店招、价格签、钱包与方角对白。<code>themes/bright-school/commerce/shop/material-{header,cards,dialogue,fractsidus}.css</code> 通过 <code>mobile-adaptive.css</code> 末尾加载，仅匹配 <code>.shop-window</code>。商品卡不再使用纹理或装饰渐变；棋子预览底色及边框透明，盒模型保持。对白伪元素位于原气泡边界内，文字的内边距、比例和竖屏位置沿用原 owner；旧 WebP 框图保留为兼容资源。按钮通过 <code>--campus-control-*</code> 状态变量保留悬停、按下、冷却和减少动态效果。实装前基线对比覆盖桌面及 390／320px 的双店几何和动效。</li>
 </ul>
 <ul>
 <li>商店双页的切换路牌在桌面和竖屏都使用镜像底角锚点：扎希拉页位于左下，残星会页位于右下；桌面统一使用 <code>14px</code> 边距，最终移动层统一使用 <code>8px</code> 边距，并显式清除顶部与相反方向的 inset。</li>

@@ -36,10 +36,22 @@
     transform: skewY(34deg) !important;
     pointer-events: none;
   }
+  .zahira-store-page .shop-mascot-bubble {
+    --shop-dialogue-frame-aspect: auto;
+  }
+  .zahira-store-page .shop-mascot-bubble::before {
+    inset: 2px 0 10px;
+    background: url("/assets/shop/zahira-dialogue-cartouche.svg") center / 100% 100% no-repeat !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    filter: drop-shadow(0 2px 1px rgb(48 33 49 / 24%));
+  }
+  .zahira-store-page .shop-mascot-bubble::after { display: none !important; }
   .costume-shop-bubble::after { right: auto; left: 34px; transform: skewY(-34deg) !important; border-right: 0 !important; border-left: 2px solid var(--shop-material-dialogue-edge) !important; }
 }
 @media (max-width: 768px) {
-  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school:not(.is-sigrika-corrupted) .shop-window :is(.shop-mascot-bubble, .costume-shop-bubble)::before {
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school:not(.is-sigrika-corrupted) .shop-window .costume-shop-bubble::before {
     inset: 4px 1px 24px;
   }
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school:not(.is-sigrika-corrupted) .shop-window :is(.shop-mascot-bubble, .costume-shop-bubble)::after {
