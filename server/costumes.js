@@ -1,5 +1,7 @@
 import { canonicalCharacterId } from "../src/shared/characterAliases.js";
 import {
+  FRACTSIDUS_COSTUME_IDS,
+  RETIRED_COSTUME_IDS,
   COSTUME_PORTRAIT_OFFSET_RANGE,
   COSTUME_PORTRAIT_SCALE_RANGE,
   DEFAULT_COSTUME_ID,
@@ -10,7 +12,9 @@ import {
 } from "../src/shared/costumes.js";
 import { publicUser, USER_ASSET_RELATION_INCLUDE } from "./db.js";
 import { routeError } from "./adminRouteErrors.js";
-import { publicUserAssets } from "./userAssets.js";
+import { parseItemPurchaseCounts, serializeItemPurchaseCounts } from "./shop.js";
+import { RECRUITMENT_ITEM_TYPES } from "../src/shared/recruitment.js";
+import { parseOwnedItemCounts, serializeOwnedItemCounts, syncStructuredUserAssets, publicUserAssets } from "./userAssets.js";
 import {
   PROGRESS_METRICS,
   PROGRESS_REASONS,
@@ -157,7 +161,7 @@ export function validateCostumeInput(input = {}, { requireId = true } = {}) {
 export async function listCostumes({ prisma, userId }) {
   const [costumes, user] = await Promise.all([
     prisma.costume.findMany({
-      where: { enabled: true },
+      where: { enabled: true, id: { notIn: RETIRED_COSTUME_IDS } },
       orderBy: [{ sortOrder: "asc" }, { createdAt: "asc" }, { id: "asc" }]
     }),
     prisma.user.findUnique({
@@ -170,6 +174,7 @@ export async function listCostumes({ prisma, userId }) {
   const ownedIds = new Set(assets.ownedCostumeIds);
   const ownedCharacters = new Set(assets.ownedCharacters);
   return {
+    tokenClaimed: Boolean(parseItemPurchaseCounts(user.itemPurchaseCounts)[RECRUITMENT_ITEM_TYPES.fractsidusToken]),
     costumes: costumes.map((costume) => ({
       ...toCostumePayload(costume),
       owned: ownedIds.has(costume.id),
@@ -181,8 +186,29 @@ export async function listCostumes({ prisma, userId }) {
   };
 }
 
+async function claimFractsidusToken(tx, userId) {
+  const user = await tx.user.findUnique({ where: { id: userId }, include: USER_ASSET_RELATION_INCLUDE });
+  if (!user) throw routeError(404, "用户不存在");
+  const owned = publicUserAssets(user).ownedCostumeIds;
+  if (!FRACTSIDUS_COSTUME_IDS.every((id) => owned.includes(id))) throw routeError(400, "请先集齐三套服装");
+  const tokenId = RECRUITMENT_ITEM_TYPES.fractsidusToken;
+  const purchases = parseItemPurchaseCounts(user.itemPurchaseCounts);
+  if (purchases[tokenId]) throw routeError(400, "已经领取过信物");
+  const counts = parseOwnedItemCounts(user.ownedItems);
+  counts[tokenId] = (counts[tokenId] ?? 0) + 1;
+  purchases[tokenId] = 1;
+  const updated = await tx.user.update({
+    where: { id: userId },
+    data: { ownedItems: serializeOwnedItemCounts(counts), itemPurchaseCounts: serializeItemPurchaseCounts(purchases) }
+  });
+  await syncStructuredUserAssets(tx, updated);
+  const refreshed = await tx.user.findUnique({ where: { id: userId }, include: USER_ASSET_RELATION_INCLUDE });
+  return { user: publicUser(refreshed), tokenClaimed: true };
+}
+
 export async function purchaseCostume({ prisma, userId, costumeId }) {
   return prisma.$transaction(async (tx) => {
+    if (costumeId === RECRUITMENT_ITEM_TYPES.fractsidusToken) return claimFractsidusToken(tx, userId);
     const [user, costume, ownership] = await Promise.all([
       tx.user.findUnique({
         where: { id: userId },
@@ -199,11 +225,12 @@ export async function purchaseCostume({ prisma, userId, costumeId }) {
       })
     ]);
     if (!user) throw routeError(404, "用户不存在");
-    if (!costume || !costume.enabled || !costume.shopVisible || !costume.purchasable) {
+    if (!costume || RETIRED_COSTUME_IDS.includes(costumeId) || !costume.enabled || !costume.shopVisible || !costume.purchasable) {
       throw routeError(400, "服装不可购买");
     }
     if (ownership) throw routeError(400, "已拥有该服装");
-    if (!publicUserAssets(user).ownedCharacters.includes(canonicalCharacterId(costume.characterSlug))) {
+    const characterOwned = publicUserAssets(user).ownedCharacters.includes(canonicalCharacterId(costume.characterSlug));
+    if (!characterOwned && costumeId !== "nabomo-costume-01") {
       throw routeError(400, "需要先拥有对应角色");
     }
 
@@ -240,7 +267,7 @@ export async function purchaseCostume({ prisma, userId, costumeId }) {
       costume: {
         ...toCostumePayload(costume),
         owned: true,
-        characterOwned: true,
+        characterOwned,
         equipped: false
       }
     };
@@ -266,7 +293,7 @@ export async function equipCostume({ prisma, userId, characterSlug: rawCharacter
       await tx.userCostumeEquipment.deleteMany({ where: { userId, characterSlug } });
     } else {
       const costume = await tx.costume.findUnique({ where: { id: costumeId } });
-      if (!costume || !costume.enabled || canonicalCharacterId(costume.characterSlug) !== characterSlug) {
+      if (!costume || RETIRED_COSTUME_IDS.includes(costumeId) || !costume.enabled || canonicalCharacterId(costume.characterSlug) !== characterSlug) {
         throw routeError(400, "服装不可装扮");
       }
       const ownership = await tx.userCostume.findUnique({

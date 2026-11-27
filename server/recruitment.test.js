@@ -320,6 +320,17 @@ describe("recruitment", () => {
     })).rejects.toThrow("未知招募道具");
   });
 
+  it.each(["sigrika", "sigrika,nabomo"])("uses the token for a 260-second fixed recruitment with roster %s", async (ownedCharacters) => {
+    const itemType = RECRUITMENT_ITEM_TYPES.fractsidusToken;
+    const user = recruitmentUser({ ownedCharacters, ownedItems: JSON.stringify({ [itemType]: 1 }) });
+    const calls = [];
+    const response = await startRecruitment({ prisma: recruitmentPrisma(user, calls), userId: user.id, itemType });
+    expect(response.task).toMatchObject({ remainingMs: 260_000, cinematic: null });
+    expect(calls).toContainEqual(["recruitmentTask.create", expect.objectContaining({
+      data: expect.objectContaining({ resultCharacterSlug: "nabomo", successRatePercent: 100, resultType: "success" })
+    })]);
+  });
+
   it("consumes the memorial ticket and fixes the result to Aemeath with the cinematic duration", async () => {
     const now = new Date("2026-07-17T08:00:00.000Z");
     const user = recruitmentUser({

@@ -6,7 +6,7 @@
 
 - Trigger: any change to costume Prisma models, player/admin costume APIs, costume assets, the shop or handbook wardrobe, global character portraits, candy-effect portraits, or room/replay portrait snapshots.
 - Costume ownership and equipment are permanent account state. Shop batches and mascot copy are modal-session UI state.
-- Character ownership and costume ownership are separate gates: the catalog may show a locked costume, but purchase and equipment require the base character.
+- Character ownership and costume ownership are separate gates: the catalog may show a locked costume, but equipment requires the base character. The Fractsidus flying Charon outfit can be purchased before recruiting Nabomo.
 
 ## 2. Signatures
 
@@ -43,7 +43,7 @@
 
 - Player catalog rows expose the normalized admin fields plus `finalPrice`, `owned`, `characterOwned`, and `equipped`.
 - Player listing returns enabled costumes. Shop visibility and purchase flags still gate store selection and settlement; the handbook may render the complete enabled character catalog.
-- The costume shop shows at most five unowned rows per batch. Purchasable rows for owned characters are selected before gray locked rows for unowned characters. Its stage reuses Zahira's measured `layoutShopCards` contract so one to five visible products are centered according to the actual count without empty placeholder slots.
+- The Fractsidus shop lists only the three designated unowned outfits. Once all are owned it shows a centered free token until purchased. A permanent itemPurchaseCounts receipt survives recruitment, leaving the shelf empty. The two retired outfits are excluded from the player catalog. Purchasable rows for owned characters are selected before gray locked rows for unowned characters. Its stage reuses Zahira's measured `layoutShopCards` contract so one to five visible products are centered according to the actual count without empty placeholder slots.
 - A purchase runs in one Prisma transaction: re-read user, costume, and ownership; atomically decrement coins with `coins >= finalPrice`; create `UserCostume`; write the progress ledger; return the refreshed public user.
 - Purchasing never equips implicitly. The success dialog may offer equipment, but declining equipment must keep the just-purchased costume owned.
 - The wardrobe always includes a virtual `default` card. Default is not a `Costume` or `UserCostume` row and is equipable only when the user owns the base character. `defaultCostumeCard(character)` takes its portrait from the character and its optional credit from `Character.illustName` / `Character.illustUrl`; the main character detail must not duplicate this default-costume-only credit. Wardrobe costume details reuse the shared shop item detail art, category, copy, and description structure; the optional credit sits below the costume name and aligns left, and the wardrobe variant omits the shop ownership-status area. The wardrobe art modifier clears the shared shop image drop-shadow while preserving the art frame and the shop product/detail shadow contract.

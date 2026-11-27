@@ -99,7 +99,7 @@ export async function startRecruitment({ prisma, userId, itemType, now = new Dat
     if (activeTask) throw routeError(400, "现在只能同时进行一次招募");
 
     const ownedCharacters = publicUserAssets(user).ownedCharacters;
-    const candidateIds = item.candidates.filter((candidateId) => !ownedCharacters.includes(candidateId));
+    const candidateIds = item.candidates.filter((candidateId) => item.itemType === RECRUITMENT_ITEM_TYPES.fractsidusToken || !ownedCharacters.includes(candidateId));
     if (candidateIds.length === 0) throw routeError(400, RECRUITMENT_NO_CANDIDATE_MESSAGE);
 
     const ownedItems = parseOwnedItemCounts(user.ownedItems);

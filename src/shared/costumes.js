@@ -1,3 +1,7 @@
+export const FRACTSIDUS_COSTUME_IDS = Object.freeze(["denia-costume-01", "sigrika-costume-01", "nabomo-costume-01"]);
+export const RETIRED_COSTUME_IDS = Object.freeze(["denia-costume-02", "nabomo-costume-02"]);
+export const FRACTSIDUS_INVITATION = "想不到你竟然...咳咳，也许我们的理念十分契合呢。怎么样，要不加入我们残星会吧？";
+
 import { canonicalCharacterId } from "./characterAliases.js";
 
 export const DEFAULT_COSTUME_ID = "default";

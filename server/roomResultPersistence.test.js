@@ -73,17 +73,15 @@ describe("roomResultPersistence", () => {
     return room;
   }
 
-  test("shares concurrent settlement and permanently awards the spark six-dan unlock", async () => {
+  test("shares concurrent settlement without granting Nabomo at six dan", async () => {
     const prisma = fakePrisma();
     const room = promotionRoom();
     await Promise.all([saveGameRecord({ prisma, room }), saveGameRecord({ prisma, room })]);
     await saveGameRecord({ prisma, room });
     expect(prisma.gameRecord.create).toHaveBeenCalledTimes(1);
     expect(room.players[0].user).toMatchObject({ rank: "6段", stars: 3, rating: 0 });
-    expect(room.players[0].user.ownedCharacters).toContain("nabomo");
-    expect(prisma.userCharacter.upsert).toHaveBeenCalledWith(expect.objectContaining({
-      create: { userId: "winner", characterSlug: "nabomo", source: "rank" }
-    }));
+    expect(room.players[0].user.ownedCharacters).not.toContain("nabomo");
+    expect(prisma.userCharacter.upsert).not.toHaveBeenCalled();
     expect(room.players[0].user.modeStats.standard).toMatchObject({ rank: "5段", stars: 6 });
   });
 

@@ -168,6 +168,9 @@ export async function seedCharacters(prisma) {
   for (const [sortOrder, character] of entries.entries()) {
     const existing = await prisma.character.findUnique({ where: { slug: character.id }, include: { skill: true } });
     if (existing) {
+      if (character.id === "nabomo" && existing.acquisitionMethod === "首次升上6段后自动获得") {
+        await prisma.character.update({ where: { slug: character.id }, data: { acquisitionMethod: character.acquisitionMethod } });
+      }
       await syncBuiltinStaticPortrait(prisma, existing, character);
       await syncBuiltinSkillCost(prisma, existing, character);
       await syncBuiltinDerivedSkillDefinitions(prisma, existing, character);

@@ -353,7 +353,7 @@ export const ADMIN_DEFAULT_CONFIG = {
       "description": "“作为残星会会长，这种较量简直不在话下...啊，你说残星会是什么？怎么，有兴趣加入我创立的社团吗？”——在这个平行宇宙中，娜波摩不过是个喜欢说中二话的普通学生罢了。",
       "portraitUrl": "/assets/characters/portraits/nabomo.webp",
       "portraitSource": "url",
-      "acquisitionMethod": "首次升上6段后自动获得",
+      "acquisitionMethod": "在残星会买齐三套服装，领取残星会的信物后招募获得",
       "cvName": "璃音",
       "cvUrl": "https://space.bilibili.com/68435776",
       "illustName": "nai5",

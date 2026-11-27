@@ -1,4 +1,6 @@
 import { useEffect, useRef, useState } from "react";
+import { FRACTSIDUS_COSTUME_IDS, FRACTSIDUS_INVITATION } from "../../shared/costumes.js";
+import { RECRUITMENT_ITEMS, RECRUITMENT_ITEM_TYPES } from "../../shared/recruitment.js";
 import { api } from "../../api/client.js";
 import { couponNotice } from "../../shared/StartorchCouponIcon.jsx";
 import { isCouponInsufficientNotice } from "../../shared/startorchCoupon.js";
@@ -11,6 +13,12 @@ import {
   selectCostumeBatch
 } from "../costumeShopHelpers.js";
 
+const tokenItem = RECRUITMENT_ITEMS[RECRUITMENT_ITEM_TYPES.fractsidusToken];
+const tokenProduct = {
+  id: tokenItem.itemType, name: tokenItem.name, description: tokenItem.description,
+  portraitUrl: tokenItem.imageUrl, finalPrice: 0, purchasable: true, isToken: true
+};
+
 export function useCostumeCatalog({
   token,
   user,
@@ -18,6 +26,7 @@ export function useCostumeCatalog({
   onPurchased,
   dialogueConfig = DEFAULT_SHOP_MASCOT_DIALOGUES.nabomo
 }) {
+  const [tokenClaimed, setTokenClaimed] = useState(false);
   const [costumes, setCostumes] = useState([]);
   const [effectiveUser, setEffectiveUser] = useState(user);
   const [catalogState, setCatalogState] = useState("loading");
@@ -52,7 +61,8 @@ export function useCostumeCatalog({
     api("/api/costumes", { token })
       .then((data) => {
         if (!alive) return;
-        const catalog = data.costumes ?? [];
+        const catalog = (data.costumes ?? []).filter((entry) => FRACTSIDUS_COSTUME_IDS.includes(entry.id));
+        setTokenClaimed(Boolean(data.tokenClaimed));
         const batch = selectCostumeBatch(catalog);
         setCostumes(catalog);
         setCurrentBatch(batch);
@@ -107,12 +117,12 @@ export function useCostumeCatalog({
       const data = await api(`/api/costumes/${costume.id}/purchase`, { method: "POST", token });
       setEffectiveUser(data.user);
       onPurchasedRef.current?.(data.user);
+      if (data.tokenClaimed) setTokenClaimed(true);
       setCostumes((current) => current.map((entry) => (
         entry.id === costume.id ? { ...entry, ...data.costume, owned: true } : entry
       )));
-      setCurrentBatch((current) => current.map((entry) => (
-        entry.id === costume.id ? { ...entry, ...data.costume, owned: true } : entry
-      )));
+      setCurrentBatch((current) => current.filter((entry) => entry.id !== costume.id));
+      setPreparedBatch(null);
       setMascotFeedback("thanks", dialogueConfig.thanksLine);
       onNoticeRef.current?.(`已购买${costume.name}`, "success");
       for (const unlock of data.achievementUnlocks ?? []) {
@@ -182,20 +192,21 @@ export function useCostumeCatalog({
   const refreshDisabled = catalogState === "loading"
     || (catalogState === "ready" && (cooldownRemaining > 0 || preparedBatch === null || (!currentBatch.length && eligibleCount === 0)));
 
+  const collectionComplete = FRACTSIDUS_COSTUME_IDS.every((id) => costumes.some((entry) => entry.id === id && entry.owned));
   return {
     batchVersion,
     catalogState,
     cooldownRemaining,
-    currentBatch,
+    currentBatch: collectionComplete ? (tokenClaimed ? [] : [tokenProduct]) : currentBatch,
     effectiveUser,
     equippingId,
     equipCostume,
-    mascotLine,
-    mascotMood,
+    mascotLine: collectionComplete ? (tokenClaimed ? dialogueConfig.emptyLine : FRACTSIDUS_INVITATION) : mascotLine,
+    mascotMood: collectionComplete ? (tokenClaimed ? "empty" : "greeting") : mascotMood,
     purchasingId,
     purchaseCostume,
     refreshCatalog,
-    refreshDisabled,
+    refreshDisabled: collectionComplete || refreshDisabled,
     refreshMode: catalogState === "error" ? "retry" : cooldownRemaining > 0 ? "cooldown" : "refresh"
   };
 }

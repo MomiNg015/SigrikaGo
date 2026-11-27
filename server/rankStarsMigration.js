@@ -43,8 +43,6 @@ export async function migrateRankStars(prisma) {
     }
     for (const user of users) {
       const owned = new Set(String(user.ownedCharacters ?? "").split(",").filter(Boolean));
-      const spark = user.modeStats.find((stats) => stats.mode === "spark");
-      if (user.rating >= 1400 || rankToStep(spark?.rank ?? user.rank) >= 6) owned.add("nabomo");
       if (owned.has("nabomo")) {
         await tx.userCharacter.upsert({
           where: { userId_characterSlug: { userId: user.id, characterSlug: "nabomo" } },

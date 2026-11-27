@@ -189,8 +189,25 @@ describe("costume purchase", () => {
     expect(result.user).toMatchObject({ coins: 200, ownedCostumeIds: [COSTUME.id] });
   });
 
+  it("records one free token purchase after all three outfits, independently of inventory", async () => {
+    const ids = ["sigrika-costume-01", "denia-costume-01", "nabomo-costume-01"];
+    const account = user({ coins: 0, userCostumes: ids.slice(0, 2).map((costumeId) => ({ costumeId })) });
+    const tx = { user: {
+      findUnique: async () => account,
+      update: async ({ data }) => Object.assign(account, data)
+    } };
+    const prisma = { $transaction: (callback) => callback(tx) };
+    const claim = () => purchaseCostume({ prisma, userId: account.id, costumeId: "fractsidus-token" });
+    await expect(claim()).rejects.toThrow("请先集齐三套服装");
+    account.userCostumes.push({ costumeId: ids[2] });
+    await expect(claim()).resolves.toMatchObject({ tokenClaimed: true });
+    expect(JSON.parse(account.ownedItems)).toEqual({ "fractsidus-token": 1 });
+    account.ownedItems = "{}";
+    await expect(claim()).rejects.toThrow("已经领取过信物");
+  });
+
   it("rejects a costume for an unowned character before writing", async () => {
-    const lockedCostume = { ...COSTUME, id: "nabomo-costume-01", characterSlug: "nabomo" };
+    const lockedCostume = { ...COSTUME, id: "changli-costume-01", characterSlug: "changli" };
     const tx = {
       user: {
         findUnique: vi.fn(async () => user({ ownedCharacters: "sigrika" })),

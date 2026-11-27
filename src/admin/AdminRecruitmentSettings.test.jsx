@@ -43,6 +43,7 @@ describe("AdminRecruitmentSettings", () => {
         method: "PATCH",
         body: expect.objectContaining({
           fixedItemTexts: {
+            ...DEFAULT_RECRUITMENT_CONFIG.fixedItemTexts,
             [itemType]: {
               scopeLabel: "拿纪念券呼唤飞行雪绒",
               resultText: "爱弥斯从舞台灯光中现身。"

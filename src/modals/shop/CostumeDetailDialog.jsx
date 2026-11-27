@@ -15,17 +15,18 @@ export default function CostumeDetailDialog({
 }) {
   if (!costume) return null;
   const owned = costume.owned;
-  const canPurchase = costume.characterOwned && costume.purchasable && !owned;
+  const purchaseUnlocked = costume.characterOwned || costume.id === "nabomo-costume-01" || costume.isToken;
+  const canPurchase = purchaseUnlocked && costume.purchasable && !owned;
   const characterName = CHARACTERS[canonicalCharacterId(costume.characterSlug)]?.name ?? "角色";
   const purchaseLabel = purchasing
     ? "购买中…"
     : owned
       ? "已拥有"
-      : !costume.characterOwned
+      : !purchaseUnlocked
         ? "需要先拥有对应角色"
         : !costume.purchasable
           ? "暂不可购买"
-          : "购买服装";
+          : costume.isToken ? "购买信物" : "购买服装";
 
   async function purchase() {
     let purchased = null;
@@ -34,7 +35,7 @@ export default function CostumeDetailDialog({
     } finally {
       onClose();
     }
-    if (purchased) onPurchaseSuccess?.({ ...costume, ...purchased, owned: true });
+    if (purchased && (purchased.characterOwned ?? costume.characterOwned)) onPurchaseSuccess?.({ ...costume, ...purchased, owned: true });
   }
 
   return (
@@ -50,7 +51,7 @@ export default function CostumeDetailDialog({
           <PortraitShowcase src={costume.portraitUrl} />
         </div>
         <div className="shop-detail-copy costume-detail-copy">
-          <span className="shop-detail-category costume-detail-category">{characterName}服装</span>
+          <span className="shop-detail-category costume-detail-category">{costume.isToken ? "招募物品" : characterName + "服装"}</span>
           <div className="shop-detail-title-row costume-detail-title-row">
             <h3>{costume.name}</h3>
             {costume.illustName && (

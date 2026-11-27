@@ -2,7 +2,7 @@ import StartorchCouponIcon from "../../shared/StartorchCouponIcon.jsx";
 
 export default function CostumeCard({ costume, onShowDetail }) {
   return (
-    <article className={`costume-shop-card${costume.characterOwned ? "" : " is-character-locked"}${costume.owned ? " is-owned" : ""}`}>
+    <article className={`costume-shop-card${(costume.characterOwned || costume.isToken || costume.id === "nabomo-costume-01") ? "" : " is-character-locked"}${costume.owned ? " is-owned" : ""}`}>
       <button
         className="costume-shop-card-trigger"
         type="button"

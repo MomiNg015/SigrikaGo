@@ -3,6 +3,7 @@ import { CHARACTER_PORTRAIT_ASSETS } from "./characterPortraitAssetCatalog.js";
 
 export const RECRUITMENT_ITEM_TYPES = Object.freeze({
   campusPoster: "campus-recruitment-poster",
+  fractsidusToken: "fractsidus-token",
   aemeathMemorialTicket: "aemeath-flight-snow-memorial-ticket",
   magicClock: "magic-clock",
   radioTicket: "radio-recruitment-ticket"
@@ -95,6 +96,23 @@ export const RECRUITMENT_ITEMS = Object.freeze({
     resultText: "爱弥斯，回应粉丝的期待，闪亮登台！嗯？是想让我加入围棋部吗？哼哼哼，也好，就让你们见识一下我的实力吧！",
     assetSlots: AEMEATH_RECRUITMENT_ASSET_SLOTS
   }),
+  [RECRUITMENT_ITEM_TYPES.fractsidusToken]: Object.freeze({
+    itemType: RECRUITMENT_ITEM_TYPES.fractsidusToken,
+    name: "残星会的信物",
+    scopeLabel: "感觉到一束诡秘的视线正看向这里......",
+    description: "残星会发的纪念卡片。嗯...这有什么用呢？",
+    imageUrl: "/assets/items/fractsidus-token.webp",
+    priceCoins: 0,
+    sortOrder: 122,
+    playerShopAvailability: "hidden",
+    catalogVisibility: "owned-only",
+    resultMode: "fixed",
+    configurableProbability: false,
+    fixedResultCharacterId: "nabomo",
+    candidates: Object.freeze(["nabomo"]),
+    durationMs: 260_000,
+    resultText: "哟，你在这里发什么呆呢？什么，想让我加入围棋部？西西那家伙，难道没跟你说过我的事情吗？"
+  }),
   [RECRUITMENT_ITEM_TYPES.magicClock]: Object.freeze({
     itemType: RECRUITMENT_ITEM_TYPES.magicClock,
     name: "神奇小钟表",
@@ -156,6 +174,10 @@ export const DEFAULT_RECRUITMENT_CONFIG = Object.freeze({
     changli: "长离循着广播找来，笑着问围棋部还缺不缺一个后手专家。"
   }),
   fixedItemTexts: Object.freeze({
+    [RECRUITMENT_ITEM_TYPES.fractsidusToken]: Object.freeze({
+      scopeLabel: RECRUITMENT_ITEMS[RECRUITMENT_ITEM_TYPES.fractsidusToken].scopeLabel,
+      resultText: RECRUITMENT_ITEMS[RECRUITMENT_ITEM_TYPES.fractsidusToken].resultText
+    }),
     [RECRUITMENT_ITEM_TYPES.aemeathMemorialTicket]: Object.freeze({
       scopeLabel: RECRUITMENT_ITEMS[RECRUITMENT_ITEM_TYPES.aemeathMemorialTicket].scopeLabel,
       resultText: RECRUITMENT_ITEMS[RECRUITMENT_ITEM_TYPES.aemeathMemorialTicket].resultText

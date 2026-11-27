@@ -57,7 +57,7 @@ it("atomically backs up and resets every mode, preserves assets, migrates condit
   expect(reset.modeStats).toHaveLength(3);
   expect(reset.modeStats.every((row) => row.rank === "3段" && row.stars === 2 && row.rating === 0)).toBe(true);
   expect(reset.modeStats.find((row) => row.mode === "spark").wins).toBe(30);
-  expect(reset.userCharacters.map((row) => row.characterSlug)).toContain("nabomo");
+  expect(reset.userCharacters.map((row) => row.characterSlug)).not.toContain("nabomo");
   expect(reset.achievements).toHaveLength(1);
   const migratedAchievement = await prisma.achievement.findUnique({ where: { id: achievement.id } });
   expect(migratedAchievement.conditionType).toBe("rank");

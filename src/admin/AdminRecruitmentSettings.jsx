@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { CHARACTERS } from "../shared/characters.js";
 import { adminApi } from "../api/client.js";
 import {
   DEFAULT_RECRUITMENT_CONFIG,
@@ -107,7 +108,7 @@ export default function AdminRecruitmentSettings({ token, onNotice }) {
               />
             </label>
             <label>
-              爱弥斯招募台词
+              {CHARACTERS[item.fixedResultCharacterId]?.name ?? item.fixedResultCharacterId}招募台词
               <textarea
                 value={draft.fixedItemTexts[item.itemType]?.resultText ?? ""}
                 onChange={(event) => setDraft({

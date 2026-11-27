@@ -535,20 +535,8 @@ function userUpdateOperations(prisma, player, mode, settlement, recordDelta = {}
     ...(settlement.coins ? { coins: { increment: settlement.coins } } : {}),
     ...extraData
   };
-  const earnedNabomo = mode === "spark" && rankToStep(player.user.rank) >= 6;
-  const unlockOperations = earnedNabomo && prisma.userCharacter?.upsert ? [prisma.userCharacter.upsert({
-    where: { userId_characterSlug: { userId: player.user.id, characterSlug: "nabomo" } },
-    create: { userId: player.user.id, characterSlug: "nabomo", source: "rank" },
-    update: {}
-  })] : [];
-  if (earnedNabomo) {
-    const owned = new Set(Array.isArray(player.user.ownedCharacters) ? player.user.ownedCharacters : String(player.user.ownedCharacters ?? "").split(",").filter(Boolean));
-    owned.add("nabomo");
-    data.ownedCharacters = [...owned].join(",");
-    player.user.ownedCharacters = [...owned];
-  }
-  if (!Object.keys(data).length) return unlockOperations;
-  return [...unlockOperations, prisma.user.update({
+  if (!Object.keys(data).length) return [];
+  return [prisma.user.update({
     where: { id: player.user.id },
     data
   })];

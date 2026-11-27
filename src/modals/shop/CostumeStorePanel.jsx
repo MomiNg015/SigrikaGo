@@ -1,4 +1,3 @@
-import WindowEmptyState from "../WindowEmptyState.jsx";
 import { useMemo, useRef } from "react";
 import { buildShopCardPresentation } from "../shopModalHelpers.js";
 import CostumeCard from "./CostumeCard.jsx";
@@ -58,8 +57,8 @@ export default function CostumeStorePanel({
                 key={costume.id}
                 style={{
                   "--costume-card-index": index,
-                  "--shop-card-left": `${placement.x}px`,
-                  "--shop-card-top": `${placement.y}px`,
+                  "--shop-card-left": `${(costume.isToken ? (size.width - placement.width) / 2 : placement.x)}px`,
+                  "--shop-card-top": `${(costume.isToken ? (size.height - placement.height) / 2 : placement.y)}px`,
                   "--shop-card-width": `${baseSize.width}px`,
                   "--shop-card-height": `${baseSize.height}px`,
                   "--shop-card-scale": placement.scale,
@@ -80,7 +79,6 @@ export default function CostumeStorePanel({
             );
           })}
         </div>
-        {batch.length === 0 && <WindowEmptyState className="costume-shop-empty">暂无服装</WindowEmptyState>}
       </section>
       <button className="shop-switch-button costume-to-zahira" type="button" onClick={onSwitchShop}>
         <span>扎希拉商店</span>

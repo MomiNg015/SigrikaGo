@@ -16,7 +16,7 @@ Applies to competitive progression, public projections, leaderboards, admin edit
 - Every entry into 9段 sets 1000 points. Win +200; loss -250 floored at zero. Losing from zero demotes to 8段 with four stars.
 - Draw leaves progression and challenge eligibility unchanged; 18级 cannot demote.
 - Sort by numeric rank descending, ninth-dan points or stars descending, wins descending, then exact wins/totalGames descending. More wins must outrank fewer wins even with a lower win rate at equal progression. Equal standings sort by `UserModeStats.leaderboardReachedAt` ascending; identical timestamps use stable user ID. All ranks are unique (1,2,3). Never use usernames, rounded percentages or legacy Elo as a score tie-breaker. See [Unique Leaderboard Order](./leaderboard-order-contract.md) for timestamp/migration contracts.
-- A spark six-dan unlock writes permanent Nabomo ownership transactionally. Other modes do not grant it.
+- Six-dan promotion and rank migration never grant Nabomo. Her permanent unlock comes from recruitment with the Fractsidus token.
 - Migration resets all users/modes to 3段 / 2 stars / 0 points, preserving counters and earned assets; updates unsettled room snapshots and converts old rating achievements into equivalent rank thresholds. Receipt and reset are atomic. Never expose or export migration receipts as admin defaults.
 - Public room/profile/leaderboard payloads carry stars. Settlement includes rankAfter, starsAfter and ratingAfter.
 - Battle PlayerInfo shows only the rank name; dossier/leaderboard progress remains detailed.
@@ -41,7 +41,7 @@ rankProgression.test.js covers limits and transitions; roomResultPersistence.tes
 Wrong: increment stars and immediately promote when the result reaches capacity.
 Correct: inspect the pre-game stars; only an already-full player can promote on a win.
 Wrong: dynamically derive owned characters from current rating.
-Correct: persist the six-dan award so later demotion cannot revoke it.
+Correct: preserve existing character ownership across rank changes.
 
 ## Matchmaking classification
 - Ordinary spark/standard/gomoku queues use their own mode rank; rankDistance skips nonexistent zero (1 kyu -> 1 dan is one step).
